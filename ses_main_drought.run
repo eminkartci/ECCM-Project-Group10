@@ -1,0 +1,247 @@
+shell 'mkdir -p output_drought/sankey';
+model ses_main.mod;
+data ses_main_drought.dat;
+option solver gurobi;
+option gurobi_options 'outlev=1';
+option show_stats 1; # show statistics
+
+solve;
+
+# display solve_result_num;
+# display _solve_elapsed_time;
+
+## Saving sets and parameters to output file
+
+for {i in _SETS} { 
+		print "display " & i & " > output_drought/sets.txt;" > comfile.txt;
+} 
+
+for {i in _PARS} { 
+        print "printf 'param ' > output_drought/params.txt;" > comfile.txt; 
+        print "display " & i & " > output_drought/params.txt;" > comfile.txt; 
+        if indexarity(i) == 0 then print "print ';' > output_drought/params.txt;" > comfile.txt; 
+} 
+
+include comfile.txt;
+
+# Text file for variables
+# display {j in 1.._nvars} (_varname[j],_var[j].val,_var[j].init,_var[j].lb,_var[j].slack,_var[j].ub)> output_drought/variables.txt;
+
+# Text file for objectives
+# printf {j in 1.._nobjs} "%s\t%g\n", _objname[j], _obj[j] >> output_drought/objectives.txt;
+
+# Text file for constraints
+# display {j in 1.._ncons} (_conname[j],_con[j],_con[j].body,_con[j].dual,_con[j].lb,_con[j].ldual,_con[j].lslack,_con[j].slack,_con[j].ub) > output_drought/constraints.txt;
+
+
+## Print total yearly output to txt file
+printf "%s\t%s\n", "Name", "Yearly output" > output_drought/total_output.txt; 
+for {i in TECHNOLOGIES union RESOURCES diff STORAGE_TECH}{
+		printf "%s\t%.3f\n", i, sum{t in PERIODS} (F_Mult_t [i, t] * period_duration [t]) >> output_drought/total_output.txt;
+}
+
+## Print cost breakdown to txt file.
+printf "%s\t%s\t%s\t%s\n", "Name", "C_inv", "C_maint", "C_op" > output_drought/cost_breakdown.txt; 
+for {i in TECHNOLOGIES union RESOURCES}{if i in TECHNOLOGIES
+then
+		printf "%s\t%.6f\t%.6f\t%.6f\n", i, tau [i] * C_inv [i], C_maint [i], 0 > output_drought/cost_breakdown.txt;
+else
+		printf "%s\t%.6f\t%.6f\t%.6f\n", i, 0, 0, C_op[i] > output_drought/cost_breakdown.txt;
+}
+
+## Print GWP breakdown
+printf "%s\t%s\t%s\n", "Name", "GWP_constr", "GWP_op" > output_drought/gwp_breakdown.txt; 
+for {i in TECHNOLOGIES union RESOURCES}{if i in TECHNOLOGIES
+then
+		printf "%s\t%.6f\t%.6f\n", i, GWP_constr [i] / lifetime [i], 0 > output_drought/gwp_breakdown.txt;
+else
+		printf "%s\t%.6f\t%.6f\n", i, 0, GWP_op [i] > output_drought/gwp_breakdown.txt;
+}
+
+## Print F_Mult_t to txt file.
+printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", "Name", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" > output_drought/f_mult_t.txt; 
+for {i in TECHNOLOGIES union RESOURCES}{
+		printf "%s\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\n", i, {t in PERIODS} F_Mult_t[i,t] > output_drought/f_mult_t.txt;
+}
+
+## Print F_Mult to txt file
+printf "%s\t%s\n", "Name", "Mult" > output_drought/f_mult.txt; 
+for {i in TECHNOLOGIES}{
+	printf "%s\t%.6f\n", i, F_Mult[i] > output_drought/f_mult.txt;
+}
+
+## Print End_Uses to txt file (with negative sign to close balance)
+printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", "Name", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" > output_drought/End_Uses.txt; 
+for {i in LAYERS}{
+		printf "%s\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\n", i, {t in PERIODS} -End_Uses[i,t] > output_drought/End_Uses.txt;
+}
+
+## Print storage balance from/to layers (Storage_Out - Storage_In) to txt file.
+for {i in STORAGE_TECH}{
+	printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", "Not accounting for efficiency", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" > ("output_drought/" & i & ".txt"); 
+	for {l in LAYERS}{
+		printf "%s\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\n", l, {t in PERIODS} (Storage_Out[i,l,t] - Storage_In[i,l,t]) > ("output_drought/" & i & ".txt");
+}}
+
+## Print storage balance for storage tech (Storage_Out/eff_out - Storage_In * eff_in) to txt file. 
+for {i in STORAGE_TECH}{
+	printf "\n%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", "Accounting for efficiency", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" > ("output_drought/" & i & ".txt"); 
+	for {l in LAYERS}{
+		printf "%s\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\n", l, {t in PERIODS} (if Storage_Out [i,l,t] == 0 then (- Storage_In[i,l,t] * storage_eff_in[i,l]) else (Storage_Out[i,l,t] / storage_eff_out[i,l])) > ("output_drought/" & i & ".txt");
+	}}
+
+
+## Print period_duration to txt file.
+for {t in PERIODS}{
+		printf "%s\t%.6f\n", t, period_duration[t] > output_drought/period_duration.txt;
+}
+
+## Print losses to txt file
+for {i in END_USES_TYPES}{
+		printf "%s\t%.3f\n", i, sum{t in PERIODS}(Losses [i,t] * period_duration [t])  > output_drought/losses.txt;
+}
+
+## Generate CSV file to be used as input to Sankey diagram
+# Notes:
+# - Assuming that SNG and BioOil are used in boilers
+
+printf "%s,%s,%s,%s,%s,%s\n", "source" , "target", "realValue", "layerID", "layerColor", "layerUnit" > output_drought/sankey/input2sankey.csv;
+## Gasoline
+if sum{t in PERIODS}(F_Mult_t ["GASOLINE", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Gasoline" , "Mob priv", sum{t in PERIODS}(layers_in_out["GASOLINE","GASOLINE"] * F_Mult_t ["GASOLINE", t] * period_duration [t]) / 1000 , "Gasoline", "#808080", "TWh" > output_drought/sankey/input2sankey.csv;
+## Diesel
+if sum{t in PERIODS}(F_Mult_t ["CAR_DIESEL", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Diesel" , "Mob priv", sum{t in PERIODS}(-layers_in_out["CAR_DIESEL","DIESEL"] * F_Mult_t ["CAR_DIESEL", t] * period_duration [t]) / 1000 , "Diesel", "#D3D3D3", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS} ((F_Mult_t ["BUS_COACH_DIESEL", t] + F_Mult_t["BUS_COACH_HYDIESEL", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Diesel" , "Mob public", sum{t in PERIODS}(-layers_in_out["BUS_COACH_DIESEL","DIESEL"] * F_Mult_t ["BUS_COACH_DIESEL", t] * period_duration [t] - layers_in_out["BUS_COACH_HYDIESEL","DIESEL"] * F_Mult_t ["BUS_COACH_HYDIESEL", t] * period_duration [t] ) / 1000 , "Diesel", "#D3D3D3", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS} ((F_Mult_t ["TRUCK", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Diesel" , "Freight", sum{t in PERIODS}(-layers_in_out["TRUCK","DIESEL"] * F_Mult_t ["TRUCK", t] * period_duration [t]) / 1000 , "Diesel", "#D3D3D3", "TWh" > output_drought/sankey/input2sankey.csv;
+## Natural Gas
+if sum{t in PERIODS}(F_Mult_t ["CAR_NG", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "NG" , "Mob priv", sum{t in PERIODS}(-layers_in_out["CAR_NG","NG"] * F_Mult_t ["CAR_NG", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["BUS_COACH_CNG_STOICH", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "NG" , "Mob public", sum{t in PERIODS}(-layers_in_out["BUS_COACH_CNG_STOICH","NG"] * F_Mult_t ["BUS_COACH_CNG_STOICH", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["H2_NG", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "NG" , "H2 prod", sum{t in PERIODS}(-layers_in_out["H2_NG","NG"] * F_Mult_t ["H2_NG", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["CCGT", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "NG" , "Elec", sum{t in PERIODS}(-layers_in_out["CCGT","NG"] * F_Mult_t ["CCGT", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["CCGT_CCS", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "NG CCS" , "Elec", sum{t in PERIODS}(-layers_in_out["CCGT_CCS","NG_CCS"] * F_Mult_t ["CCGT_CCS", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["IND_COGEN_GAS", t] + F_Mult_t ["DHN_COGEN_GAS", t] + F_Mult_t ["DEC_COGEN_GAS", t] + F_Mult_t ["DEC_ADVCOGEN_GAS", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "NG" , "CHP", sum{t in PERIODS}(-layers_in_out["IND_COGEN_GAS","NG"] * F_Mult_t ["IND_COGEN_GAS", t] * period_duration [t] - layers_in_out["DHN_COGEN_GAS","NG"] * F_Mult_t ["DHN_COGEN_GAS", t] * period_duration [t] - layers_in_out["DEC_COGEN_GAS","NG"] * F_Mult_t ["DEC_COGEN_GAS", t] * period_duration [t] - layers_in_out["DEC_ADVCOGEN_GAS","NG"] * F_Mult_t ["DEC_ADVCOGEN_GAS", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["DEC_THHP_GAS", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "NG" , "HPs", sum{t in PERIODS}(-layers_in_out["DEC_THHP_GAS","NG"] * F_Mult_t ["DEC_THHP_GAS", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["IND_BOILER_GAS", t] + F_Mult_t ["DHN_BOILER_GAS", t] + F_Mult_t ["DEC_BOILER_GAS", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "NG" , "Boilers", sum{t in PERIODS}(-layers_in_out["IND_BOILER_GAS","NG"] * F_Mult_t ["IND_BOILER_GAS", t] * period_duration [t] - layers_in_out["DHN_BOILER_GAS","NG"] * F_Mult_t ["DHN_BOILER_GAS", t] * period_duration [t] - layers_in_out["DEC_BOILER_GAS","NG"] * F_Mult_t ["DEC_BOILER_GAS", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output_drought/sankey/input2sankey.csv;
+## Electricity production
+if sum{t in PERIODS}(F_Mult_t ["ELECTRICITY", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Electricity" , "Elec", sum{t in PERIODS}(layers_in_out["ELECTRICITY","ELECTRICITY"] * F_Mult_t ["ELECTRICITY", t] * period_duration [t]) / 1000 , "Electricity", "#00BFFF", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["NUCLEAR", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Nuclear" , "Elec", sum{t in PERIODS}(layers_in_out["NUCLEAR","ELECTRICITY"] * F_Mult_t ["NUCLEAR", t] * period_duration [t]) / 1000 , "Nuclear", "#FFC0CB", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["WIND", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Wind" , "Elec", sum{t in PERIODS}(layers_in_out["WIND","ELECTRICITY"] * F_Mult_t ["WIND", t] * period_duration [t]) / 1000 , "Wind", "#FFA500", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["HYDRO_DAM", t] + F_Mult_t ["NEW_HYDRO_DAM", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Hydro Dams" , "Elec", sum{t in PERIODS}(layers_in_out["HYDRO_DAM","ELECTRICITY"] * F_Mult_t ["HYDRO_DAM", t] * period_duration [t] + layers_in_out["NEW_HYDRO_DAM","ELECTRICITY"] * F_Mult_t ["NEW_HYDRO_DAM", t] * period_duration [t]) / 1000 , "Hydro Dam", "#00CED1", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["HYDRO_RIVER", t] + F_Mult_t ["NEW_HYDRO_RIVER", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Hydro River" , "Elec", sum{t in PERIODS}(layers_in_out["HYDRO_RIVER","ELECTRICITY"] * F_Mult_t ["HYDRO_RIVER", t] * period_duration [t] + layers_in_out["NEW_HYDRO_RIVER","ELECTRICITY"] * F_Mult_t ["NEW_HYDRO_RIVER", t] * period_duration [t]) / 1000 , "Hydro River", "#0000FF", "TWh" > output_drought/sankey/input2sankey.csv;
+# Coal
+if sum{t in PERIODS}((F_Mult_t ["COAL_US", t] + F_Mult_t ["COAL_IGCC", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Coal" , "Elec", sum{t in PERIODS}(-layers_in_out["COAL_US","COAL"] * F_Mult_t ["COAL_US", t] * period_duration [t] - layers_in_out["COAL_IGCC","COAL"] * F_Mult_t ["COAL_IGCC", t] * period_duration [t]) / 1000 , "Coal", "#A0522D", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["COAL_US_CCS", t] + F_Mult_t ["COAL_IGCC_CCS", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Coal CCS" , "Elec", sum{t in PERIODS}(-layers_in_out["COAL_US_CCS","COAL_CSS"] * F_Mult_t ["COAL_US_CCS", t] * period_duration [t] - layers_in_out["COAL_IGCC_CCS","COAL"] * F_Mult_t ["COAL_IGCC_CCS", t] * period_duration [t]) / 1000 , "Coal", "#A0522D", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["IND_BOILER_COAL", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Coal" , "Boilers", sum{t in PERIODS}(-layers_in_out["IND_BOILER_COAL","COAL"] * F_Mult_t ["IND_BOILER_COAL", t] * period_duration [t]) / 1000 , "Coal", "#A0522D", "TWh" > output_drought/sankey/input2sankey.csv;
+# Solar
+if sum{t in PERIODS}(F_Mult_t ["PV", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Solar" , "Elec", sum{t in PERIODS}(layers_in_out["PV","ELECTRICITY"] * F_Mult_t ["PV", t] * period_duration [t]) / 1000 , "Solar", "#FFFF00", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["DEC_SOLAR", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Solar" , "Heat LT Dec", sum{t in PERIODS}(layers_in_out["DEC_SOLAR","HEAT_LOW_T_DECEN"] * F_Mult_t ["DEC_SOLAR", t] * period_duration [t]) / 1000 , "Solar", "#FFFF00", "TWh" > output_drought/sankey/input2sankey.csv;
+# Geothermal
+if sum{t in PERIODS}(F_Mult_t ["GEOTHERMAL", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Geothermal" , "Elec", sum{t in PERIODS}(layers_in_out["GEOTHERMAL","ELECTRICITY"] * F_Mult_t ["GEOTHERMAL", t] * period_duration [t]) / 1000 , "Geothermal", "#FF0000", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["DHN_DEEP_GEO", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Geothermal" , "DHN", sum{t in PERIODS}(layers_in_out["DHN_DEEP_GEO","HEAT_LOW_T_DHN"] * F_Mult_t ["DHN_DEEP_GEO", t] * period_duration [t]) / 1000 , "Geothermal", "#FF0000", "TWh" > output_drought/sankey/input2sankey.csv;
+# Waste
+if sum{t in PERIODS}((F_Mult_t ["IND_COGEN_WASTE", t] + F_Mult_t ["DHN_COGEN_WASTE", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Waste" , "CHP", sum{t in PERIODS}(-layers_in_out["IND_COGEN_WASTE","WASTE"] * F_Mult_t ["IND_COGEN_WASTE", t] * period_duration [t] -layers_in_out["DHN_COGEN_WASTE","WASTE"] * F_Mult_t ["DHN_COGEN_WASTE", t] * period_duration [t]) / 1000 , "Waste", "#808000", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["IND_BOILER_WASTE", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Waste" , "Boilers", sum{t in PERIODS}(-layers_in_out["IND_BOILER_WASTE","WASTE"] * F_Mult_t ["IND_BOILER_WASTE", t] * period_duration [t]) / 1000 , "Waste", "#808000", "TWh" > output_drought/sankey/input2sankey.csv;
+# Oil
+if sum{t in PERIODS}((F_Mult_t ["DEC_COGEN_OIL", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Oil" , "CHP", sum{t in PERIODS}(-layers_in_out["DEC_COGEN_OIL","LFO"] * F_Mult_t ["DEC_COGEN_OIL", t] * period_duration [t]) / 1000 , "Oil", "#8B008B", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["IND_BOILER_OIL", t] + F_Mult_t ["DHN_BOILER_OIL", t] + F_Mult_t ["DEC_BOILER_OIL", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Oil" , "Boilers", sum{t in PERIODS}(-layers_in_out["IND_BOILER_OIL","LFO"] * F_Mult_t ["IND_BOILER_OIL", t] * period_duration [t] - layers_in_out["DHN_BOILER_OIL","LFO"] * F_Mult_t ["DHN_BOILER_OIL", t] * period_duration [t] - layers_in_out["DEC_BOILER_OIL","LFO"] * F_Mult_t ["DEC_BOILER_OIL", t] * period_duration [t]) / 1000 , "Oil", "#8B008B", "TWh" > output_drought/sankey/input2sankey.csv;
+# Wood
+if sum{t in PERIODS}(F_Mult_t ["H2_BIOMASS", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Wood" , "H2 prod", sum{t in PERIODS}(-layers_in_out["H2_BIOMASS","WOOD"] * F_Mult_t ["H2_BIOMASS", t] * period_duration [t]) / 1000 , "Wood", "#CD853F", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["GASIFICATION_SNG", t] + F_Mult_t ["PYROLYSIS", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Wood" , "Biofuels", sum{t in PERIODS}(-layers_in_out["GASIFICATION_SNG","WOOD"] * F_Mult_t ["GASIFICATION_SNG", t] * period_duration [t] - layers_in_out["PYROLYSIS","WOOD"] * F_Mult_t ["PYROLYSIS", t] * period_duration [t]) / 1000 , "Wood", "#CD853F", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["IND_COGEN_WOOD", t] + F_Mult_t ["DHN_COGEN_WOOD", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Wood" , "CHP", sum{t in PERIODS}(-layers_in_out["IND_COGEN_WOOD","WOOD"] * F_Mult_t ["IND_COGEN_WOOD", t] * period_duration [t] - layers_in_out["DHN_COGEN_WOOD","WOOD"] * F_Mult_t ["DHN_COGEN_WOOD", t] * period_duration [t]) / 1000 , "Wood", "#CD853F", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["IND_BOILER_WOOD", t] + F_Mult_t ["DHN_BOILER_WOOD", t] + F_Mult_t ["DEC_BOILER_WOOD", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Wood" , "Boilers", sum{t in PERIODS}(-layers_in_out["IND_BOILER_WOOD","WOOD"] * F_Mult_t ["IND_BOILER_WOOD", t] * period_duration [t] - layers_in_out["DHN_BOILER_WOOD","WOOD"] * F_Mult_t ["DHN_BOILER_WOOD", t] * period_duration [t] - layers_in_out["DEC_BOILER_WOOD","WOOD"] * F_Mult_t ["DEC_BOILER_WOOD", t] * period_duration [t]) / 1000 , "Wood", "#CD853F", "TWh" > output_drought/sankey/input2sankey.csv;
+# Electricity use
+if sum{t in PERIODS}((F_Mult_t ["CAR_PHEV", t] + F_Mult_t ["CAR_BEV", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Elec" , "Mob priv", sum{t in PERIODS}(-layers_in_out["CAR_PHEV","ELECTRICITY"] * F_Mult_t ["CAR_PHEV", t] * period_duration [t] - layers_in_out["CAR_BEV","ELECTRICITY"] * F_Mult_t ["CAR_BEV", t] * period_duration [t]) / 1000 , "Electricity", "#00BFFF", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["TRAIN_PUB", t] + F_Mult_t ["TRAMWAY_TROLLEY", t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Elec" , "Mob public", sum{t in PERIODS}(-layers_in_out["TRAIN_PUB","ELECTRICITY"] * F_Mult_t ["TRAIN_PUB", t] * period_duration [t] - layers_in_out["TRAMWAY_TROLLEY","ELECTRICITY"] * F_Mult_t ["TRAMWAY_TROLLEY", t] * period_duration [t]) / 1000 , "Electricity", "#00BFFF", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["TRAIN_FREIGHT", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Elec" , "Freight", sum{t in PERIODS}(-layers_in_out["TRAIN_FREIGHT","ELECTRICITY"] * F_Mult_t ["TRAIN_FREIGHT", t] * period_duration [t]) / 1000 , "Electricity", "#00BFFF", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(Losses ["ELECTRICITY", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Elec" , "Exp & Loss", sum{t in PERIODS}(Losses ["ELECTRICITY",t] * period_duration [t] - layers_in_out["ELEC_EXPORT","ELECTRICITY"] * F_Mult_t ["ELEC_EXPORT", t] * period_duration [t]) / 1000 , "Electricity", "#00BFFF", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(End_Uses ["ELECTRICITY",t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Elec" , "Elec demand", sum{t in PERIODS}(End_Uses ["ELECTRICITY", t] * period_duration [t] - Losses ["ELECTRICITY",t] * period_duration [t]) / 1000 , "Electricity", "#00BFFF", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["DHN_HP_ELEC",t] + F_Mult_t ["DEC_HP_ELEC",t])* period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Elec" , "HPs", sum{t in PERIODS}(-layers_in_out["DHN_HP_ELEC","ELECTRICITY"] * F_Mult_t ["DHN_HP_ELEC", t] * period_duration [t] - layers_in_out["DEC_HP_ELEC","ELECTRICITY"] * F_Mult_t ["DEC_HP_ELEC", t] * period_duration [t]) / 1000 , "Electricity", "#00BFFF", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["H2_ELECTROLYSIS",t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Elec" , "H2 prod", sum{t in PERIODS}(-layers_in_out["H2_ELECTROLYSIS","ELECTRICITY"] * F_Mult_t ["H2_ELECTROLYSIS", t] * period_duration [t]) / 1000 , "Electricity", "#00BFFF", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["DEC_DIRECT_ELEC",t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Elec" , "Heat LT Dec", sum{t in PERIODS}(layers_in_out["DEC_DIRECT_ELEC","HEAT_LOW_T_DECEN"] * F_Mult_t ["DEC_DIRECT_ELEC", t] * period_duration [t]) / 1000 , "Electricity", "#00BFFF", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["IND_DIRECT_ELEC",t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Elec" , "Heat HT", sum{t in PERIODS}(layers_in_out["IND_DIRECT_ELEC","HEAT_HIGH_T"] * F_Mult_t ["IND_DIRECT_ELEC", t] * period_duration [t]) / 1000 , "Electricity", "#00BFFF", "TWh" > output_drought/sankey/input2sankey.csv;
+# H2 use
+if sum{t in PERIODS}(F_Mult_t ["DEC_ADVCOGEN_H2",t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "H2 prod" , "CHP", sum{t in PERIODS}(-layers_in_out["DEC_ADVCOGEN_H2","H2"] * F_Mult_t ["DEC_ADVCOGEN_H2", t] * period_duration [t]) / 1000 , "H2", "#FF00FF", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["CAR_FUEL_CELL",t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "H2 prod" , "Mob priv", sum{t in PERIODS}(-layers_in_out["CAR_FUEL_CELL","H2"] * F_Mult_t ["CAR_FUEL_CELL", t] * period_duration [t]) / 1000 , "H2", "#FF00FF", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["BUS_COACH_FC_HYBRIDH2",t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "H2 prod" , "Mob public", sum{t in PERIODS}(-layers_in_out["BUS_COACH_FC_HYBRIDH2","H2"] * F_Mult_t ["BUS_COACH_FC_HYBRIDH2", t] * period_duration [t]) / 1000 , "H2", "#FF00FF", "TWh" > output_drought/sankey/input2sankey.csv;
+# CHP
+if sum{i in COGEN, t in PERIODS}(F_Mult_t [i,t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "CHP" , "Elec", sum{i in COGEN, t in PERIODS}(layers_in_out[i,"ELECTRICITY"] * F_Mult_t [i, t] * period_duration [t]) / 1000 , "Electricity", "#00BFFF", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["DEC_COGEN_GAS",t] + F_Mult_t ["DEC_COGEN_OIL",t] + F_Mult_t ["DEC_ADVCOGEN_GAS",t] + F_Mult_t ["DEC_ADVCOGEN_H2",t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "CHP" , "Heat LT Dec", sum{i in COGEN, t in PERIODS}(layers_in_out[i,"HEAT_LOW_T_DECEN"] * F_Mult_t [i, t] * period_duration [t]) / 1000 , "Heat LT", "#FA8072", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["DHN_COGEN_GAS",t] + F_Mult_t ["DHN_COGEN_WOOD",t] + F_Mult_t ["DHN_COGEN_WASTE",t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "CHP" , "DHN", sum{i in COGEN, t in PERIODS}(layers_in_out[i,"HEAT_LOW_T_DHN"] * F_Mult_t [i, t] * period_duration [t]) / 1000 , "Heat LT", "#FA8072", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["IND_COGEN_GAS",t] + F_Mult_t ["IND_COGEN_WOOD",t] + F_Mult_t ["IND_COGEN_WASTE",t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "CHP" , "Heat HT", sum{i in COGEN, t in PERIODS}(layers_in_out[i,"HEAT_HIGH_T"] * F_Mult_t [i, t] * period_duration [t]) / 1000 , "Heat HT", "#DC143C", "TWh" > output_drought/sankey/input2sankey.csv;
+# HPs
+if sum{t in PERIODS}((F_Mult_t ["DEC_HP_ELEC",t] + F_Mult_t ["DEC_THHP_GAS",t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "HPs" , "Heat LT Dec", sum{t in PERIODS}(layers_in_out["DEC_HP_ELEC","HEAT_LOW_T_DECEN"] * F_Mult_t ["DEC_HP_ELEC", t] * period_duration [t] + layers_in_out["DEC_THHP_GAS","HEAT_LOW_T_DECEN"] * F_Mult_t ["DEC_THHP_GAS", t] * period_duration [t]) / 1000 , "Heat LT", "#FA8072", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(F_Mult_t ["DHN_HP_ELEC",t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "HPs" , "DHN", sum{t in PERIODS}(layers_in_out["DHN_HP_ELEC","HEAT_LOW_T_DHN"] * F_Mult_t ["DHN_HP_ELEC", t] * period_duration [t]) / 1000 , "Heat LT", "#FA8072", "TWh" > output_drought/sankey/input2sankey.csv;
+# Biofuels
+if sum{t in PERIODS}((F_Mult_t ["GASIFICATION_SNG",t] + F_Mult_t ["PYROLYSIS",t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Biofuels" , "Elec", sum{t in PERIODS}(layers_in_out["GASIFICATION_SNG","ELECTRICITY"] * F_Mult_t ["GASIFICATION_SNG", t] * period_duration [t] + layers_in_out["PYROLYSIS","ELECTRICITY"] * F_Mult_t ["PYROLYSIS", t] * period_duration [t]) / 1000 , "Electricity", "#00BFFF", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["GASIFICATION_SNG",t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Biofuels" , "Boilers", sum{t in PERIODS}(layers_in_out["GASIFICATION_SNG","NG"] * F_Mult_t ["GASIFICATION_SNG", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["PYROLYSIS",t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Biofuels" , "Boilers", sum{t in PERIODS}(layers_in_out["PYROLYSIS","LFO"] * F_Mult_t ["PYROLYSIS", t] * period_duration [t]) / 1000 , "Oil", "#8B008B", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["GASIFICATION_SNG",t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Biofuels" , "DHN", sum{t in PERIODS}(layers_in_out["GASIFICATION_SNG","HEAT_LOW_T_DHN"] * F_Mult_t ["GASIFICATION_SNG", t] * period_duration [t]) / 1000, "Heat LT", "#FA8072", "TWh" > output_drought/sankey/input2sankey.csv;
+# Boilers
+if sum{t in PERIODS}((F_Mult_t ["DEC_BOILER_GAS",t] + F_Mult_t ["DEC_BOILER_WOOD",t] + F_Mult_t ["DEC_BOILER_OIL",t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Boilers" , "Heat LT Dec", sum{i in BOILERS, t in PERIODS}(layers_in_out[i,"HEAT_LOW_T_DECEN"] * F_Mult_t [i, t] * period_duration [t]) / 1000 , "Heat LT", "#FA8072", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["DHN_BOILER_GAS",t] + F_Mult_t ["DHN_BOILER_WOOD",t] + F_Mult_t ["DHN_BOILER_OIL",t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Boilers" , "DHN", sum{i in BOILERS, t in PERIODS}(layers_in_out[i,"HEAT_LOW_T_DHN"] * F_Mult_t [i, t] * period_duration [t]) / 1000 , "Heat LT", "#FA8072", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}((F_Mult_t ["IND_BOILER_GAS",t] + F_Mult_t ["IND_BOILER_WOOD",t] + F_Mult_t ["IND_BOILER_OIL",t] + F_Mult_t ["IND_BOILER_COAL",t] + F_Mult_t ["IND_BOILER_WASTE",t]) * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Boilers" , "Heat HT", sum{i in BOILERS, t in PERIODS}(layers_in_out[i,"HEAT_HIGH_T"] * F_Mult_t [i, t] * period_duration [t]) / 1000 , "Heat HT", "#DC143C", "TWh" > output_drought/sankey/input2sankey.csv;
+# DHN 
+if sum{t in PERIODS}(End_Uses ["HEAT_LOW_T_DHN", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "DHN" , "Heat LT DHN", sum{t in PERIODS}(sum {i in TECHNOLOGIES diff STORAGE_TECH} (layers_in_out[i, "HEAT_LOW_T_DHN"] * F_Mult_t [i, t] * period_duration [t]) - Losses ["HEAT_LOW_T_DHN",t] * period_duration [t]) / 1000 , "Heat LT", "#FA8072", "TWh" > output_drought/sankey/input2sankey.csv;
+if sum{t in PERIODS}(Losses ["HEAT_LOW_T_DHN", t] * period_duration [t]) > 10 then
+	printf "%s,%s,%.2f,%s,%s,%s\n", "DHN" , "Loss DHN", sum{t in PERIODS}(Losses ["HEAT_LOW_T_DHN",t] * period_duration [t]) / 1000 , "Heat LT", "#FA8072", "TWh" > output_drought/sankey/input2sankey.csv;
+
+## Scenario summary (drought: compare TotalCost with output/scenario_metrics.txt from ses_main.run)
+printf "%s\t%.12g\n", "TotalCost", TotalCost > output_drought/scenario_metrics.txt;
+printf "%s\t%.12g\n", "TotalGWP", TotalGWP >> output_drought/scenario_metrics.txt;

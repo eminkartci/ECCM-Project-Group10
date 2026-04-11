@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>SES Sankey — Kuraklık senaryosu</title>
+<style>
+html, body { min-height: 100%; margin: 0; }
+#chart { height: 500px; }
+body {
+	font-family: system-ui, "Segoe UI", sans-serif;
+	font-size: 62.5%;
+}
+h1 {
+	font-size: 1.4rem;
+	font-weight: 600;
+	margin: 12px 16px 8px;
+	color: #222;
+}
+.node rect {
+	cursor: move;
+	fill-opacity: .6;
+	shape-rendering: crispEdges;
+}
+.node text {
+	pointer-events: none;
+	text-shadow: none !important;
+}
+.node rect:hover { fill-opacity: 0.8; }
+.link {
+	fill: none;
+	stroke: #336666;
+	stroke-opacity: .8;
+}
+.link:hover { stroke-opacity: 0.8 !important; }
+</style>
+</head>
+<body>
+<h1>EnergyScope Sankey — <span style="color:#8b4513">Kuraklık</span> (<code>input2sankey.csv</code>)</h1>
+<div id="chart"></div>
+<script src="d3.min.js"></script>
+<script src="sankey.js"></script>
+<script>
+function resize() {
+	var ch = document.getElementById("chart");
+	if (ch) ch.style.minHeight = (window.innerHeight - 120) + "px";
+}
+window.addEventListener("resize", resize);
+
+var margin = {top: 10, right: 10, bottom: 10, left: 10},
+	width = 1220 - margin.left - margin.right,
+	height = 760 - margin.top - margin.bottom;
+
+var formatNumber = d3.format(",.2f"),
+	format = function(d) { return formatNumber(d); },
+	color = d3.scale.category20();
+
+var svg = d3.select("#chart")
+	.append("svg")
+	.attr("width", width + margin.left + margin.right)
+	.attr("height", height + margin.top + margin.bottom)
+	.append("g")
+	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var sankey = d3.sankey()
+	.nodeWidth(50)
+	.nodePadding(10)
+	.size([width, height]);
+
+var path = sankey.link();
+
+d3.csv("input2sankey.csv", function(error, data) {
+	if (error) {
+		document.getElementById("chart").innerHTML =
+			"<p style=\"padding:1rem;font-size:1.2rem\">CSV yüklenemedi. Bu HTML dosyasını <strong>aynı klasörde</strong> <code>input2sankey.csv</code> ile birlikte açın (veya yerel sunucu kullanın).<br><br>Hata: " + String(error) + "</p>";
+		return;
+	}
+	if (!data || !data.length) {
+		document.getElementById("chart").innerHTML =
+			"<p style=\"padding:1rem\">input2sankey.csv boş veya yok. Önce <code>ampl ses_main_drought.run</code> çalıştırın.</p>";
+		return;
+	}
+
+	var graph = { nodes: [], links: [] };
+
+	data.forEach(function(d) {
+		graph.nodes.push({ name: d.source });
+		graph.nodes.push({ name: d.target });
+		graph.links.push({
+			source: d.source,
+			target: d.target,
+			realValue: +d.realValue,
+			layerId: d.layerID != null ? d.layerID : d.layerId,
+			layerColor: d.layerColor,
+			layerUnit: d.layerUnit
+		});
+	});
+
+	graph.nodes = d3.keys(d3.nest()
+		.key(function(d) { return d.name; })
+		.map(graph.nodes));
+
+	graph.nodes.forEach(function(d, i) {
+		graph.nodes[i] = { name: d };
+	});
+
+	graph.links.forEach(function(link) {
+		link.value = +link.realValue;
+	});
+
+	graph.links.forEach(function(l) {
+		l.source = graph.nodes.filter(function(n) { return n.name === l.source; })[0];
+		l.target = graph.nodes.filter(function(n) { return n.name === l.target; })[0];
+	});
+
+	sankey.nodes(graph.nodes).links(graph.links).layout(32);
+
+	var link = svg.append("g").selectAll(".link")
+		.data(graph.links)
+		.enter()
+		.append("path")
+		.attr("class", "link")
+		.attr("id", function(d, i) { return "linkLabel" + i; })
+		.attr("d", path)
+		.style("stroke", function(d) { return d.layerColor || "#888"; })
+		.style("stroke-width", function(d) { return Math.max(1, d.dy); })
+		.sort(function(a, b) { return b.dy - a.dy; });
+
+	svg.selectAll(".labelText")
+		.data(graph.links)
+		.enter()
+		.append("text")
+		.attr("class", "labelText")
+		.attr("dx", 40)
+		.attr("dy", 2)
+		.append("textPath")
+		.attr("xlink:href", function(d, i) { return "#linkLabel" + i; })
+		.text(function(d) { return format(d.value); });
+
+	link.append("title")
+		.text(function(d) {
+			return d.source.name + " → " + d.target.name + "\n" + format(d.value);
+		});
+
+	var node = svg.append("g").selectAll(".node")
+		.data(graph.nodes)
+		.enter().append("g")
+		.attr("class", "node")
+		.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+		.call(d3.behavior.drag()
+			.origin(function(d) { return d; })
+			.on("dragstart", function() { this.parentNode.appendChild(this); })
+			.on("drag", dragmove));
+
+	node.append("rect")
+		.attr("height", function(d) { return d.dy; })
+		.attr("width", sankey.nodeWidth())
+		.style("fill", function() { return "#D3D3D3"; })
+		.append("title")
+		.text(function(d) { return d.name + "\n" + format(d.value); });
+
+	node.append("text")
+		.attr("x", 0)
+		.attr("y", function(d) { return d.dy / 2; })
+		.attr("dy", ".35em")
+		.attr("text-anchor", "left")
+		.attr("transform", null)
+		.style("font-size", "0.9rem")
+		.text(function(d) { return d.name; })
+		.filter(function(d) { return d.x > width * 0.05; })
+		.attr("x", 0 + sankey.nodeWidth() / 2)
+		.attr("text-anchor", "middle")
+		.filter(function(d) { return d.x > width * 0.95; })
+		.attr("x", 0 + sankey.nodeWidth())
+		.attr("text-anchor", "end");
+
+	function dragmove(d) {
+		d3.select(this).attr("transform",
+			"translate(" + (d.x = Math.max(0, Math.min(width - d.dx, d3.event.x))) + "," +
+			(d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))) + ")");
+		sankey.relayout();
+		link.attr("d", path);
+	}
+});
+resize();
+</script>
+</body>
+</html>

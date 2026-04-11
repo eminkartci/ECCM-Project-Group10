@@ -1,0 +1,1042 @@
+param end_uses_demand_year [*,*]
+:                  HOUSEHOLDS  INDUSTRY  SERVICES TRANSPORTATION    :=
+ELECTRICITY          10848.1    10443.5   15026.5          0
+HEAT_HIGH_T              0      19021.5       0            0
+HEAT_LOW_T_HW         7537.8     1281.8    3256            0
+HEAT_LOW_T_SH        29489.2     4947.5   14524.8          0
+LIGHTING               425.1     1263.8    3805.2          0
+MOBILITY_FREIGHT         0          0         0        39966.7
+MOBILITY_PASSENGER       0          0         0       146049
+;
+
+param i_rate = 0.03215
+
+;
+param share_mobility_public_min = 0.3
+
+;
+param share_mobility_public_max = 0.5
+
+;
+param share_freight_train_min = 0.4
+
+;
+param share_freight_train_max = 0.6
+
+;
+param share_heat_dhn_min = 0.1
+
+;
+param share_heat_dhn_max = 0.3
+
+;
+param period_duration [*] :=
+ 1  744
+ 2  672
+ 3  744
+ 4  720
+ 5  744
+ 6  720
+ 7  744
+ 8  744
+ 9  720
+10  744
+11  720
+12  744
+;
+
+param lighting_month [*] :=
+ 1  0.124
+ 2  0.102
+ 3  0.0918
+ 4  0.0708
+ 5  0.0588
+ 6  0.0438
+ 7  0.0408
+ 8  0.0398
+ 9  0.0678
+10  0.1048
+11  0.1238
+12  0.1318
+;
+
+param heating_month [*] :=
+ 1  0.1984
+ 2  0.1654
+ 3  0.1421
+ 4  0.0319
+ 5  0
+ 6  0
+ 7  0
+ 8  0
+ 9  0.0147
+10  0.0898
+11  0.1383
+12  0.2194
+;
+
+param layers_in_out [*,*]
+:                        COAL    COAL_CCS   DIESEL  ELECTRICITY  GASOLINE    :=
+BIODIESEL                0         0         1          0          0
+BIOETHANOL               0         0         0          0          1
+BUS_COACH_CNG_STOICH     0         0         0          0          0
+BUS_COACH_DIESEL         0         0        -0.2655     0          0
+BUS_COACH_FC_HYBRIDH2    0         0         0          0          0
+BUS_COACH_HYDIESEL       0         0        -0.1828     0          0
+CAR_BEV                  0         0         0         -0.1066     0
+CAR_DIESEL               0         0        -0.3868     0          0
+CAR_FUEL_CELL            0         0         0          0          0
+CAR_GASOLINE             0         0         0          0         -0.4297
+CAR_HEV                  0         0         0          0         -0.2471
+CAR_NG                   0         0         0          0          0
+CAR_PHEV                 0         0         0         -0.0451    -0.176
+CCGT                     0         0         0          1          0
+CCGT_CCS                 0         0         0          1          0
+COAL                     1         0         0          0          0
+COAL_CCS                 0         1         0          0          0
+COAL_IGCC               -1.8519    0         0          1          0
+COAL_IGCC_CCS            0        -2.0833    0          1          0
+COAL_US                 -2.0408    0         0          1          0
+COAL_US_CCS              0        -2.381     0          1          0
+DEC_ADVCOGEN_GAS         0         0         0          2.6364     0
+DEC_ADVCOGEN_H2          0         0         0          2.6364     0
+DEC_BOILER_GAS           0         0         0          0          0
+DEC_BOILER_OIL           0         0         0          0          0
+DEC_BOILER_WOOD          0         0         0          0          0
+DEC_COGEN_GAS            0         0         0          0.9565     0
+DEC_COGEN_OIL            0         0         0          0.907      0
+DEC_DIRECT_ELEC          0         0         0         -1          0
+DEC_HP_ELEC              0         0         0         -0.3333     0
+DEC_SOLAR                0         0         0          0          0
+DEC_THHP_GAS             0         0         0          0          0
+DHN                      0         0         0          0          0
+DHN_BOILER_GAS           0         0         0          0          0
+DHN_BOILER_OIL           0         0         0          0          0
+DHN_BOILER_WOOD          0         0         0          0          0
+DHN_COGEN_GAS            0         0         0          1.25       0
+DHN_COGEN_WASTE          0         0         0          0.4444     0
+DHN_COGEN_WOOD           0         0         0          0.3396     0
+DHN_DEEP_GEO             0         0         0          0          0
+DHN_HP_ELEC              0         0         0         -0.25       0
+DIESEL                   0         0         1          0          0
+EFFICIENCY               0         0         0          0          0
+ELECTRICITY              0         0         0          1          0
+ELEC_EXPORT              0         0         0         -1          0
+GASIFICATION_SNG         0         0         0          0.0426     0
+GASOLINE                 0         0         0          0          1
+GEOTHERMAL               0         0         0          1          0
+GRID                     0         0         0          0          0
+H2                       0         0         0          0          0
+H2_BIOMASS               0         0         0          0          0
+H2_ELECTROLYSIS          0         0         0         -1.1765     0
+H2_NG                    0         0         0          0          0
+HYDRO_DAM                0         0         0          1          0
+HYDRO_RIVER              0         0         0          1          0
+IND_BOILER_COAL         -1.2195    0         0          0          0
+IND_BOILER_GAS           0         0         0          0          0
+IND_BOILER_OIL           0         0         0          0          0
+IND_BOILER_WASTE         0         0         0          0          0
+IND_BOILER_WOOD          0         0         0          0          0
+IND_COGEN_GAS            0         0         0          0.9565     0
+IND_COGEN_WASTE          0         0         0          0.4444     0
+IND_COGEN_WOOD           0         0         0          0.3396     0
+IND_DIRECT_ELEC          0         0         0         -1          0
+LFO                      0         0         0          0          0
+LNG                      0         0         0          0          0
+NEW_HYDRO_DAM            0         0         0          1          0
+NEW_HYDRO_RIVER          0         0         0          1          0
+NG                       0         0         0          0          0
+NG_CCS                   0         0         0          0          0
+NUCLEAR                  0         0         0          1          0
+POWER2GAS_1              0         0         0         -1          0
+POWER2GAS_2              0         0         0          0.9556     0
+POWER2GAS_3              0         0         0          0          0
+PV                       0         0         0          1          0
+PYROLYSIS                0         0         0          0.0238     0
+SNG                      0         0         0          0          0
+TRAIN_FREIGHT            0         0         0         -0.0683     0
+TRAIN_PUB                0         0         0         -0.0917     0
+TRAMWAY_TROLLEY          0         0         0         -0.1653     0
+TRUCK                    0         0        -0.5126     0          0
+URANIUM                  0         0         0          0          0
+WASTE                    0         0         0          0          0
+WIND                     0         0         0          1          0
+WOOD                     0         0         0          0          0
+
+# $2 = HEAT_HIGH_T
+# $3 = HEAT_LOW_T_DECEN
+# $4 = HEAT_LOW_T_DHN
+# $7 = MOB_FREIGHT_RAIL
+# $8 = MOB_FREIGHT_ROAD
+:                         H2     $2  $3     $4       LFO       LNG    $7  $8 :=
+BIODIESEL                0        0   0   0         0         0        0   0
+BIOETHANOL               0        0   0   0         0         0        0   0
+BUS_COACH_CNG_STOICH     0        0   0   0         0         0        0   0
+BUS_COACH_DIESEL         0        0   0   0         0         0        0   0
+BUS_COACH_FC_HYBRIDH2   -0.2255   0   0   0         0         0        0   0
+BUS_COACH_HYDIESEL       0        0   0   0         0         0        0   0
+CAR_BEV                  0        0   0   0         0         0        0   0
+CAR_DIESEL               0        0   0   0         0         0        0   0
+CAR_FUEL_CELL           -0.1794   0   0   0         0         0        0   0
+CAR_GASOLINE             0        0   0   0         0         0        0   0
+CAR_HEV                  0        0   0   0         0         0        0   0
+CAR_NG                   0        0   0   0         0         0        0   0
+CAR_PHEV                 0        0   0   0         0         0        0   0
+CCGT                     0        0   0   0         0         0        0   0
+CCGT_CCS                 0        0   0   0         0         0        0   0
+COAL                     0        0   0   0         0         0        0   0
+COAL_CCS                 0        0   0   0         0         0        0   0
+COAL_IGCC                0        0   0   0         0         0        0   0
+COAL_IGCC_CCS            0        0   0   0         0         0        0   0
+COAL_US                  0        0   0   0         0         0        0   0
+COAL_US_CCS              0        0   0   0         0         0        0   0
+DEC_ADVCOGEN_GAS         0        0   1   0         0         0        0   0
+DEC_ADVCOGEN_H2         -4.5455   0   1   0         0         0        0   0
+DEC_BOILER_GAS           0        0   1   0         0         0        0   0
+DEC_BOILER_OIL           0        0   1   0        -1.1765    0        0   0
+DEC_BOILER_WOOD          0        0   1   0         0         0        0   0
+DEC_COGEN_GAS            0        0   1   0         0         0        0   0
+DEC_COGEN_OIL            0        0   1   0        -2.3256    0        0   0
+DEC_DIRECT_ELEC          0        0   1   0         0         0        0   0
+DEC_HP_ELEC              0        0   1   0         0         0        0   0
+DEC_SOLAR                0        0   1   0         0         0        0   0
+DEC_THHP_GAS             0        0   1   0         0         0        0   0
+DHN                      0        0   0   0         0         0        0   0
+DHN_BOILER_GAS           0        0   0   1         0         0        0   0
+DHN_BOILER_OIL           0        0   0   1        -1.1461    0        0   0
+DHN_BOILER_WOOD          0        0   0   1         0         0        0   0
+DHN_COGEN_GAS            0        0   0   1         0         0        0   0
+DHN_COGEN_WASTE          0        0   0   1         0         0        0   0
+DHN_COGEN_WOOD           0        0   0   1         0         0        0   0
+DHN_DEEP_GEO             0        0   0   1         0         0        0   0
+DHN_HP_ELEC              0        0   0   1         0         0        0   0
+DIESEL                   0        0   0   0         0         0        0   0
+EFFICIENCY               0        0   0   0         0         0        0   0
+ELECTRICITY              0        0   0   0         0         0        0   0
+ELEC_EXPORT              0        0   0   0         0         0        0   0
+GASIFICATION_SNG         0        0   0   0.1217    0         0        0   0
+GASOLINE                 0        0   0   0         0         0        0   0
+GEOTHERMAL               0        0   0   0         0         0        0   0
+GRID                     0        0   0   0         0         0        0   0
+H2                       1        0   0   0         0         0        0   0
+H2_BIOMASS               1        0   0   0         0         0        0   0
+H2_ELECTROLYSIS          1        0   0   0         0         0        0   0
+H2_NG                    1        0   0   0         0         0        0   0
+HYDRO_DAM                0        0   0   0         0         0        0   0
+HYDRO_RIVER              0        0   0   0         0         0        0   0
+IND_BOILER_COAL          0        1   0   0         0         0        0   0
+IND_BOILER_GAS           0        1   0   0         0         0        0   0
+IND_BOILER_OIL           0        1   0   0        -1.1461    0        0   0
+IND_BOILER_WASTE         0        1   0   0         0         0        0   0
+IND_BOILER_WOOD          0        1   0   0         0         0        0   0
+IND_COGEN_GAS            0        1   0   0         0         0        0   0
+IND_COGEN_WASTE          0        1   0   0         0         0        0   0
+IND_COGEN_WOOD           0        1   0   0         0         0        0   0
+IND_DIRECT_ELEC          0        1   0   0         0         0        0   0
+LFO                      0        0   0   0         1         0        0   0
+LNG                      0        0   0   0         0         1        0   0
+NEW_HYDRO_DAM            0        0   0   0         0         0        0   0
+NEW_HYDRO_RIVER          0        0   0   0         0         0        0   0
+NG                       0        0   0   0         0         0        0   0
+NG_CCS                   0        0   0   0         0         0        0   0
+NUCLEAR                  0        0   0   0         0         0        0   0
+POWER2GAS_1              0        0   0   0         0         0.792    0   0
+POWER2GAS_2              0        0   0   0         0        -1.3496   0   0
+POWER2GAS_3              0        0   0   0         0         0        0   0
+PV                       0        0   0   0         0         0        0   0
+PYROLYSIS                0        0   0   0         1         0        0   0
+SNG                      0        0   0   0         0         0        0   0
+TRAIN_FREIGHT            0        0   0   0         0         0        1   0
+TRAIN_PUB                0        0   0   0         0         0        0   0
+TRAMWAY_TROLLEY          0        0   0   0         0         0        0   0
+TRUCK                    0        0   0   0         0         0        0   1
+URANIUM                  0        0   0   0         0         0        0   0
+WASTE                    0        0   0   0         0         0        0   0
+WIND                     0        0   0   0         0         0        0   0
+WOOD                     0        0   0   0         0         0        0   0
+
+# $1 = MOB_PRIVATE
+# $2 = MOB_PUBLIC
+:                      $1  $2     NG      NG_CCS    URANIUM    WASTE     WOOD :=
+BIODIESEL               0   0    0         0         0         0         0
+BIOETHANOL              0   0    0         0         0         0         0
+BUS_COACH_CNG_STOICH    0   1   -0.3062    0         0         0         0
+BUS_COACH_DIESEL        0   1    0         0         0         0         0
+BUS_COACH_FC_HYBRIDH2   0   1    0         0         0         0         0
+BUS_COACH_HYDIESEL      0   1    0         0         0         0         0
+CAR_BEV                 1   0    0         0         0         0         0
+CAR_DIESEL              1   0    0         0         0         0         0
+CAR_FUEL_CELL           1   0    0         0         0         0         0
+CAR_GASOLINE            1   0    0         0         0         0         0
+CAR_HEV                 1   0    0         0         0         0         0
+CAR_NG                  1   0   -0.4826    0         0         0         0
+CAR_PHEV                1   0    0         0         0         0         0
+CCGT                    0   0   -1.5873    0         0         0         0
+CCGT_CCS                0   0    0        -1.7544    0         0         0
+COAL                    0   0    0         0         0         0         0
+COAL_CCS                0   0    0         0         0         0         0
+COAL_IGCC               0   0    0         0         0         0         0
+COAL_IGCC_CCS           0   0    0         0         0         0         0
+COAL_US                 0   0    0         0         0         0         0
+COAL_US_CCS             0   0    0         0         0         0         0
+DEC_ADVCOGEN_GAS        0   0   -4.5455    0         0         0         0
+DEC_ADVCOGEN_H2         0   0    0         0         0         0         0
+DEC_BOILER_GAS          0   0   -1.1111    0         0         0         0
+DEC_BOILER_OIL          0   0    0         0         0         0         0
+DEC_BOILER_WOOD         0   0    0         0         0         0        -1.1765
+DEC_COGEN_GAS           0   0   -2.1739    0         0         0         0
+DEC_COGEN_OIL           0   0    0         0         0         0         0
+DEC_DIRECT_ELEC         0   0    0         0         0         0         0
+DEC_HP_ELEC             0   0    0         0         0         0         0
+DEC_SOLAR               0   0    0         0         0         0         0
+DEC_THHP_GAS            0   0   -0.6667    0         0         0         0
+DHN                     0   0    0         0         0         0         0
+DHN_BOILER_GAS          0   0   -1.0785    0         0         0         0
+DHN_BOILER_OIL          0   0    0         0         0         0         0
+DHN_BOILER_WOOD         0   0    0         0         0         0        -1.1568
+DHN_COGEN_GAS           0   0   -2.5       0         0         0         0
+DHN_COGEN_WASTE         0   0    0         0         0        -2.2222    0
+DHN_COGEN_WOOD          0   0    0         0         0         0        -1.8868
+DHN_DEEP_GEO            0   0    0         0         0         0         0
+DHN_HP_ELEC             0   0    0         0         0         0         0
+DIESEL                  0   0    0         0         0         0         0
+EFFICIENCY              0   0    0         0         0         0         0
+ELECTRICITY             0   0    0         0         0         0         0
+ELEC_EXPORT             0   0    0         0         0         0         0
+GASIFICATION_SNG        0   0    1         0         0         0        -1.3514
+GASOLINE                0   0    0         0         0         0         0
+GEOTHERMAL              0   0    0         0         0         0         0
+GRID                    0   0    0         0         0         0         0
+H2                      0   0    0         0         0         0         0
+H2_BIOMASS              0   0    0         0         0         0        -2.3121
+H2_ELECTROLYSIS         0   0    0         0         0         0         0
+H2_NG                   0   0   -1.3646    0         0         0         0
+HYDRO_DAM               0   0    0         0         0         0         0
+HYDRO_RIVER             0   0    0         0         0         0         0
+IND_BOILER_COAL         0   0    0         0         0         0         0
+IND_BOILER_GAS          0   0   -1.0785    0         0         0         0
+IND_BOILER_OIL          0   0    0         0         0         0         0
+IND_BOILER_WASTE        0   0    0         0         0        -1.2195    0
+IND_BOILER_WOOD         0   0    0         0         0         0        -1.1568
+IND_COGEN_GAS           0   0   -2.1739    0         0         0         0
+IND_COGEN_WASTE         0   0    0         0         0        -2.2222    0
+IND_COGEN_WOOD          0   0    0         0         0         0        -1.8868
+IND_DIRECT_ELEC         0   0    0         0         0         0         0
+LFO                     0   0    0         0         0         0         0
+LNG                     0   0    0         0         0         0         0
+NEW_HYDRO_DAM           0   0    0         0         0         0         0
+NEW_HYDRO_RIVER         0   0    0         0         0         0         0
+NG                      0   0    1         0         0         0         0
+NG_CCS                  0   0    0         1         0         0         0
+NUCLEAR                 0   0    0         0        -2.7027    0         0
+POWER2GAS_1             0   0    0         0         0         0         0
+POWER2GAS_2             0   0    0         0         0         0         0
+POWER2GAS_3             0   0    0         0         0         0         0
+PV                      0   0    0         0         0         0         0
+PYROLYSIS               0   0    0         0         0         0        -1.5017
+SNG                     0   0    1         0         0         0         0
+TRAIN_FREIGHT           0   0    0         0         0         0         0
+TRAIN_PUB               0   1    0         0         0         0         0
+TRAMWAY_TROLLEY         0   1    0         0         0         0         0
+TRUCK                   0   0    0         0         0         0         0
+URANIUM                 0   0    0         0         1         0         0
+WASTE                   0   0    0         0         0         1         0
+WIND                    0   0    0         0         0         0         0
+WOOD                    0   0    0         0         0         0         1
+;
+
+param ref_size [*] :=
+ BUS_COACH_CNG_STOICH     0.001             DHN_DEEP_GEO     0.023
+     BUS_COACH_DIESEL     0.001              DHN_HP_ELEC     0.001
+BUS_COACH_FC_HYBRIDH2     0.001               EFFICIENCY     0
+   BUS_COACH_HYDIESEL     0.001         GASIFICATION_SNG     0
+              CAR_BEV     0.001               GEOTHERMAL     0.008
+           CAR_DIESEL     0.001                     GRID     0
+        CAR_FUEL_CELL     0.001               H2_BIOMASS     0
+         CAR_GASOLINE     0.001          H2_ELECTROLYSIS     0
+              CAR_HEV     0.001                    H2_NG     0
+               CAR_NG     0.001                HYDRO_DAM     8.08
+             CAR_PHEV     0.001              HYDRO_RIVER     3.8
+                 CCGT     0.5            IND_BOILER_COAL     0.001
+             CCGT_CCS     0.5             IND_BOILER_GAS     0.01
+            COAL_IGCC     0.5             IND_BOILER_OIL     0.01
+        COAL_IGCC_CCS     0.5           IND_BOILER_WASTE     0.001
+              COAL_US     0.5            IND_BOILER_WOOD     0.01
+          COAL_US_CCS     0.5              IND_COGEN_GAS     0.02
+     DEC_ADVCOGEN_GAS 1e-05              IND_COGEN_WASTE     0.02
+      DEC_ADVCOGEN_H2 1e-05               IND_COGEN_WOOD     0.02
+       DEC_BOILER_GAS 1e-05              IND_DIRECT_ELEC     0.0001
+       DEC_BOILER_OIL 1e-05                NEW_HYDRO_DAM     0.001
+      DEC_BOILER_WOOD 1e-05              NEW_HYDRO_RIVER     0.0001
+        DEC_COGEN_GAS 5e-06                      NUCLEAR     1
+        DEC_COGEN_OIL 1e-05                    POWER2GAS     0.001
+      DEC_DIRECT_ELEC 1e-05                  POWER2GAS_1     0.001
+          DEC_HP_ELEC 1e-05                  POWER2GAS_2     0.001
+            DEC_SOLAR 1e-05                  POWER2GAS_3     0.001
+         DEC_THHP_GAS 1e-05                 PUMPED_HYDRO     0.001
+                  DHN     0                           PV 3e-06
+       DHN_BOILER_GAS     0.01                 PYROLYSIS     0
+       DHN_BOILER_OIL     0.01             TRAIN_FREIGHT     0.001
+      DHN_BOILER_WOOD     0.01                 TRAIN_PUB     0.001
+        DHN_COGEN_GAS     0.02           TRAMWAY_TROLLEY     0.001
+      DHN_COGEN_WASTE     0.02                     TRUCK     0.001
+       DHN_COGEN_WOOD     0.02                      WIND     0.003
+;
+
+param c_inv [*] :=
+ BUS_COACH_CNG_STOICH     0                 DHN_DEEP_GEO  1620.13
+     BUS_COACH_DIESEL     0                  DHN_HP_ELEC   368.17
+BUS_COACH_FC_HYBRIDH2     0                   EFFICIENCY  1856
+   BUS_COACH_HYDIESEL     0             GASIFICATION_SNG  2930.11
+              CAR_BEV     0                   GEOTHERMAL 11464.1
+           CAR_DIESEL     0                         GRID 61100
+        CAR_FUEL_CELL     0                   H2_BIOMASS  2696.86
+         CAR_GASOLINE     0              H2_ELECTROLYSIS   328.47
+              CAR_HEV     0                        H2_NG   727.5
+               CAR_NG     0                    HYDRO_DAM  4828.39
+             CAR_PHEV     0                  HYDRO_RIVER  5387.47
+                 CCGT   824.41           IND_BOILER_COAL   123
+             CCGT_CCS  1273.26            IND_BOILER_GAS    62.89
+            COAL_IGCC  3466.2             IND_BOILER_OIL    58.58
+        COAL_IGCC_CCS  6044.78          IND_BOILER_WASTE   123
+              COAL_US  2687.59           IND_BOILER_WOOD   123
+          COAL_US_CCS  4327.26             IND_COGEN_GAS  1503.64
+     DEC_ADVCOGEN_GAS  7734.03           IND_COGEN_WASTE  3126.67
+      DEC_ADVCOGEN_H2  7734.03            IND_COGEN_WOOD  1154.18
+       DEC_BOILER_GAS   169.3            IND_DIRECT_ELEC   354.91
+       DEC_BOILER_OIL   152.05             NEW_HYDRO_DAM  3437.12
+      DEC_BOILER_WOOD   493.84           NEW_HYDRO_RIVER  5919.19
+        DEC_COGEN_GAS  1503.64                   NUCLEAR  5174.76
+        DEC_COGEN_OIL  1394.21                 POWER2GAS     0.4144
+      DEC_DIRECT_ELEC    42.69               POWER2GAS_1     0
+          DEC_HP_ELEC   525.45               POWER2GAS_2     0
+            DEC_SOLAR   767.9                POWER2GAS_3  3118.41
+         DEC_THHP_GAS   337.12              PUMPED_HYDRO     0
+                  DHN   881.96                        PV  1000
+       DHN_BOILER_GAS    62.89                 PYROLYSIS  1435.49
+       DHN_BOILER_OIL    58.58             TRAIN_FREIGHT     0
+      DHN_BOILER_WOOD   123                    TRAIN_PUB     0
+        DHN_COGEN_GAS  1339.67           TRAMWAY_TROLLEY     0
+      DHN_COGEN_WASTE  3126.67                     TRUCK     0
+       DHN_COGEN_WOOD  1154.18                      WIND  1465.62
+;
+
+param c_maint [*] :=
+ BUS_COACH_CNG_STOICH   0               DHN_DEEP_GEO  60.12
+     BUS_COACH_DIESEL   0                DHN_HP_ELEC  12.81
+BUS_COACH_FC_HYBRIDH2   0                 EFFICIENCY   0
+   BUS_COACH_HYDIESEL   0           GASIFICATION_SNG 149.44
+              CAR_BEV   0                 GEOTHERMAL 465.04
+           CAR_DIESEL   0                       GRID   0
+        CAR_FUEL_CELL   0                 H2_BIOMASS 208.99
+         CAR_GASOLINE   0            H2_ELECTROLYSIS  32.85
+              CAR_HEV   0                      H2_NG  68.81
+               CAR_NG   0                  HYDRO_DAM  24.14
+             CAR_PHEV   0                HYDRO_RIVER  53.87
+                 CCGT  21.07         IND_BOILER_COAL   2.46
+             CCGT_CCS  30.23          IND_BOILER_GAS   1.26
+            COAL_IGCC  52.27          IND_BOILER_OIL   1.26
+        COAL_IGCC_CCS  73.86        IND_BOILER_WASTE   2.46
+              COAL_US  31.72         IND_BOILER_WOOD   2.46
+          COAL_US_CCS  67.58           IND_COGEN_GAS  98.9
+     DEC_ADVCOGEN_GAS 154.68         IND_COGEN_WASTE 118.88
+      DEC_ADVCOGEN_H2 154.68          IND_COGEN_WOOD  43.24
+       DEC_BOILER_GAS   5.08         IND_DIRECT_ELEC   1.61
+       DEC_BOILER_OIL   9.12           NEW_HYDRO_DAM   2.89
+      DEC_BOILER_WOOD  17.28         NEW_HYDRO_RIVER  76.28
+        DEC_COGEN_GAS  98.9                  NUCLEAR 109.92
+        DEC_COGEN_OIL  87.53               POWER2GAS   0
+      DEC_DIRECT_ELEC   0.19             POWER2GAS_1   0
+          DEC_HP_ELEC  22.48             POWER2GAS_2   0
+            DEC_SOLAR   8.64             POWER2GAS_3 155.92
+         DEC_THHP_GAS  10.11            PUMPED_HYDRO   0
+                  DHN   0                         PV  15.88
+       DHN_BOILER_GAS   1.26               PYROLYSIS  71.77
+       DHN_BOILER_OIL   1.26           TRAIN_FREIGHT   0
+      DHN_BOILER_WOOD   2.46               TRAIN_PUB   0
+        DHN_COGEN_GAS  40.08         TRAMWAY_TROLLEY   0
+      DHN_COGEN_WASTE 118.88                   TRUCK   0
+       DHN_COGEN_WOOD  43.24                    WIND  22.9
+;
+
+param lifetime [*] :=
+ BUS_COACH_CNG_STOICH  1         DEC_DIRECT_ELEC 15          IND_BOILER_OIL 17
+     BUS_COACH_DIESEL  1             DEC_HP_ELEC 18        IND_BOILER_WASTE 17
+BUS_COACH_FC_HYBRIDH2  1               DEC_SOLAR 20         IND_BOILER_WOOD 17
+   BUS_COACH_HYDIESEL  1            DEC_THHP_GAS 20           IND_COGEN_GAS 25
+              CAR_BEV  1                     DHN 60         IND_COGEN_WASTE 25
+           CAR_DIESEL  1          DHN_BOILER_GAS 17          IND_COGEN_WOOD 25
+        CAR_FUEL_CELL  1          DHN_BOILER_OIL 17         IND_DIRECT_ELEC 15
+         CAR_GASOLINE  1         DHN_BOILER_WOOD 17           NEW_HYDRO_DAM 40
+              CAR_HEV  1           DHN_COGEN_GAS 25         NEW_HYDRO_RIVER 40
+               CAR_NG  1         DHN_COGEN_WASTE 25                 NUCLEAR 60
+             CAR_PHEV  1          DHN_COGEN_WOOD 25               POWER2GAS 25
+                 CCGT 25            DHN_DEEP_GEO 30             POWER2GAS_1  1
+             CCGT_CCS 25             DHN_HP_ELEC 25             POWER2GAS_2  1
+            COAL_IGCC 35              EFFICIENCY  1             POWER2GAS_3 25
+        COAL_IGCC_CCS 35        GASIFICATION_SNG 25            PUMPED_HYDRO  1
+              COAL_US 35              GEOTHERMAL 30                      PV 25
+          COAL_US_CCS 35                    GRID 80               PYROLYSIS 25
+     DEC_ADVCOGEN_GAS 20              H2_BIOMASS 25           TRAIN_FREIGHT  1
+      DEC_ADVCOGEN_H2 20         H2_ELECTROLYSIS 15               TRAIN_PUB  1
+       DEC_BOILER_GAS 17                   H2_NG 25         TRAMWAY_TROLLEY  1
+       DEC_BOILER_OIL 17               HYDRO_DAM 40                   TRUCK  1
+      DEC_BOILER_WOOD 17             HYDRO_RIVER 40                    WIND 20
+        DEC_COGEN_GAS 20         IND_BOILER_COAL 17
+        DEC_COGEN_OIL 20          IND_BOILER_GAS 17
+;
+
+param f_max [*] :=
+ BUS_COACH_CNG_STOICH    16.7             DHN_DEEP_GEO    20
+     BUS_COACH_DIESEL    16.7              DHN_HP_ELEC    20
+BUS_COACH_FC_HYBRIDH2    16.7               EFFICIENCY    20
+   BUS_COACH_HYDIESEL    16.7         GASIFICATION_SNG    20
+              CAR_BEV    16.7               GEOTHERMAL     0.7
+           CAR_DIESEL    16.7                     GRID    20
+        CAR_FUEL_CELL    16.7               H2_BIOMASS    20
+         CAR_GASOLINE    16.7          H2_ELECTROLYSIS    20
+              CAR_HEV    16.7                    H2_NG    20
+               CAR_NG    16.7                HYDRO_DAM     8.08
+             CAR_PHEV    16.7              HYDRO_RIVER     3.8
+                 CCGT    10            IND_BOILER_COAL    20
+             CCGT_CCS    10             IND_BOILER_GAS    20
+            COAL_IGCC    10             IND_BOILER_OIL    20
+        COAL_IGCC_CCS    10           IND_BOILER_WASTE    20
+              COAL_US    10            IND_BOILER_WOOD    20
+          COAL_US_CCS    10              IND_COGEN_GAS    20
+     DEC_ADVCOGEN_GAS    20            IND_COGEN_WASTE    20
+      DEC_ADVCOGEN_H2    20             IND_COGEN_WOOD    20
+       DEC_BOILER_GAS    20            IND_DIRECT_ELEC    20
+       DEC_BOILER_OIL    20              NEW_HYDRO_DAM     0.44
+      DEC_BOILER_WOOD    20            NEW_HYDRO_RIVER     0.85
+        DEC_COGEN_GAS    20                    NUCLEAR    10
+        DEC_COGEN_OIL    20                  POWER2GAS 1e+05
+      DEC_DIRECT_ELEC    20                POWER2GAS_1    20
+          DEC_HP_ELEC    20                POWER2GAS_2    20
+            DEC_SOLAR    20                POWER2GAS_3    20
+         DEC_THHP_GAS    20               PUMPED_HYDRO  2400
+                  DHN    20                         PV    25
+       DHN_BOILER_GAS    20                  PYROLYSIS    20
+       DHN_BOILER_OIL    20              TRAIN_FREIGHT     3.2
+      DHN_BOILER_WOOD    20                  TRAIN_PUB    16.7
+        DHN_COGEN_GAS    20            TRAMWAY_TROLLEY    16.7
+      DHN_COGEN_WASTE    20                      TRUCK     3.2
+       DHN_COGEN_WOOD    20                       WIND     5.3
+;
+
+param f_min [*] :=
+ BUS_COACH_CNG_STOICH 0               DHN_DEEP_GEO 0
+     BUS_COACH_DIESEL 0                DHN_HP_ELEC 0
+BUS_COACH_FC_HYBRIDH2 0                 EFFICIENCY 0
+   BUS_COACH_HYDIESEL 0           GASIFICATION_SNG 0
+              CAR_BEV 0                 GEOTHERMAL 0
+           CAR_DIESEL 0                       GRID 0
+        CAR_FUEL_CELL 0                 H2_BIOMASS 0
+         CAR_GASOLINE 0            H2_ELECTROLYSIS 0
+              CAR_HEV 0                      H2_NG 0
+               CAR_NG 0                  HYDRO_DAM 8.08
+             CAR_PHEV 0                HYDRO_RIVER 3.8
+                 CCGT 0            IND_BOILER_COAL 0
+             CCGT_CCS 0             IND_BOILER_GAS 0
+            COAL_IGCC 0             IND_BOILER_OIL 0
+        COAL_IGCC_CCS 0           IND_BOILER_WASTE 0
+              COAL_US 0            IND_BOILER_WOOD 0
+          COAL_US_CCS 0              IND_COGEN_GAS 0
+     DEC_ADVCOGEN_GAS 0            IND_COGEN_WASTE 0
+      DEC_ADVCOGEN_H2 0             IND_COGEN_WOOD 0
+       DEC_BOILER_GAS 0            IND_DIRECT_ELEC 0
+       DEC_BOILER_OIL 0              NEW_HYDRO_DAM 0
+      DEC_BOILER_WOOD 0            NEW_HYDRO_RIVER 0
+        DEC_COGEN_GAS 0                    NUCLEAR 0
+        DEC_COGEN_OIL 0                  POWER2GAS 0
+      DEC_DIRECT_ELEC 0                POWER2GAS_1 0
+          DEC_HP_ELEC 0                POWER2GAS_2 0
+            DEC_SOLAR 0                POWER2GAS_3 0
+         DEC_THHP_GAS 0               PUMPED_HYDRO 0
+                  DHN 0                         PV 0
+       DHN_BOILER_GAS 0                  PYROLYSIS 0
+       DHN_BOILER_OIL 0              TRAIN_FREIGHT 0.92
+      DHN_BOILER_WOOD 0                  TRAIN_PUB 0
+        DHN_COGEN_GAS 0            TRAMWAY_TROLLEY 0
+      DHN_COGEN_WASTE 0                      TRUCK 0.92
+       DHN_COGEN_WOOD 0                       WIND 0
+;
+
+param c_p_t [*,*]
+:                         1       2       3       4       5       6       7  :=
+BUS_COACH_CNG_STOICH    1       1       1       1       1       1       1
+BUS_COACH_DIESEL        1       1       1       1       1       1       1
+BUS_COACH_FC_HYBRIDH2   1       1       1       1       1       1       1
+BUS_COACH_HYDIESEL      1       1       1       1       1       1       1
+CAR_BEV                 1       1       1       1       1       1       1
+CAR_DIESEL              1       1       1       1       1       1       1
+CAR_FUEL_CELL           1       1       1       1       1       1       1
+CAR_GASOLINE            1       1       1       1       1       1       1
+CAR_HEV                 1       1       1       1       1       1       1
+CAR_NG                  1       1       1       1       1       1       1
+CAR_PHEV                1       1       1       1       1       1       1
+CCGT                    1       1       1       1       1       1       1
+CCGT_CCS                1       1       1       1       1       1       1
+COAL_IGCC               1       1       1       1       1       1       1
+COAL_IGCC_CCS           1       1       1       1       1       1       1
+COAL_US                 1       1       1       1       1       1       1
+COAL_US_CCS             1       1       1       1       1       1       1
+DEC_ADVCOGEN_GAS        1       1       1       1       1       1       1
+DEC_ADVCOGEN_H2         1       1       1       1       1       1       1
+DEC_BOILER_GAS          1       1       1       1       1       1       1
+DEC_BOILER_OIL          1       1       1       1       1       1       1
+DEC_BOILER_WOOD         1       1       1       1       1       1       1
+DEC_COGEN_GAS           1       1       1       1       1       1       1
+DEC_COGEN_OIL           1       1       1       1       1       1       1
+DEC_DIRECT_ELEC         1       1       1       1       1       1       1
+DEC_HP_ELEC             1       1       1       1       1       1       1
+DEC_SOLAR               0.065   0.091   0.12    0.123   0.141   0.152   0.161
+DEC_THHP_GAS            1       1       1       1       1       1       1
+DHN                     1       1       1       1       1       1       1
+DHN_BOILER_GAS          1       1       1       1       1       1       1
+DHN_BOILER_OIL          1       1       1       1       1       1       1
+DHN_BOILER_WOOD         1       1       1       1       1       1       1
+DHN_COGEN_GAS           1       1       1       1       1       1       1
+DHN_COGEN_WASTE         1       1       1       1       1       1       1
+DHN_COGEN_WOOD          1       1       1       1       1       1       1
+DHN_DEEP_GEO            1       1       1       1       1       1       1
+DHN_HP_ELEC             1       1       1       1       1       1       1
+EFFICIENCY              1       1       1       1       1       1       1
+GASIFICATION_SNG        1       1       1       1       1       1       1
+GEOTHERMAL              1       1       1       1       1       1       1
+GRID                    1       1       1       1       1       1       1
+H2_BIOMASS              1       1       1       1       1       1       1
+H2_ELECTROLYSIS         1       1       1       1       1       1       1
+H2_NG                   1       1       1       1       1       1       1
+HYDRO_DAM               0.251   0.253   0.188   0.16    0.212   0.279   0.268
+HYDRO_RIVER             0.302   0.265   0.308   0.436   0.622   0.766   0.77
+IND_BOILER_COAL         1       1       1       1       1       1       1
+IND_BOILER_GAS          1       1       1       1       1       1       1
+IND_BOILER_OIL          1       1       1       1       1       1       1
+IND_BOILER_WASTE        1       1       1       1       1       1       1
+IND_BOILER_WOOD         1       1       1       1       1       1       1
+IND_COGEN_GAS           1       1       1       1       1       1       1
+IND_COGEN_WASTE         1       1       1       1       1       1       1
+IND_COGEN_WOOD          1       1       1       1       1       1       1
+IND_DIRECT_ELEC         1       1       1       1       1       1       1
+NEW_HYDRO_DAM           0.251   0.253   0.188   0.16    0.212   0.279   0.268
+NEW_HYDRO_RIVER         0.302   0.265   0.308   0.436   0.622   0.766   0.77
+NUCLEAR                 1       1       1       1       1       1       1
+POWER2GAS               1       1       1       1       1       1       1
+POWER2GAS_1             1       1       1       1       1       1       1
+POWER2GAS_2             1       1       1       1       1       1       1
+POWER2GAS_3             1       1       1       1       1       1       1
+PUMPED_HYDRO            1       1       1       1       1       1       1
+PV                      0.053   0.094   0.12    0.153   0.156   0.157   0.164
+PYROLYSIS               1       1       1       1       1       1       1
+TRAIN_FREIGHT           1       1       1       1       1       1       1
+TRAIN_PUB               1       1       1       1       1       1       1
+TRAMWAY_TROLLEY         1       1       1       1       1       1       1
+TRUCK                   1       1       1       1       1       1       1
+WIND                    0.325   0.279   0.282   0.182   0.176   0.14    0.149
+
+:                         8       9      10      11      12      :=
+BUS_COACH_CNG_STOICH    1       1       1       1       1
+BUS_COACH_DIESEL        1       1       1       1       1
+BUS_COACH_FC_HYBRIDH2   1       1       1       1       1
+BUS_COACH_HYDIESEL      1       1       1       1       1
+CAR_BEV                 1       1       1       1       1
+CAR_DIESEL              1       1       1       1       1
+CAR_FUEL_CELL           1       1       1       1       1
+CAR_GASOLINE            1       1       1       1       1
+CAR_HEV                 1       1       1       1       1
+CAR_NG                  1       1       1       1       1
+CAR_PHEV                1       1       1       1       1
+CCGT                    1       1       1       1       1
+CCGT_CCS                1       1       1       1       1
+COAL_IGCC               1       1       1       1       1
+COAL_IGCC_CCS           1       1       1       1       1
+COAL_US                 1       1       1       1       1
+COAL_US_CCS             1       1       1       1       1
+DEC_ADVCOGEN_GAS        1       1       1       1       1
+DEC_ADVCOGEN_H2         1       1       1       1       1
+DEC_BOILER_GAS          1       1       1       1       1
+DEC_BOILER_OIL          1       1       1       1       1
+DEC_BOILER_WOOD         1       1       1       1       1
+DEC_COGEN_GAS           1       1       1       1       1
+DEC_COGEN_OIL           1       1       1       1       1
+DEC_DIRECT_ELEC         1       1       1       1       1
+DEC_HP_ELEC             1       1       1       1       1
+DEC_SOLAR               0.149   0.135   0.101   0.068   0.055
+DEC_THHP_GAS            1       1       1       1       1
+DHN                     1       1       1       1       1
+DHN_BOILER_GAS          1       1       1       1       1
+DHN_BOILER_OIL          1       1       1       1       1
+DHN_BOILER_WOOD         1       1       1       1       1
+DHN_COGEN_GAS           1       1       1       1       1
+DHN_COGEN_WASTE         1       1       1       1       1
+DHN_COGEN_WOOD          1       1       1       1       1
+DHN_DEEP_GEO            1       1       1       1       1
+DHN_HP_ELEC             1       1       1       1       1
+EFFICIENCY              1       1       1       1       1
+GASIFICATION_SNG        1       1       1       1       1
+GEOTHERMAL              1       1       1       1       1
+GRID                    1       1       1       1       1
+H2_BIOMASS              1       1       1       1       1
+H2_ELECTROLYSIS         1       1       1       1       1
+H2_NG                   1       1       1       1       1
+HYDRO_DAM               0.259   0.288   0.212   0.217   0.226
+HYDRO_RIVER             0.713   0.548   0.376   0.348   0.342
+IND_BOILER_COAL         1       1       1       1       1
+IND_BOILER_GAS          1       1       1       1       1
+IND_BOILER_OIL          1       1       1       1       1
+IND_BOILER_WASTE        1       1       1       1       1
+IND_BOILER_WOOD         1       1       1       1       1
+IND_COGEN_GAS           1       1       1       1       1
+IND_COGEN_WASTE         1       1       1       1       1
+IND_COGEN_WOOD          1       1       1       1       1
+IND_DIRECT_ELEC         1       1       1       1       1
+NEW_HYDRO_DAM           0.259   0.288   0.212   0.217   0.226
+NEW_HYDRO_RIVER         0.713   0.548   0.376   0.348   0.342
+NUCLEAR                 1       1       1       1       1
+POWER2GAS               1       1       1       1       1
+POWER2GAS_1             1       1       1       1       1
+POWER2GAS_2             1       1       1       1       1
+POWER2GAS_3             1       1       1       1       1
+PUMPED_HYDRO            1       1       1       1       1
+PV                      0.156   0.128   0.088   0.052   0.036
+PYROLYSIS               1       1       1       1       1
+TRAIN_FREIGHT           1       1       1       1       1
+TRAIN_PUB               1       1       1       1       1
+TRAMWAY_TROLLEY         1       1       1       1       1
+TRUCK                   1       1       1       1       1
+WIND                    0.135   0.162   0.279   0.313   0.339
+;
+
+param c_p [*] :=
+ BUS_COACH_CNG_STOICH 1                DHN_DEEP_GEO 0.85
+     BUS_COACH_DIESEL 1                 DHN_HP_ELEC 0.95
+BUS_COACH_FC_HYBRIDH2 1                  EFFICIENCY 1
+   BUS_COACH_HYDIESEL 1            GASIFICATION_SNG 0.85
+              CAR_BEV 1                  GEOTHERMAL 0.86
+           CAR_DIESEL 1                        GRID 1
+        CAR_FUEL_CELL 1                  H2_BIOMASS 0.86
+         CAR_GASOLINE 1             H2_ELECTROLYSIS 0.9
+              CAR_HEV 1                       H2_NG 0.86
+               CAR_NG 1                   HYDRO_DAM 1
+             CAR_PHEV 1                 HYDRO_RIVER 1
+                 CCGT 0.85          IND_BOILER_COAL 0.9
+             CCGT_CCS 0.85           IND_BOILER_GAS 0.95
+            COAL_IGCC 0.856          IND_BOILER_OIL 0.95
+        COAL_IGCC_CCS 0.856        IND_BOILER_WASTE 0.9
+              COAL_US 0.868         IND_BOILER_WOOD 0.9
+          COAL_US_CCS 0.868           IND_COGEN_GAS 0.85
+     DEC_ADVCOGEN_GAS 0.285         IND_COGEN_WASTE 0.85
+      DEC_ADVCOGEN_H2 0.285          IND_COGEN_WOOD 0.85
+       DEC_BOILER_GAS 0.285         IND_DIRECT_ELEC 0.95
+       DEC_BOILER_OIL 0.285           NEW_HYDRO_DAM 1
+      DEC_BOILER_WOOD 0.285         NEW_HYDRO_RIVER 1
+        DEC_COGEN_GAS 0.285                 NUCLEAR 0.849
+        DEC_COGEN_OIL 0.285               POWER2GAS 1
+      DEC_DIRECT_ELEC 0.285             POWER2GAS_1 0.9
+          DEC_HP_ELEC 0.285             POWER2GAS_2 0.9
+            DEC_SOLAR 1                 POWER2GAS_3 1
+         DEC_THHP_GAS 0.285            PUMPED_HYDRO 1
+                  DHN 1                          PV 1
+       DHN_BOILER_GAS 0.95                PYROLYSIS 0.85
+       DHN_BOILER_OIL 0.95            TRAIN_FREIGHT 1
+      DHN_BOILER_WOOD 0.9                 TRAIN_PUB 1
+        DHN_COGEN_GAS 0.85          TRAMWAY_TROLLEY 1
+      DHN_COGEN_WASTE 0.85                    TRUCK 1
+       DHN_COGEN_WOOD 0.85                     WIND 1
+;
+
+param tau [*] :=
+ BUS_COACH_CNG_STOICH 1.03215              DHN_DEEP_GEO 0.0524473
+     BUS_COACH_DIESEL 1.03215               DHN_HP_ELEC 0.0588123
+BUS_COACH_FC_HYBRIDH2 1.03215                EFFICIENCY 1.03215
+   BUS_COACH_HYDIESEL 1.03215          GASIFICATION_SNG 0.0588123
+              CAR_BEV 1.03215                GEOTHERMAL 0.0524473
+           CAR_DIESEL 1.03215                      GRID 0.0349281
+        CAR_FUEL_CELL 1.03215                H2_BIOMASS 0.0588123
+         CAR_GASOLINE 1.03215           H2_ELECTROLYSIS 0.0850746
+              CAR_HEV 1.03215                     H2_NG 0.0588123
+               CAR_NG 1.03215                 HYDRO_DAM 0.0447787
+             CAR_PHEV 1.03215               HYDRO_RIVER 0.0447787
+                 CCGT 0.0588123         IND_BOILER_COAL 0.0772735
+             CCGT_CCS 0.0588123          IND_BOILER_GAS 0.0772735
+            COAL_IGCC 0.0480116          IND_BOILER_OIL 0.0772735
+        COAL_IGCC_CCS 0.0480116        IND_BOILER_WASTE 0.0772735
+              COAL_US 0.0480116         IND_BOILER_WOOD 0.0772735
+          COAL_US_CCS 0.0480116           IND_COGEN_GAS 0.0588123
+     DEC_ADVCOGEN_GAS 0.0685589         IND_COGEN_WASTE 0.0588123
+      DEC_ADVCOGEN_H2 0.0685589          IND_COGEN_WOOD 0.0588123
+       DEC_BOILER_GAS 0.0772735         IND_DIRECT_ELEC 0.0850746
+       DEC_BOILER_OIL 0.0772735           NEW_HYDRO_DAM 0.0447787
+      DEC_BOILER_WOOD 0.0772735         NEW_HYDRO_RIVER 0.0447787
+        DEC_COGEN_GAS 0.0685589                 NUCLEAR 0.0378134
+        DEC_COGEN_OIL 0.0685589               POWER2GAS 0.0588123
+      DEC_DIRECT_ELEC 0.0850746             POWER2GAS_1 1.03215
+          DEC_HP_ELEC 0.0740367             POWER2GAS_2 1.03215
+            DEC_SOLAR 0.0685589             POWER2GAS_3 0.0588123
+         DEC_THHP_GAS 0.0685589            PUMPED_HYDRO 1.03215
+                  DHN 0.0378134                      PV 0.0588123
+       DHN_BOILER_GAS 0.0772735               PYROLYSIS 0.0588123
+       DHN_BOILER_OIL 0.0772735           TRAIN_FREIGHT 1.03215
+      DHN_BOILER_WOOD 0.0772735               TRAIN_PUB 1.03215
+        DHN_COGEN_GAS 0.0588123         TRAMWAY_TROLLEY 1.03215
+      DHN_COGEN_WASTE 0.0588123                   TRUCK 1.03215
+       DHN_COGEN_WOOD 0.0588123                    WIND 0.0685589
+;
+
+param gwp_constr [*] :=
+ BUS_COACH_CNG_STOICH     0               DHN_DEEP_GEO   808.76
+     BUS_COACH_DIESEL     0                DHN_HP_ELEC   174.79
+BUS_COACH_FC_HYBRIDH2     0                 EFFICIENCY     0
+   BUS_COACH_HYDIESEL     0           GASIFICATION_SNG     0
+              CAR_BEV     0                 GEOTHERMAL 24929.1
+           CAR_DIESEL     0                       GRID     0
+        CAR_FUEL_CELL     0                 H2_BIOMASS     0
+         CAR_GASOLINE     0            H2_ELECTROLYSIS     0
+              CAR_HEV     0                      H2_NG     0
+               CAR_NG     0                  HYDRO_DAM  1692.88
+             CAR_PHEV     0                HYDRO_RIVER  1262.82
+                 CCGT   183.79         IND_BOILER_COAL    48.18
+             CCGT_CCS   183.79          IND_BOILER_GAS    12.32
+            COAL_IGCC   331.6           IND_BOILER_OIL    12.32
+        COAL_IGCC_CCS   331.6         IND_BOILER_WASTE    28.87
+              COAL_US   331.6          IND_BOILER_WOOD    28.87
+          COAL_US_CCS   331.6            IND_COGEN_GAS  1024.32
+     DEC_ADVCOGEN_GAS  2193.45         IND_COGEN_WASTE   647.82
+      DEC_ADVCOGEN_H2  2193.45          IND_COGEN_WOOD   165.33
+       DEC_BOILER_GAS    21.09         IND_DIRECT_ELEC     1.47
+       DEC_BOILER_OIL    21.09           NEW_HYDRO_DAM  1692.88
+      DEC_BOILER_WOOD    21.09         NEW_HYDRO_RIVER  1262.82
+        DEC_COGEN_GAS  1024.32                 NUCLEAR   707.88
+        DEC_COGEN_OIL  1024.32               POWER2GAS     0
+      DEC_DIRECT_ELEC     1.47             POWER2GAS_1     0
+          DEC_HP_ELEC   164.89             POWER2GAS_2     0
+            DEC_SOLAR   221.22             POWER2GAS_3     0
+         DEC_THHP_GAS   381.93            PUMPED_HYDRO     0
+                  DHN     0                         PV  2081.43
+       DHN_BOILER_GAS    12.32               PYROLYSIS     0
+       DHN_BOILER_OIL    12.32           TRAIN_FREIGHT     0
+      DHN_BOILER_WOOD    28.87               TRAIN_PUB     0
+        DHN_COGEN_GAS   490.88         TRAMWAY_TROLLEY     0
+      DHN_COGEN_WASTE   647.82                   TRUCK     0
+       DHN_COGEN_WOOD   165.33                    WIND   622.85
+;
+
+param fmax_perc [*] :=
+ BUS_COACH_CNG_STOICH 0.3            DHN_DEEP_GEO 0.5
+     BUS_COACH_DIESEL 0.3             DHN_HP_ELEC 0.5
+BUS_COACH_FC_HYBRIDH2 0.2              EFFICIENCY 1
+   BUS_COACH_HYDIESEL 0.3        GASIFICATION_SNG 1
+              CAR_BEV 0.3              GEOTHERMAL 1
+           CAR_DIESEL 1                      GRID 1
+        CAR_FUEL_CELL 0.2              H2_BIOMASS 1
+         CAR_GASOLINE 1           H2_ELECTROLYSIS 1
+              CAR_HEV 0.3                   H2_NG 1
+               CAR_NG 0.5               HYDRO_DAM 1
+             CAR_PHEV 0.3             HYDRO_RIVER 1
+                 CCGT 1           IND_BOILER_COAL 0.5
+             CCGT_CCS 1            IND_BOILER_GAS 0.6
+            COAL_IGCC 1            IND_BOILER_OIL 0.5
+        COAL_IGCC_CCS 1          IND_BOILER_WASTE 1
+              COAL_US 1           IND_BOILER_WOOD 1
+          COAL_US_CCS 1             IND_COGEN_GAS 0.5
+     DEC_ADVCOGEN_GAS 0.2         IND_COGEN_WASTE 0.5
+      DEC_ADVCOGEN_H2 0.2          IND_COGEN_WOOD 1
+       DEC_BOILER_GAS 0.8         IND_DIRECT_ELEC 0.2
+       DEC_BOILER_OIL 0.5           NEW_HYDRO_DAM 1
+      DEC_BOILER_WOOD 1           NEW_HYDRO_RIVER 1
+        DEC_COGEN_GAS 0.4                 NUCLEAR 1
+        DEC_COGEN_OIL 0.4               POWER2GAS 1
+      DEC_DIRECT_ELEC 0.2             POWER2GAS_1 1
+          DEC_HP_ELEC 0.5             POWER2GAS_2 1
+            DEC_SOLAR 0.4             POWER2GAS_3 1
+         DEC_THHP_GAS 0.2            PUMPED_HYDRO 1
+                  DHN 1                        PV 0.5
+       DHN_BOILER_GAS 0.8               PYROLYSIS 1
+       DHN_BOILER_OIL 0.5           TRAIN_FREIGHT 1
+      DHN_BOILER_WOOD 1                 TRAIN_PUB 0.8
+        DHN_COGEN_GAS 0.5         TRAMWAY_TROLLEY 0.3
+      DHN_COGEN_WASTE 0.5                   TRUCK 1
+       DHN_COGEN_WOOD 1                      WIND 0.5
+;
+
+param fmin_perc [*] :=
+ BUS_COACH_CNG_STOICH 0              DHN_DEEP_GEO 0
+     BUS_COACH_DIESEL 0               DHN_HP_ELEC 0
+BUS_COACH_FC_HYBRIDH2 0                EFFICIENCY 0
+   BUS_COACH_HYDIESEL 0          GASIFICATION_SNG 0
+              CAR_BEV 0                GEOTHERMAL 0
+           CAR_DIESEL 0.2                    GRID 0
+        CAR_FUEL_CELL 0                H2_BIOMASS 0
+         CAR_GASOLINE 0.2         H2_ELECTROLYSIS 0
+              CAR_HEV 0                     H2_NG 0
+               CAR_NG 0                 HYDRO_DAM 0
+             CAR_PHEV 0               HYDRO_RIVER 0
+                 CCGT 0           IND_BOILER_COAL 0
+             CCGT_CCS 0            IND_BOILER_GAS 0
+            COAL_IGCC 0            IND_BOILER_OIL 0
+        COAL_IGCC_CCS 0          IND_BOILER_WASTE 0
+              COAL_US 0           IND_BOILER_WOOD 0
+          COAL_US_CCS 0             IND_COGEN_GAS 0
+     DEC_ADVCOGEN_GAS 0           IND_COGEN_WASTE 0
+      DEC_ADVCOGEN_H2 0            IND_COGEN_WOOD 0
+       DEC_BOILER_GAS 0.2         IND_DIRECT_ELEC 0
+       DEC_BOILER_OIL 0.1           NEW_HYDRO_DAM 0
+      DEC_BOILER_WOOD 0           NEW_HYDRO_RIVER 0
+        DEC_COGEN_GAS 0                   NUCLEAR 0
+        DEC_COGEN_OIL 0                 POWER2GAS 0
+      DEC_DIRECT_ELEC 0               POWER2GAS_1 0
+          DEC_HP_ELEC 0               POWER2GAS_2 0
+            DEC_SOLAR 0               POWER2GAS_3 0
+         DEC_THHP_GAS 0              PUMPED_HYDRO 0
+                  DHN 0                        PV 0
+       DHN_BOILER_GAS 0.2               PYROLYSIS 0
+       DHN_BOILER_OIL 0             TRAIN_FREIGHT 0
+      DHN_BOILER_WOOD 0                 TRAIN_PUB 0
+        DHN_COGEN_GAS 0           TRAMWAY_TROLLEY 0
+      DHN_COGEN_WASTE 0                     TRUCK 0
+       DHN_COGEN_WOOD 0                      WIND 0
+;
+
+param c_op [*,*]
+:               1        2        3        4        5        6        7      :=
+BIODIESEL     0.0852   0.0852   0.0852   0.0852   0.0852   0.0852   0.0852
+BIOETHANOL    0.088    0.088    0.088    0.088    0.088    0.088    0.088
+COAL          0.0302   0.0302   0.0302   0.0302   0.0302   0.0302   0.0302
+COAL_CCS      0.0302   0.0302   0.0302   0.0302   0.0302   0.0302   0.0302
+DIESEL        0.0852   0.0852   0.0852   0.0852   0.0852   0.0852   0.0852
+ELECTRICITY   0.0901   0.0901   0.0901   0.0901   0.0901   0.0901   0.0901
+ELEC_EXPORT   0        0        0        0        0        0        0
+GASOLINE      0.088    0.088    0.088    0.088    0.088    0.088    0.088
+H2            0        0        0        0        0        0        0
+LFO           0.0606   0.0606   0.0606   0.0606   0.0606   0.0606   0.0606
+LNG           0        0        0        0        0        0        0
+NG            0.0348   0.0348   0.0348   0.0348   0.0348   0.0348   0.0348
+NG_CCS        0.0348   0.0348   0.0348   0.0348   0.0348   0.0348   0.0348
+SNG           0.0348   0.0348   0.0348   0.0348   0.0348   0.0348   0.0348
+URANIUM       0.0041   0.0041   0.0041   0.0041   0.0041   0.0041   0.0041
+WASTE         0        0        0        0        0        0        0
+WOOD          0.0932   0.0932   0.0932   0.0932   0.0932   0.0932   0.0932
+
+:               8        9        10       11       12      :=
+BIODIESEL     0.0852   0.0852   0.0852   0.0852   0.0852
+BIOETHANOL    0.088    0.088    0.088    0.088    0.088
+COAL          0.0302   0.0302   0.0302   0.0302   0.0302
+COAL_CCS      0.0302   0.0302   0.0302   0.0302   0.0302
+DIESEL        0.0852   0.0852   0.0852   0.0852   0.0852
+ELECTRICITY   0.0901   0.0901   0.0901   0.0901   0.0901
+ELEC_EXPORT   0        0        0        0        0
+GASOLINE      0.088    0.088    0.088    0.088    0.088
+H2            0        0        0        0        0
+LFO           0.0606   0.0606   0.0606   0.0606   0.0606
+LNG           0        0        0        0        0
+NG            0.0348   0.0348   0.0348   0.0348   0.0348
+NG_CCS        0.0348   0.0348   0.0348   0.0348   0.0348
+SNG           0.0348   0.0348   0.0348   0.0348   0.0348
+URANIUM       0.0041   0.0041   0.0041   0.0041   0.0041
+WASTE         0        0        0        0        0
+WOOD          0.0932   0.0932   0.0932   0.0932   0.0932
+;
+
+param avail [*] :=
+  BIODIESEL      0
+ BIOETHANOL      0
+       COAL  1e+06
+   COAL_CCS  1e+06
+     DIESEL  1e+06
+ELECTRICITY  1e+06
+ELEC_EXPORT  1e+06
+   GASOLINE  1e+06
+         H2      0
+        LFO  1e+06
+        LNG      0
+         NG  1e+06
+     NG_CCS  1e+06
+        SNG      0
+    URANIUM  1e+06
+      WASTE  11142
+       WOOD  12279
+;
+
+param gwp_op [*] :=
+  BIODIESEL  0
+ BIOETHANOL  0
+       COAL  0.4014
+   COAL_CCS  0.0401
+     DIESEL  0.3148
+ELECTRICITY  0.4818
+ELEC_EXPORT  0
+   GASOLINE  0.3448
+         H2  0
+        LFO  0.3115
+        LNG  0
+         NG  0.2666
+     NG_CCS  0.02667
+        SNG  0
+    URANIUM  0.0039
+      WASTE  0.1501
+       WOOD  0.0118
+;
+
+param storage_eff_in [*,*] (tr)
+:                POWER2GAS PUMPED_HYDRO    :=
+COAL                  0          0
+COAL_CCS              0          0
+DIESEL                0          0
+ELECTRICITY           0          1
+GASOLINE              0          0
+H2                    0          0
+HEAT_HIGH_T           0          0
+HEAT_LOW_T_DECEN      0          0
+HEAT_LOW_T_DHN        0          0
+LFO                   0          0
+LNG                   1          0
+MOB_FREIGHT_RAIL      0          0
+MOB_FREIGHT_ROAD      0          0
+MOB_PRIVATE           0          0
+MOB_PUBLIC            0          0
+NG                    0          0
+NG_CCS                0          0
+URANIUM               0          0
+WASTE                 0          0
+WOOD                  0          0
+;
+
+param storage_eff_out [*,*] (tr)
+:                POWER2GAS PUMPED_HYDRO    :=
+COAL                  0          0
+COAL_CCS              0          0
+DIESEL                0          0
+ELECTRICITY           0          1
+GASOLINE              0          0
+H2                    0          0
+HEAT_HIGH_T           0          0
+HEAT_LOW_T_DECEN      0          0
+HEAT_LOW_T_DHN        0          0
+LFO                   0          0
+LNG                   1          0
+MOB_FREIGHT_RAIL      0          0
+MOB_FREIGHT_ROAD      0          0
+MOB_PRIVATE           0          0
+MOB_PUBLIC            0          0
+NG                    0          0
+NG_CCS                0          0
+URANIUM               0          0
+WASTE                 0          0
+WOOD                  0          0
+;
+
+param loss_coeff [*] :=
+     ELECTRICITY  0.07
+     HEAT_HIGH_T  0
+HEAT_LOW_T_DECEN  0
+  HEAT_LOW_T_DHN  0.05
+MOB_FREIGHT_RAIL  0
+MOB_FREIGHT_ROAD  0
+     MOB_PRIVATE  0
+      MOB_PUBLIC  0
+;
+
+param peak_dhn_factor = 2
+
+;

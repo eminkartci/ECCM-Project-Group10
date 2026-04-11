@@ -1,0 +1,4 @@
+
+1. Install the Live Server extension in VS Code.
+2. Right-click on the SES_sankey.html file.
+3. Select Open with Live Server.

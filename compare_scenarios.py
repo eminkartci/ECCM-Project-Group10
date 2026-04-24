@@ -15,10 +15,10 @@ def main() -> None:
     base = root / "output" / "scenario_metrics.txt"
     drought = root / "output_drought" / "scenario_metrics.txt"
     if not base.is_file():
-        print(f"Missing {base} — run: ampl ses_main.run")
+        print(f"Missing {base} — run: ampl scenarios/baseline/ses_main.run")
         return
     if not drought.is_file():
-        print(f"Missing {drought} — run: ampl ses_main_drought.run")
+        print(f"Missing {drought} — run: ampl scenarios/drought/ses_main_drought.run")
         return
     b, d = read_metrics(base), read_metrics(drought)
     print("Metric\t\tBaseline\tDrought\t\tDelta (drought - baseline)")

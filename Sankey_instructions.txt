@@ -1,4 +1,8 @@
-
-1. Install the Live Server extension in VS Code.
-2. Right-click on the SES_sankey.html file.
-3. Select Open with Live Server.
+1. Run one of the scenarios first:
+   - ampl scenarios/baseline/ses_main.run
+   - ampl scenarios/drought/ses_main_drought.run
+2. Install the Live Server extension in VS Code.
+3. Open one of these files:
+   - output/sankey/SES_sankey.html
+   - output_drought/sankey/SES_sankey.html
+4. Right-click the selected HTML file and choose Open with Live Server.

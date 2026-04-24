@@ -1,6 +1,6 @@
 # Swiss-EnergyScope (SES) — Proje Rehberi (Türkçe)
 
-Bu belge, `ses_main.mod`, `ses_main.dat` ve `ses_main.run` dosyalarına dayanarak **bu klasördeki modelin neyi temsil ettiğini** ve **nasıl çalıştığını** öğretmek amacıyla hazırlanmıştır. Model, Stefano Moret tarafından 2015’te yazılmış **Swiss-EnergyScope (SES)** MILP (karma tamsayılı doğrusal programlama) formülasyonudur; ders materyali olarak İsviçre enerji sistemi verileriyle birlikte kullanılmaktadır.
+Bu belge, `model/ses_main.mod`, `scenarios/baseline/ses_main.dat` ve `scenarios/baseline/ses_main.run` dosyalarına dayanarak **bu klasördeki modelin neyi temsil ettiğini** ve **nasıl çalıştığını** öğretmek amacıyla hazırlanmıştır. Model, Stefano Moret tarafından 2015’te yazılmış **Swiss-EnergyScope (SES)** MILP (karma tamsayılı doğrusal programlama) formülasyonudur; ders materyali olarak İsviçre enerji sistemi verileriyle birlikte kullanılmaktadır.
 
 ---
 
@@ -16,11 +16,13 @@ Bu bir **iklim veya atmosfer dinamiği modeli değildir**; **enerji–ekonomi op
 
 | Dosya | Rol |
 |--------|-----|
-| `ses_main.mod` | AMPL’de **kümeler, parametreler, karar değişkenleri, kısıtlar ve amaç fonksiyonu** (matematiksel model). |
-| `ses_main.dat` | Sayısal **veri**: sektör talepleri, teknoloji maliyetleri, `layers_in_out` matrisi, aylık süreler, kapasite faktörleri vb. |
-| `ses_main.run` | Modeli ve veriyi yükler, **Gurobi** ile çözer, `output/` altına **metin ve CSV çıktıları** yazar. |
+| `model/ses_main.mod` | AMPL’de **kümeler, parametreler, karar değişkenleri, kısıtlar ve amaç fonksiyonu** (matematiksel model). |
+| `scenarios/baseline/ses_main.dat` | Baseline senaryonun sayısal **veri** dosyası: sektör talepleri, teknoloji maliyetleri, `layers_in_out` matrisi, aylık süreler, kapasite faktörleri vb. |
+| `scenarios/baseline/ses_main.run` | Baseline senaryoyu çözer; `output/` altına **metin ve CSV çıktıları** yazar. |
+| `scenarios/drought/ses_main_drought.dat` | Kuraklık senaryosunun sayısal veri dosyası. |
+| `scenarios/drought/ses_main_drought.run` | Kuraklık senaryosunu çözer; `output_drought/` altına çıktı yazar. |
 
-Çalıştırma tipik olarak AMPL içinde: `ampl ses_main.run` (Gurobi lisansı ve AMPL kurulumu gerekir).
+Çalıştırma tipik olarak AMPL içinde: `ampl scenarios/baseline/ses_main.run` (Gurobi lisansı ve AMPL kurulumu gerekir). Kuraklık için: `ampl scenarios/drought/ses_main_drought.run`.
 
 ---
 
@@ -34,7 +36,7 @@ Bu bir **iklim veya atmosfer dinamiği modeli değildir**; **enerji–ekonomi op
 
 ## 4. Birimler (veri dosyası başlığından)
 
-Varsayılan birimler (`ses_main.dat` başında belirtildiği gibi):
+Varsayılan birimler (`scenarios/baseline/ses_main.dat` başında belirtildiği gibi):
 
 - Enerji: **GWh**
 - Güç: **GW**
@@ -112,7 +114,7 @@ Burada `tau[i]` verilen iskonto oranı `i_rate` ve ömür `lifetime[i]` ile **se
 
 ---
 
-## 9. Veri dosyasında neler var? (`ses_main.dat`)
+## 9. Veri dosyasında neler var? (`scenarios/baseline/ses_main.dat`)
 
 - **Kümeler:** Tüm teknoloji ve kaynak listeleri (nükleer, CCGT, PV, rüzgâr, hidro, jeotermal, endüstriyel KOG/kazanlar, DHN ve dağınık ısıtma seçenekleri, toplu taşıma ve özel araç tipleri, tren/yük kamyonu, depolama: `PUMPED_HYDRO`, `POWER2GAS`, altyapı: `GRID`, `DHN`, H₂ rotaları, gazifikasyon, piroliz, …).
 - **`layers_in_out`:** Her satır bir kaynak veya teknoloji; sütunlar katmanlar — **enerji dengesi ve verimlilik** burada kodlanır.
@@ -122,9 +124,9 @@ Burada `tau[i]` verilen iskonto oranı `i_rate` ve ömür `lifetime[i]` ile **se
 
 ---
 
-## 10. Çalıştırma betiği (`ses_main.run`) ne yapıyor?
+## 10. Çalıştırma betiği (`scenarios/baseline/ses_main.run`) ne yapıyor?
 
-1. `model ses_main.mod;` ve `data ses_main.dat;` yüklenir.
+1. `model model/ses_main.mod;` ve `data scenarios/baseline/ses_main.dat;` yüklenir.
 2. Çözücü: **Gurobi** (`option solver gurobi`).
 3. `solve;` ile MILP çözülür.
 4. Kümeler ve parametreler `output/sets.txt`, `output/params.txt` içine yazdırılır (geçici `comfile.txt` ile).
@@ -149,10 +151,10 @@ Burada `tau[i]` verilen iskonto oranı `i_rate` ve ömür `lifetime[i]` ile **se
 
 ## 12. Öğrenme sırası (önerilen)
 
-1. `ses_main.dat` içindeki **SECTORS** ve **END_USES_INPUT** tablosunu okuyun: sistemin **sınırları** netleşir.
+1. `scenarios/baseline/ses_main.dat` içindeki **SECTORS** ve **END_USES_INPUT** tablosunu okuyun: sistemin **sınırları** netleşir.
 2. Bir teknoloji seçin (ör. `CCGT` veya `DHN_COGEN_GAS`) ve **`layers_in_out`** satırını inceleyin: **hangi yakıttan ne üretiliyor** anlaşılır.
-3. `ses_main.mod` içinde **`layer_balance`** ve **`end_uses_t`** kısıtlarını yan yana okuyun: **talep → denge → maliyet** zinciri kurulur.
-4. `ses_main.run` çıktı dosyalarından **`total_output.txt`** ve **`cost_breakdown.txt`** ile optimal karışımı sayısal olarak takip edin.
+3. `model/ses_main.mod` içinde **`layer_balance`** ve **`end_uses_t`** kısıtlarını yan yana okuyun: **talep → denge → maliyet** zinciri kurulur.
+4. `scenarios/baseline/ses_main.run` çıktı dosyalarından **`total_output.txt`** ve **`cost_breakdown.txt`** ile optimal karışımı sayısal olarak takip edin.
 
 ---
 
@@ -162,4 +164,4 @@ Model başlığında: **Swiss-EnergyScope (SES)**, yazar **Stefano Moret**, tari
 
 ---
 
-*Bu rehber, depodaki `ses_main.mod`, `ses_main.dat`, `ses_main.run` dosyalarının doğrudan okunmasıyla üretilmiştir; çözücü sürümü veya veri güncellemeleri farklılık gösterebilir.*
+*Bu rehber, depodaki `model/ses_main.mod`, `scenarios/baseline/ses_main.dat`, `scenarios/baseline/ses_main.run` dosyalarının doğrudan okunmasıyla üretilmiştir; çözücü sürümü veya veri güncellemeleri farklılık gösterebilir.*

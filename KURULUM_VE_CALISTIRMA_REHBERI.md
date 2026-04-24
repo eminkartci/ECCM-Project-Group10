@@ -85,7 +85,7 @@ Repo kok dizininde asagidaki komutlari calistirin.
 ### 5.1 Baseline senaryo
 
 ```bash
-ampl ses_main.run
+ampl scenarios/baseline/ses_main.run
 ```
 
 Bu komut `output/` altina sonuclari yazar (or. `total_output.txt`, `cost_breakdown.txt`, `scenario_metrics.txt`, `sankey/input2sankey.csv`).
@@ -93,7 +93,7 @@ Bu komut `output/` altina sonuclari yazar (or. `total_output.txt`, `cost_breakdo
 ### 5.2 Drought senaryo
 
 ```bash
-ampl ses_main_drought.run
+ampl scenarios/drought/ses_main_drought.run
 ```
 
 Bu komut `output_drought/` altina sonuclari yazar.
@@ -130,13 +130,13 @@ VS Code ile:
 - `error: could not load solver gurobi`:
   - Gurobi kurulu/lisansli degil veya AMPL-Gurobi baglantisi eksik.
 - `Missing ... scenario_metrics.txt`:
-  - Once ilgili AMPL run dosyasini calistirin (`ses_main.run` ve/veya `ses_main_drought.run`).
+  - Once ilgili AMPL run dosyasini calistirin (`scenarios/baseline/ses_main.run` ve/veya `scenarios/drought/ses_main_drought.run`).
 
 ## 8) Hizli kontrol listesi
 
 - [ ] `ampl --version` calisiyor
 - [ ] Gurobi lisansi aktif
-- [ ] `ampl ses_main.run` basarili
-- [ ] `ampl ses_main_drought.run` basarili
+- [ ] `ampl scenarios/baseline/ses_main.run` basarili
+- [ ] `ampl scenarios/drought/ses_main_drought.run` basarili
 - [ ] (Opsiyonel) `python3 compare_scenarios.py` cikti veriyor
 

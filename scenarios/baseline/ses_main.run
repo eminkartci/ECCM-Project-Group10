@@ -1,6 +1,6 @@
 shell 'mkdir -p output/sankey';
-model ses_main.mod;
-data ses_main.dat;
+model model/ses_main.mod;
+data scenarios/baseline/ses_main.dat;
 option solver gurobi;
 option gurobi_options 'outlev=1';
 option show_stats 1; # show statistics

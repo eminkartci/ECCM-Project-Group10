@@ -1,0 +1,108 @@
+# Turkey EnergyScope 2024 Reference Case
+# Primary source:
+# scenarios/turkey_reference_case/turkey_energy_scope_2024_baseline_research_summary.md
+#
+# Strategy:
+# 1) Load full baseline dataset as structural template.
+# 2) Override only parameters that can be mapped to SES model parameters.
+# 3) Mark each inherited/mapped gap with ASSUMPTION comments.
+
+include scenarios/baseline/ses_main.dat;
+
+# -------------------------------------------------------------------
+# Installed capacity alignment (summary -> SES technology mapping)
+# Units in model are GW.
+# -------------------------------------------------------------------
+#
+# ASSUMPTION: Summary has aggregate categories; mapped to closest SES techs.
+# ASSUMPTION: Natural gas capacity mapped to CCGT (no separate OCGT block).
+# ASSUMPTION: COAL_US = domestic proxy (lignite + hard coal + asphaltite);
+#             COAL_IGCC = imported-coal proxy (not IGCC technology).
+# ASSUMPTION: Hydro total split between HYDRO_DAM and HYDRO_RIVER
+#             proportionally to baseline fixed capacities (8.08 vs 3.8).
+# ASSUMPTION: Biomass capacity mapped to IND_COGEN_WOOD as representative
+#             dispatchable biomass conversion technology.
+# ASSUMPTION: Existing geothermal mapped to GEOTHERMAL (electric).
+# ASSUMPTION: Nuclear is set to zero for 2024 Turkey baseline.
+#
+let f_min["NUCLEAR"] := 0;
+let f_min["CCGT"] := 25.384;
+let f_min["COAL_US"] := 11.453;
+let f_min["COAL_IGCC"] := 10.404;
+let f_min["HYDRO_DAM"] := 21.886;
+let f_min["HYDRO_RIVER"] := 10.421;
+let f_min["PV"] := 19.615;
+let f_min["WIND"] := 12.692;
+let f_min["IND_COGEN_WOOD"] := 2.308;
+let f_min["GEOTHERMAL"] := 1.154;
+
+let f_max["NUCLEAR"] := 100;
+let f_max["CCGT"] := 125.384;
+let f_max["COAL_US"] := 14.000;
+let f_max["COAL_IGCC"] := 13.000;
+let f_max["HYDRO_DAM"] := 121.886;
+let f_max["HYDRO_RIVER"] := 110.421;
+let f_max["PV"] := 119.615;
+let f_max["WIND"] := 112.692;
+let f_max["IND_COGEN_WOOD"] := 12.308;
+let f_max["GEOTHERMAL"] := 11.154;
+
+# Lock "new build" hydro expansion in the historical baseline year.
+# ASSUMPTION: 2024 baseline keeps expansion candidates at zero.
+let f_min["NEW_HYDRO_DAM"] := 0;
+let f_min["NEW_HYDRO_RIVER"] := 0;
+
+let f_max["NEW_HYDRO_DAM"] := 0;
+let f_max["NEW_HYDRO_RIVER"] := 0;
+
+# -------------------------------------------------------------------
+# Fuel price alignment (summary indicative €/MWh_th -> c_op MCHF/GWh)
+# -------------------------------------------------------------------
+#
+# ASSUMPTION: 1 EUR ~= 1 CHF for calibration simplicity.
+# ASSUMPTION: c_op unit conversion -> 1 EUR/MWh = 0.001 MCHF/GWh.
+# ASSUMPTION: LNG/LFO/H2 etc. not explicitly in summary keep baseline values
+#             except where directly mapped below.
+# ASSUMPTION: COAL value (22) used as blended coal fuel; lignite/hard-coal
+#             details are not separable in current SES resource set.
+#
+let {t in PERIODS} c_op["NG", t] := 0.021;
+let {t in PERIODS} c_op["NG_CCS", t] := 0.038;
+let {t in PERIODS} c_op["COAL", t] := 0.022;
+let {t in PERIODS} c_op["COAL_CCS", t] := 0.022;
+let {t in PERIODS} c_op["DIESEL", t] := 0.078;
+let {t in PERIODS} c_op["LFO", t] := 0.078;
+let {t in PERIODS} c_op["WOOD", t] := 0.018;
+let {t in PERIODS} c_op["URANIUM", t] := 0.007;
+
+# ================================
+# TURKEY 2024 ELECTRICITY DEMAND
+# Source calibration:
+# TEİAŞ (generation & trade)
+# Ember Electricity Review 2025
+# IEA Energy Balances (sector shares)
+# ================================
+
+# --- TOTAL ELECTRICITY DEMAND (TWh → GWh) ---
+# TEİAŞ + Ember aligned (~348 TWh gross demand)
+
+let end_uses_demand_year["ELECTRICITY", "HOUSEHOLDS"]    := 87000;   # 87 TWh
+let end_uses_demand_year["ELECTRICITY", "SERVICES"]      := 96000;   # 96 TWh
+let end_uses_demand_year["ELECTRICITY", "INDUSTRY"]      := 153000;  # 153 TWh
+let end_uses_demand_year["ELECTRICITY", "TRANSPORTATION"]:= 12000;   # 12 TWh (EV + rail)
+
+# TOTAL = 348 TWh
+
+# -------------------------------------------------------------------
+# Electricity trade (imports/exports/net trade)
+# -------------------------------------------------------------------
+#
+# ASSUMPTION: Summary provides annual electricity trade.
+# In SES, exported electricity is represented via resource ELEC_EXPORT
+# with yearly availability bound.
+# ASSUMPTION: Imports are represented via ELECTRICITY resource availability
+# and are not explicitly separated from domestic generation in this model.
+# ASSUMPTION: Therefore only export side is hard-constrained here.
+#
+# 3.61 TWh -> 3610 GWh
+let avail["ELEC_EXPORT"] := 3500;

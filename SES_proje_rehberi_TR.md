@@ -1,167 +1,167 @@
-# Swiss-EnergyScope (SES) — Proje Rehberi (Türkçe)
+# Swiss-EnergyScope (SES) — Project Guide (English)
 
-Bu belge, `model/ses_main.mod`, `scenarios/baseline/ses_main.dat` ve `scenarios/baseline/ses_main.run` dosyalarına dayanarak **bu klasördeki modelin neyi temsil ettiğini** ve **nasıl çalıştığını** öğretmek amacıyla hazırlanmıştır. Model, Stefano Moret tarafından 2015’te yazılmış **Swiss-EnergyScope (SES)** MILP (karma tamsayılı doğrusal programlama) formülasyonudur; ders materyali olarak İsviçre enerji sistemi verileriyle birlikte kullanılmaktadır.
-
----
-
-## 1. Özet: Tam olarak ne modelleniyor?
-
-**Modellenen şey:** Bir yıllık ufukta, **sabit (veri ile verilmiş) yıllık talepleri** karşılayacak şekilde **hangi enerji kaynaklarının ve dönüşüm teknolojilerinin ne kadar kapasiteyle çalışacağının** seçilmesi; aylık **güç dengeleri**, **depolama**, **şebeke ve bölgesel ısıtma kayıpları** ve bir dizi **politika / fizik kısıtı** altında **toplam maliyetin (iskonto edilmiş yatırım + işletme + yakıt)** minimize edilmesi.
-
-Bu bir **iklim veya atmosfer dinamiği modeli değildir**; **enerji–ekonomi optimizasyonu** modelidir. İklimle ilişkisi, isteğe bağlı olarak hesaplanabilen **GWP (küresel ısınma potansiyeli)** emisyon kalemlerinin tanımlanmış olmasıyla sınırlıdır; **amaç fonksiyonu maliyet minimizasyonudur**, karbon kısıtı bu sürümde amaçta yoktur.
+This document is based on `model/ses_main.mod`, `scenarios/baseline/ses_main.dat`, and `scenarios/baseline/ses_main.run`, and is prepared to explain **what the model in this folder represents** and **how it works**. The model is the **Swiss-EnergyScope (SES)** MILP (mixed-integer linear programming) formulation written by Stefano Moret in 2015; it is used with Swiss energy system data as course material.
 
 ---
 
-## 2. Dosyaların rolleri
+## 1. Summary: What exactly is being modeled?
 
-| Dosya | Rol |
+**Modeled problem:** Over a one-year horizon, select **which energy resources and conversion technologies operate at what capacity** to satisfy **fixed (data-given) annual demands**; under monthly **power balances**, **storage**, **grid and district-heating losses**, and a set of **policy/physical constraints**, the model minimizes **total cost (discounted investment + operation + fuel)**.
+
+This is **not a climate or atmospheric dynamics model**; it is an **energy-economy optimization** model. Its climate linkage is limited to defined **GWP (global warming potential)** emission terms that can be calculated optionally; **the objective function is cost minimization**, and there is no carbon objective term in this version.
+
+---
+
+## 2. Roles of the files
+
+| File | Role |
 |--------|-----|
-| `model/ses_main.mod` | AMPL’de **kümeler, parametreler, karar değişkenleri, kısıtlar ve amaç fonksiyonu** (matematiksel model). |
-| `scenarios/baseline/ses_main.dat` | Baseline senaryonun sayısal **veri** dosyası: sektör talepleri, teknoloji maliyetleri, `layers_in_out` matrisi, aylık süreler, kapasite faktörleri vb. |
-| `scenarios/baseline/ses_main.run` | Baseline senaryoyu çözer; `output/` altına **metin ve CSV çıktıları** yazar. |
-| `scenarios/drought/ses_main_drought.dat` | Kuraklık senaryosunun sayısal veri dosyası. |
-| `scenarios/drought/ses_main_drought.run` | Kuraklık senaryosunu çözer; `output_drought/` altına çıktı yazar. |
+| `model/ses_main.mod` | **Sets, parameters, decision variables, constraints, and objective** in AMPL (mathematical model). |
+| `scenarios/baseline/ses_main.dat` | Numerical **data** file for the baseline scenario: sector demands, technology costs, `layers_in_out` matrix, monthly durations, capacity factors, etc. |
+| `scenarios/baseline/ses_main.run` | Solves the baseline scenario and writes **text and CSV outputs** under `output/`. |
+| `scenarios/drought/ses_main_drought.dat` | Numerical data file for the drought scenario. |
+| `scenarios/drought/ses_main_drought.run` | Solves the drought scenario and writes output under `output_drought/`. |
 
-Çalıştırma tipik olarak AMPL içinde: `ampl scenarios/baseline/ses_main.run` (Gurobi lisansı ve AMPL kurulumu gerekir). Kuraklık için: `ampl scenarios/drought/ses_main_drought.run`.
-
----
-
-## 3. Zaman ve coğrafi kapsam
-
-- **Zaman:** 12 **ay** (`PERIODS := 1..12`). Her ay için `period_duration[t]` ile **saat** cinsinden süre verilir (ör. Ocak 744 saat); yıl toplamı yaklaşık 8760 saat olur.
-- **Coğrafya:** Veri seti ve teknoloji isimleri **İsviçre** enerji sistemine uygundur; model matematiksel olarak **herhangi bir ülkeye** benzer veri ile uyarlanabilir.
-- **Talep:** Yıllık enerji talepleri **sektörlere** göre verilir; model bunları aylık **güç** (GW benzeri ölçek) talebine çevirir.
+Execution is typically done inside AMPL: `ampl scenarios/baseline/ses_main.run` (requires Gurobi license and AMPL installation). For drought: `ampl scenarios/drought/ses_main_drought.run`.
 
 ---
 
-## 4. Birimler (veri dosyası başlığından)
+## 3. Time and geographic scope
 
-Varsayılan birimler (`scenarios/baseline/ses_main.dat` başında belirtildiği gibi):
-
-- Enerji: **GWh**
-- Güç: **GW**
-- Maliyet: **MCHF** (milyon İsviçre frangı)
-- Süre: **saat (h)**
-- Yolcu taşımacılığı: **Mpkm** (milyon yolcu-km)
-- Yük taşımacılığı: **Mtkm** (milyon ton-km)
+- **Time:** 12 **months** (`PERIODS := 1..12`). For each month, `period_duration[t]` gives duration in **hours** (e.g., January 744 hours); yearly total is approximately 8760 hours.
+- **Geography:** Dataset and technology naming are tailored to the **Swiss** energy system; mathematically, the model can be adapted to **any country** with similar data.
+- **Demand:** Annual energy demands are provided by **sector**; the model converts them into monthly **power** demand (GW-like scale).
 
 ---
 
-## 5. Temel kavram: “Katmanlar” (LAYERS)
+## 4. Units (from data file header)
 
-Model, enerji ve hizmetleri **katmanlar** üzerinden dengelemektedir:
+Default units (as defined at the top of `scenarios/baseline/ses_main.dat`):
 
-- **Kaynaklar (RESOURCES):** İthal elektrik, yakıtlar (benzin, dizel, doğalgaz, kömür, uranyum, atık, H₂, …), ihracat (`ELEC_EXPORT`) vb.
-- **Son kullanım tipleri (END_USES_TYPES):** Örneğin `ELECTRICITY`, `HEAT_HIGH_T`, `HEAT_LOW_T_DHN`, `HEAT_LOW_T_DECEN`, `MOB_PUBLIC`, `MOB_PRIVATE`, `MOB_FREIGHT_RAIL`, `MOB_FREIGHT_ROAD`.
-
-**LAYERS** kümesi, kaynaklardan (ithal biyoyakıt ve ihracat hariç) bu son kullanım katmanlarının birleşimidir. Her dönem `t` için bir **katman dengesi** yazılır: teknoloji ve kaynak çıktıları/girdileri + depolama − talep = 0.
-
-`layers_in_out[i, l]` matrisi: **birim çıktı** (referans: ilgili teknolojinin ana çıktısı 1 GW veya taşımada birim hareket) başına katman `l`’ye **net katkı** (pozitif: üretim/çıkış, negatif: tüketim/girdi). Böylece **verimlilik** ve **çoklu çıktılı** süreçler (KOG, ısı pompası) tek tabloda kodlanır.
+- Energy: **GWh**
+- Power: **GW**
+- Cost: **MCHF** (million Swiss francs)
+- Time: **hours (h)**
+- Passenger transport: **Mpkm** (million passenger-km)
+- Freight transport: **Mtkm** (million ton-km)
 
 ---
 
-## 6. Sektörler ve talep girdisi
+## 5. Core concept: "Layers" (`LAYERS`)
+
+The model balances energy and services through **layers**:
+
+- **Resources (`RESOURCES`):** Imported electricity, fuels (gasoline, diesel, natural gas, coal, uranium, waste, H2, ...), exports (`ELEC_EXPORT`), etc.
+- **End-use types (`END_USES_TYPES`):** For example `ELECTRICITY`, `HEAT_HIGH_T`, `HEAT_LOW_T_DHN`, `HEAT_LOW_T_DECEN`, `MOB_PUBLIC`, `MOB_PRIVATE`, `MOB_FREIGHT_RAIL`, `MOB_FREIGHT_ROAD`.
+
+The **`LAYERS`** set is the union of resources (excluding imported biofuel and export) and end-use layers. For each period `t`, a **layer balance** is written: technology and resource outputs/inputs + storage - demand = 0.
+
+The `layers_in_out[i, l]` matrix gives the **net contribution** to layer `l` per **unit output** (reference: 1 GW main output of the technology, or unit mobility output): positive = production/output, negative = consumption/input. This lets the model encode **efficiency** and **multi-output** processes (CHP, heat pumps) in a single table.
+
+---
+
+## 6. Sectors and demand input
 
 `SECTORS`: `HOUSEHOLDS`, `SERVICES`, `INDUSTRY`, `TRANSPORTATION`.
 
-`end_uses_demand_year[i, s]`: Her **son kullanım türü** `i` ve sektör `s` için **yıllık talep** (GWh veya taşıma birimi). Örneğin elektrik talebi konut/hizmet/sanayiye dağılır; yolcu ve yük hareketliliği tamamen **TRANSPORTATION** sütunundadır.
+`end_uses_demand_year[i, s]`: **annual demand** for each end-use type `i` and sector `s` (GWh or transport unit). For example, electricity demand is distributed across households/services/industry; passenger and freight mobility are fully under **TRANSPORTATION**.
 
-Model, `End_Uses_Input[i] = sum_s end_uses_demand_year[i,s]` ile toplam yıllık talebi birleştirir; sonra `end_uses_t` kısıtları ile bunu **aylık güç** talebine dönüştürür:
+The model aggregates annual demand with `End_Uses_Input[i] = sum_s end_uses_demand_year[i,s]`, then converts it into **monthly power** demand through `end_uses_t` constraints:
 
-- **Aydınlatma** ve **uzay ısıtması** için `lighting_month[t]` ve `heating_month[t]` ile **mevsimsellik** (katsayıların yılda toplamı 1 olacak şekilde paylaşım).
-- **Düşük sıcaklık ısı:** `Share_Heat_Dhn` ile talep **merkezi şebeke (DHN)** ve **dağınık** arasında bölünür.
-- **Yolcu:** `Share_Mobility_Public` ile kamu / özel.
-- **Yük:** `Share_Freight_Train` ile demiryolu / karayolu.
+- **Lighting** and **space heating** use seasonal profiles via `lighting_month[t]` and `heating_month[t]` (shares sum to 1 over the year).
+- **Low-temperature heat:** demand split between **district heating network (DHN)** and **decentralized** via `Share_Heat_Dhn`.
+- **Passenger mobility:** public/private split via `Share_Mobility_Public`.
+- **Freight mobility:** rail/road split via `Share_Freight_Train`.
 
-Bu paylar **kısıt aralıkları** ile sınırlıdır (ör. kamu mobilite %30–%50).
+These shares are constrained by **bounds** (e.g., public mobility 30%-50%).
 
 ---
 
-## 7. Karar değişkenleri (ne seçiliyor?)
+## 7. Decision variables (what is chosen?)
 
-Özetle optimizasyon şunları belirler:
+In short, the optimization determines:
 
-| Değişken (özet) | Anlamı |
+| Variable (summary) | Meaning |
 |------------------|--------|
-| `F_Mult[i]` | Teknoloji `i` için **yüklü kapasite** (referans birim tablosuna göre çarpan). |
-| `F_Mult_t[i,t]` | Dönem `t`’teki **çalışma düzeyi** (aylık; kapasite faktörleriyle üstte bağlı). |
-| `Number_Of_Units` | (Altyapı hariç) **tam sayı** birim sayısı — `ref_size` ile uyumlu diskret büyüklük. |
-| `Storage_In/Out` | Depolama giriş/çıkış güçleri. |
-| `Share_*` | Isıtma ve mobilite bölüşümleri. |
-| `Y_Solar_Backup` | Güneş termal yedeklemesi için **tek** yedek teknoloji (ikili değişken). |
-| `Losses` | Şebeke / DHN kayıpları. |
+| `F_Mult[i]` | **Installed capacity** of technology `i` (multiplier relative to reference unit table). |
+| `F_Mult_t[i,t]` | **Operating level** in period `t` (monthly; upper-bounded by capacity factors). |
+| `Number_Of_Units` | Integer number of units (except infrastructure), discrete size aligned with `ref_size`. |
+| `Storage_In/Out` | Storage charge/discharge powers. |
+| `Share_*` | Heating and mobility splits. |
+| `Y_Solar_Backup` | Binary selector of a **single** backup technology for solar thermal. |
+| `Losses` | Grid/DHN losses. |
 
-**Amaç:** `TotalCost` minimizasyonu:
+**Objective:** minimize `TotalCost`:
 
 \[
 \text{TotalCost} = \sum_{i \in \text{TECH}} \left( \tau_i \, C_{\text{inv},i} + C_{\text{maint},i} \right) + \sum_j C_{\text{op},j}
 \]
 
-Burada `tau[i]` verilen iskonto oranı `i_rate` ve ömür `lifetime[i]` ile **sermaye maliyetinin yıllıklaştırılması** (annuity) faktörüdür.
+Here, `tau[i]` is the annualization (annuity) factor of capital cost using discount rate `i_rate` and lifetime `lifetime[i]`.
 
 ---
 
-## 8. Önemli kısıt grupları (mod dosyasından)
+## 8. Main constraint groups (from `.mod` file)
 
-1. **Kapasite ve kapasite faktörü:** `F_Mult_t[i,t] ≤ F_Mult[i] * c_p_t[i,t]` ve yıllık enerji üst sınırı `c_p[i]` ile.
-2. **Katman dengesi:** Her `l`, `t` için üretim + depo net − `End_Uses[l,t] = 0`.
-3. **Kaynak kullanılabilirliği:** Her kaynak için yıllık tüketim ≤ `avail[i]`.
-4. **Depolama:** Katman uyumluluğu (`storage_eff_in/out`), dönem içinde **hem şarj hem deşarj olmaması** (ikili `y_sto_in`, `y_sto_out`), seviye denklemi (`prev(t)` ile **dairesel** yıl).
-5. **Kayıplar:** `Losses[i,t]`, ilgili katmana giren enerjinin `loss_coeff[i]` oranı (ör. elektrik %7, DHN %5).
-6. **Teknoloji payları:** `fmin_perc` / `fmax_perc` ile bir son kullanım katmanındaki teknolojilerin **yıllık enerji payı** sınırları.
-7. **Dağınık düşük sıcaklık işletme stratejisi + güneş yedeği:** Doğrusallaştırılmış kısıtlar (`X_Solar_Backup_Aux`, `Y_Solar_Backup`).
-8. **İsviçre’ye özel ekler:** Baraj mevsimsel depolama (`PUMPED_HYDRO` ile `NEW_HYDRO_DAM` bağlantısı), DHN tepe faktörü (`peak_dhn_factor`), şebeke maliyetinin rüzgâr+PV’ye bağlanması (`extra_grid`), Power-to-Gas birim boyutları, verimlilik “sanal” teknolojisi (`EFFICIENCY`), özel mobilite düzgün çalışma kısıtı.
-
----
-
-## 9. Veri dosyasında neler var? (`scenarios/baseline/ses_main.dat`)
-
-- **Kümeler:** Tüm teknoloji ve kaynak listeleri (nükleer, CCGT, PV, rüzgâr, hidro, jeotermal, endüstriyel KOG/kazanlar, DHN ve dağınık ısıtma seçenekleri, toplu taşıma ve özel araç tipleri, tren/yük kamyonu, depolama: `PUMPED_HYDRO`, `POWER2GAS`, altyapı: `GRID`, `DHN`, H₂ rotaları, gazifikasyon, piroliz, …).
-- **`layers_in_out`:** Her satır bir kaynak veya teknoloji; sütunlar katmanlar — **enerji dengesi ve verimlilik** burada kodlanır.
-- **Maliyet ve teknik parametreler:** `c_inv`, `c_maint`, `ref_size`, `f_min`/`f_max`, `lifetime`, `c_p`, `c_p_t` (özellikle PV, rüzgâr, hidro, güneş termal için aylık profil).
-- **Emisyon katsayıları:** `gwp_op` (kaynak kullanımı), `gwp_constr` (yapım, kapasiteye göre).
-- **İskonto oranı:** `i_rate := 0.03215`.
+1. **Capacity and capacity factor:** `F_Mult_t[i,t] <= F_Mult[i] * c_p_t[i,t]` and annual energy upper bound via `c_p[i]`.
+2. **Layer balance:** for each `l`, `t`, production + net storage - `End_Uses[l,t] = 0`.
+3. **Resource availability:** annual resource consumption <= `avail[i]`.
+4. **Storage:** layer compatibility (`storage_eff_in/out`), no simultaneous charge/discharge within period (binary `y_sto_in`, `y_sto_out`), state equation with **cyclic year** (`prev(t)`).
+5. **Losses:** `Losses[i,t]` as `loss_coeff[i]` fraction of energy entering the layer (e.g., electricity 7%, DHN 5%).
+6. **Technology shares:** annual energy share limits in each end-use layer via `fmin_perc` / `fmax_perc`.
+7. **Decentral low-temperature operation + solar backup:** linearized constraints (`X_Solar_Backup_Aux`, `Y_Solar_Backup`).
+8. **Swiss-specific extensions:** seasonal dam storage (`PUMPED_HYDRO` linked with `NEW_HYDRO_DAM`), DHN peak factor (`peak_dhn_factor`), grid cost linked to wind+PV (`extra_grid`), Power-to-Gas unit sizes, efficiency "virtual" technology (`EFFICIENCY`), and smooth private-mobility operation constraint.
 
 ---
 
-## 10. Çalıştırma betiği (`scenarios/baseline/ses_main.run`) ne yapıyor?
+## 9. What is in the data file? (`scenarios/baseline/ses_main.dat`)
 
-1. `model model/ses_main.mod;` ve `data scenarios/baseline/ses_main.dat;` yüklenir.
-2. Çözücü: **Gurobi** (`option solver gurobi`).
-3. `solve;` ile MILP çözülür.
-4. Kümeler ve parametreler `output/sets.txt`, `output/params.txt` içine yazdırılır (geçici `comfile.txt` ile).
-5. Ek raporlar:
-   - `total_output.txt`: Kaynak/teknoloji **yıllık enerji** (`sum_t F_Mult_t * period_duration`).
+- **Sets:** full lists of technologies and resources (nuclear, CCGT, PV, wind, hydro, geothermal, industrial CHP/boilers, DHN and decentralized heating options, public/private vehicle types, rail/truck freight, storage: `PUMPED_HYDRO`, `POWER2GAS`, infrastructure: `GRID`, `DHN`, H2 routes, gasification, pyrolysis, ...).
+- **`layers_in_out`:** each row is a resource or technology; columns are layers - **energy balance and efficiency** are encoded here.
+- **Cost and technical parameters:** `c_inv`, `c_maint`, `ref_size`, `f_min`/`f_max`, `lifetime`, `c_p`, `c_p_t` (especially monthly profiles for PV, wind, hydro, solar thermal).
+- **Emission factors:** `gwp_op` (operation/resource use), `gwp_constr` (construction, by capacity).
+- **Discount rate:** `i_rate := 0.03215`.
+
+---
+
+## 10. What does the run script do? (`scenarios/baseline/ses_main.run`)
+
+1. Loads `model model/ses_main.mod;` and `data scenarios/baseline/ses_main.dat;`.
+2. Solver: **Gurobi** (`option solver gurobi`).
+3. Solves MILP with `solve;`.
+4. Prints sets and parameters into `output/sets.txt`, `output/params.txt` (via temporary `comfile.txt`).
+5. Additional reports:
+   - `total_output.txt`: annual energy by resource/technology (`sum_t F_Mult_t * period_duration`).
    - `cost_breakdown.txt`, `gwp_breakdown.txt`.
    - `f_mult_t.txt`, `f_mult.txt`, `End_Uses.txt`.
-   - Depolama dosyaları: `PUMPED_HYDRO.txt`, `POWER2GAS.txt`.
+   - Storage files: `PUMPED_HYDRO.txt`, `POWER2GAS.txt`.
    - `losses.txt`, `period_duration.txt`.
-   - `output/sankey/input2sankey.csv`: **Sankey diyagramı** için kaynak–hedef akışları (eşik değer > 10 ile filtrelenmiş satırlar).
+   - `output/sankey/input2sankey.csv`: source-target flows for **Sankey diagram** (rows filtered by threshold > 10).
 
 ---
 
-## 11. Bu modeli okurken dikkat edilmesi gerekenler
+## 11. Important notes while reading this model
 
-- **Talep dışsal:** Sektör talepleri veriye sabitlenir; model **ekonomik büyüme veya fiyat esnekliği ile talebi içten belirlemez**.
-- **MILP:** `Number_Of_Units` ve depolama / güneş yedeği ikilileri nedeniyle çözüm **tam doğrusal değil**; çözücü tamsayı dallanma–sınır kullanır.
-- **“ELECTRICITY” kaynağı:** Matriste pozitif sütun, **ithal veya sistem dışı elektrik** satırı gibi düşünülebilir; denge denkleminde diğer üretim ve tüketimle birlikte yer alır.
-- **GWP:** `TotalGWP` tanımlıdır fakat **amaç maliyettir**; karbon fiyatı veya emisyon tavanı bu dosyada amaç veya kısıt olarak eklenmemiş olabilir (senaryo çalışması için ayrıca eklenebilir).
-
----
-
-## 12. Öğrenme sırası (önerilen)
-
-1. `scenarios/baseline/ses_main.dat` içindeki **SECTORS** ve **END_USES_INPUT** tablosunu okuyun: sistemin **sınırları** netleşir.
-2. Bir teknoloji seçin (ör. `CCGT` veya `DHN_COGEN_GAS`) ve **`layers_in_out`** satırını inceleyin: **hangi yakıttan ne üretiliyor** anlaşılır.
-3. `model/ses_main.mod` içinde **`layer_balance`** ve **`end_uses_t`** kısıtlarını yan yana okuyun: **talep → denge → maliyet** zinciri kurulur.
-4. `scenarios/baseline/ses_main.run` çıktı dosyalarından **`total_output.txt`** ve **`cost_breakdown.txt`** ile optimal karışımı sayısal olarak takip edin.
+- **Demand is exogenous:** sector demands are fixed in data; the model **does not endogenously determine demand from economic growth or price elasticity**.
+- **MILP nature:** due to `Number_Of_Units` and binary storage/solar-backup terms, the problem is **not purely continuous linear**; the solver uses integer branch-and-bound.
+- **`ELECTRICITY` resource:** positive matrix column can be interpreted like imported/external electricity; it appears in the balance equation together with other production and consumption terms.
+- **GWP:** `TotalGWP` is defined, but **the objective is cost**; carbon price or emissions cap may not be included as objective/constraint in this version (can be added for scenario studies).
 
 ---
 
-## 13. Kaynak ve atıf
+## 12. Suggested learning order
 
-Model başlığında: **Swiss-EnergyScope (SES)**, yazar **Stefano Moret**, tarih **01.04.2015**. Ders bağlamında Polimi “Energy and Climate Change Modeling” materyali ile birlikte kullanılmaktadır.
+1. Read **`SECTORS`** and **`END_USES_INPUT`** in `scenarios/baseline/ses_main.dat` to clarify system boundaries.
+2. Pick a technology (e.g., `CCGT` or `DHN_COGEN_GAS`) and inspect its **`layers_in_out`** row to see **which fuel produces which outputs**.
+3. In `model/ses_main.mod`, read **`layer_balance`** and **`end_uses_t`** together to build the chain **demand -> balance -> cost**.
+4. From `scenarios/baseline/ses_main.run` outputs, track the optimal mix numerically with **`total_output.txt`** and **`cost_breakdown.txt`**.
 
 ---
 
-*Bu rehber, depodaki `model/ses_main.mod`, `scenarios/baseline/ses_main.dat`, `scenarios/baseline/ses_main.run` dosyalarının doğrudan okunmasıyla üretilmiştir; çözücü sürümü veya veri güncellemeleri farklılık gösterebilir.*
+## 13. Source and attribution
+
+In the model header: **Swiss-EnergyScope (SES)**, author **Stefano Moret**, date **01.04.2015**. In the course context, it is used together with Polimi "Energy and Climate Change Modeling" material.
+
+---
+
+*This guide is produced by directly reading `model/ses_main.mod`, `scenarios/baseline/ses_main.dat`, and `scenarios/baseline/ses_main.run` in the repository; solver versions or data updates may cause differences.*

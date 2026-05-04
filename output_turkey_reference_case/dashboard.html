@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Turkey Reference Case Dashboard</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #111a2e;
+      --panel-2: #16223c;
+      --text: #e6edf7;
+      --muted: #94a3b8;
+      --accent: #3b82f6;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --border: #253556;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #07101f 0%, #0b1220 100%);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      letter-spacing: 0.2px;
+    }
+    .sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 6px;
+    }
+    .btn {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .card .k { color: var(--muted); font-size: 0.84rem; }
+    .card .v { font-size: 1.4rem; margin-top: 6px; font-weight: 700; }
+    .layout {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 320px;
+    }
+    .panel h2 {
+      margin: 0 0 10px 0;
+      font-size: 1rem;
+      color: #dbe9ff;
+    }
+    #sankeyChart, #barOutput, #barCost, #barGwp { width: 100%; height: 420px; }
+    .small-charts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .files {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .tab {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+      background: var(--panel-2);
+    }
+    .tab.active {
+      color: white;
+      border-color: var(--accent);
+      background: rgba(59,130,246,0.2);
+    }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+    th, td {
+      border-bottom: 1px solid var(--border);
+      padding: 8px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    th { background: #12203a; position: sticky; top: 0; z-index: 1; }
+    .raw {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.8rem;
+      white-space: pre;
+      color: #cbd5e1;
+      background: #0b162c;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      max-height: 500px;
+      overflow: auto;
+    }
+    .hint {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-top: 8px;
+    }
+    @media (max-width: 1100px) {
+      .layout, .small-charts { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>Turkey Reference Case Dashboard</h1>
+        <div class="sub">Dynamic view from <code>output_turkey_reference_case</code> files</div>
+      </div>
+      <button class="btn" id="reloadBtn">Reload Data</button>
+    </div>
+
+    <div class="grid-cards">
+      <div class="card"><div class="k">Total Cost</div><div class="v" id="kpiCost">-</div></div>
+      <div class="card"><div class="k">Total GWP</div><div class="v" id="kpiGwp">-</div></div>
+      <div class="card"><div class="k">Top Resource Output</div><div class="v" id="kpiTopRes">-</div></div>
+      <div class="card"><div class="k">Top Technology Output</div><div class="v" id="kpiTopTech">-</div></div>
+    </div>
+
+    <div class="layout">
+      <div class="panel">
+        <h2>Sankey (from <code>sankey/input2sankey.csv</code>)</h2>
+        <div id="sankeyChart"></div>
+      </div>
+      <div class="panel">
+        <h2>Top 20 Annual Outputs (TWh)</h2>
+        <div id="barOutput"></div>
+      </div>
+    </div>
+
+    <div class="small-charts">
+      <div class="panel">
+        <h2>Top 20 Cost Components (MCHF)</h2>
+        <div id="barCost"></div>
+      </div>
+      <div class="panel">
+        <h2>Top 20 GWP Components (ktCO2-eq)</h2>
+        <div id="barGwp"></div>
+      </div>
+    </div>
+
+    <div class="files">
+      <h2>All Result Files</h2>
+      <div class="tabs" id="tabs"></div>
+      <div id="fileContent"></div>
+      <div class="hint">
+        If files do not load when opening this HTML directly, run a local server:
+        <code>python3 -m http.server 8000</code> and open
+        <code>http://localhost:8000/output_turkey_reference_case/dashboard.html</code>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const RESULT_FILES = [
+      "scenario_metrics.txt",
+      "total_output.txt",
+      "cost_breakdown.txt",
+      "gwp_breakdown.txt",
+      "f_mult.txt",
+      "f_mult_t.txt",
+      "losses.txt",
+      "End_Uses.txt",
+      "period_duration.txt",
+      "params.txt",
+      "sets.txt",
+      "PUMPED_HYDRO.txt",
+      "POWER2GAS.txt",
+      "sankey/input2sankey.csv"
+    ];
+
+    const state = { cache: {}, activeFile: "scenario_metrics.txt" };
+
+    const num = (x) => {
+      const n = Number(x);
+      return Number.isFinite(n) ? n : null;
+    };
+    const fmt = (n, d = 2) => {
+      if (n === null || n === undefined) return "-";
+      const v = Number(n);
+      if (!Number.isFinite(v)) return "-";
+      return v.toLocaleString(undefined, { maximumFractionDigits: d });
+    };
+
+    async function fetchText(path) {
+      const r = await fetch(path, { cache: "no-store" });
+      if (!r.ok) throw new Error(`${path} -> ${r.status}`);
+      return r.text();
+    }
+
+    function parseDelimited(text, delimiter) {
+      const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+      if (!lines.length) return { headers: [], rows: [] };
+      const headers = lines[0].split(delimiter).map((x) => x.trim());
+      const rows = lines.slice(1).map((line) => {
+        const cells = line.split(delimiter).map((x) => x.trim());
+        const obj = {};
+        headers.forEach((h, i) => { obj[h] = cells[i] ?? ""; });
+        return obj;
+      });
+      return { headers, rows };
+    }
+
+    async function loadAll() {
+      const results = await Promise.allSettled(
+        RESULT_FILES.map(async (file) => ({ file, text: await fetchText(file) }))
+      );
+      state.cache = {};
+      for (const res of results) {
+        if (res.status === "fulfilled") {
+          state.cache[res.value.file] = { ok: true, text: res.value.text };
+        } else {
+          const file = RESULT_FILES[results.indexOf(res)];
+          state.cache[file] = { ok: false, text: String(res.reason) };
+        }
+      }
+    }
+
+    function getTable(file) {
+      const entry = state.cache[file];
+      if (!entry?.ok) return { headers: [], rows: [] };
+      const isCsv = file.endsWith(".csv");
+      return parseDelimited(entry.text, isCsv ? "," : /\t+/);
+    }
+
+    function renderKpis() {
+      const metricsTable = getTable("scenario_metrics.txt");
+      const valueHeader = metricsTable.headers[1];
+      const m = {};
+      metricsTable.rows.forEach((r) => {
+        const key = r.Name || r[metricsTable.headers[0]];
+        const value = valueHeader ? r[valueHeader] : Object.values(r)[1];
+        if (key) m[key] = num(value);
+      });
+      document.getElementById("kpiCost").textContent = fmt(m.TotalCost, 2);
+      document.getElementById("kpiGwp").textContent = fmt(m.TotalGWP, 2);
+
+      const out = getTable("total_output.txt").rows.map((r) => ({ name: r.Name, v: num(r["Yearly output"]) || 0 }));
+      const resources = new Set(["ELECTRICITY","GASOLINE","DIESEL","BIOETHANOL","BIODIESEL","LFO","LNG","NG","NG_CCS","SNG","WOOD","COAL","COAL_CCS","URANIUM","WASTE","H2","ELEC_EXPORT"]);
+      const topRes = out.filter((x) => resources.has(x.name)).sort((a, b) => b.v - a.v)[0];
+      const topTech = out.filter((x) => !resources.has(x.name)).sort((a, b) => b.v - a.v)[0];
+      document.getElementById("kpiTopRes").textContent = topRes ? `${topRes.name} (${fmt(topRes.v)})` : "-";
+      document.getElementById("kpiTopTech").textContent = topTech ? `${topTech.name} (${fmt(topTech.v)})` : "-";
+    }
+
+    function renderSankey() {
+      const t = getTable("sankey/input2sankey.csv");
+      if (!t.rows.length || typeof Plotly === "undefined") {
+        document.getElementById("sankeyChart").textContent = "Sankey data unavailable.";
+        return;
+      }
+      const names = [...new Set(t.rows.flatMap((r) => [r.source, r.target]))];
+      const idx = new Map(names.map((n, i) => [n, i]));
+      const nodeColors = names.map(() => "rgba(59,130,246,0.7)");
+      const labelColor = Object.fromEntries(t.rows.map((r) => [r.source, r.layerColor]));
+      names.forEach((n, i) => { if (labelColor[n]) nodeColors[i] = labelColor[n]; });
+      const trace = {
+        type: "sankey",
+        arrangement: "snap",
+        node: {
+          label: names,
+          color: nodeColors,
+          pad: 14,
+          thickness: 14,
+          line: { color: "#1f2f4f", width: 0.5 }
+        },
+        link: {
+          source: t.rows.map((r) => idx.get(r.source)),
+          target: t.rows.map((r) => idx.get(r.target)),
+          value: t.rows.map((r) => num(r.realValue) || 0),
+          color: t.rows.map((r) => `${r.layerColor || "#60a5fa"}88`)
+        }
+      };
+      Plotly.newPlot("sankeyChart", [trace], {
+        paper_bgcolor: "transparent",
+        plot_bgcolor: "transparent",
+        font: { color: "#e6edf7", size: 12 },
+        margin: { l: 8, r: 8, t: 8, b: 8 }
+      }, { displaylogo: false, responsive: true });
+    }
+
+    function renderBar(target, data, xKey, yKey, title, color) {
+      if (!data.length || typeof Plotly === "undefined") {
+        document.getElementById(target).textContent = "Data unavailable.";
+        return;
+      }
+      Plotly.newPlot(target, [{
+        type: "bar",
+        orientation: "h",
+        x: data.map((d) => d[yKey]).reverse(),
+        y: data.map((d) => d[xKey]).reverse(),
+        marker: { color }
+      }], {
+        paper_bgcolor: "transparent",
+        plot_bgcolor: "transparent",
+        title: { text: title, font: { color: "#e6edf7", size: 12 } },
+        margin: { l: 130, r: 20, t: 30, b: 25 },
+        xaxis: { color: "#cbd5e1", gridcolor: "#223253" },
+        yaxis: { color: "#cbd5e1" },
+        font: { color: "#e6edf7" }
+      }, { displaylogo: false, responsive: true });
+    }
+
+    function renderCharts() {
+      const outputs = getTable("total_output.txt").rows
+        .map((r) => ({ name: r.Name, value: num(r["Yearly output"]) || 0 }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 20);
+      renderBar("barOutput", outputs, "name", "value", "", "#22c55e");
+
+      const costs = getTable("cost_breakdown.txt").rows
+        .map((r) => ({
+          name: r.Name,
+          value: (num(r.C_inv) || 0) + (num(r.C_maint) || 0) + (num(r.C_op) || 0)
+        }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 20);
+      renderBar("barCost", costs, "name", "value", "", "#3b82f6");
+
+      const gwp = getTable("gwp_breakdown.txt").rows
+        .map((r) => ({ name: r.Name, value: (num(r.GWP_constr) || 0) + (num(r.GWP_op) || 0) }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 20);
+      renderBar("barGwp", gwp, "name", "value", "", "#f59e0b");
+    }
+
+    function renderTabs() {
+      const tabs = document.getElementById("tabs");
+      tabs.innerHTML = "";
+      RESULT_FILES.forEach((file) => {
+        const el = document.createElement("div");
+        el.className = "tab" + (file === state.activeFile ? " active" : "");
+        el.textContent = file;
+        el.onclick = () => { state.activeFile = file; renderTabs(); renderFileViewer(); };
+        tabs.appendChild(el);
+      });
+    }
+
+    function renderFileViewer() {
+      const wrap = document.getElementById("fileContent");
+      const entry = state.cache[state.activeFile];
+      if (!entry?.ok) {
+        wrap.innerHTML = `<div class="raw">${entry ? entry.text : "File not loaded."}</div>`;
+        return;
+      }
+      const isDelimited = state.activeFile.endsWith(".csv") || state.activeFile.endsWith(".txt");
+      if (!isDelimited) {
+        wrap.innerHTML = `<div class="raw">${entry.text}</div>`;
+        return;
+      }
+      const parsed = parseDelimited(entry.text, state.activeFile.endsWith(".csv") ? "," : /\t+/);
+      if (!parsed.headers.length || parsed.headers.length === 1) {
+        wrap.innerHTML = `<div class="raw">${entry.text}</div>`;
+        return;
+      }
+      const head = parsed.headers.map((h) => `<th>${h}</th>`).join("");
+      const body = parsed.rows.map((row) =>
+        `<tr>${parsed.headers.map((h) => `<td>${row[h] ?? ""}</td>`).join("")}</tr>`
+      ).join("");
+      wrap.innerHTML = `<div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+    }
+
+    async function renderAll() {
+      await loadAll();
+      renderKpis();
+      renderSankey();
+      renderCharts();
+      renderTabs();
+      renderFileViewer();
+    }
+
+    document.getElementById("reloadBtn").addEventListener("click", renderAll);
+    renderAll();
+  </script>
+</body>
+</html>

@@ -1,83 +1,83 @@
-# Git Hizli Kilavuz: add - commit - push
+# Git Quick Guide: add - commit - push
 
-Bu kilavuz, degisikliklerini uzak depoya gondermek icin en temel 3 adimi kisa sekilde anlatir.
+This guide briefly explains the 3 basic steps to send your changes to the remote repository.
 
-## 1) `git add` - Degisiklikleri hazirla (staging)
+## 1) `git add` - Prepare changes (staging)
 
-`git add`, commit'e girecek dosyalari secer.
+`git add` selects which files will be included in the commit.
 
-En yaygin kullanimlar:
+Most common usage:
 
 ```bash
 git add .
 ```
 
-- Bulundugun klasordeki tum degisiklikleri (yeni + degisen dosyalar) stage eder.
+- Stages all changes (new + modified files) in the current directory.
 
 ```bash
-git add dosya_adi.py
+git add file_name.py
 ```
 
-- Sadece belirli bir dosyayi stage eder.
+- Stages only a specific file.
 
-Kontrol etmek icin:
+To check:
 
 ```bash
 git status
 ```
 
-## 2) `git commit` - Anlamli bir kayit olustur
+## 2) `git commit` - Create a meaningful snapshot
 
-`git commit`, stage edilen degisiklikleri aciklamali bir kayit olarak saklar.
-
-```bash
-git commit -m "Kisa ve acik bir mesaj"
-```
-
-Ornek:
+`git commit` stores staged changes as a labeled snapshot.
 
 ```bash
-git commit -m "Kurulum rehberine Windows adimlari eklendi"
+git commit -m "Short and clear message"
 ```
 
-Iyi commit mesaji ipucu:
+Example:
 
-- Ne yaptigini kisa yaz
-- Mumkunse neden yaptigini belirt
-- 1 degisikligi 1 commit'te tutmaya calis
+```bash
+git commit -m "Added Windows steps to installation guide"
+```
 
-## 3) `git push` - Remote repoya gonder
+Good commit message tips:
 
-`git push`, commit'lerini GitHub/GitLab gibi uzak depoya yollar.
+- Briefly describe what you changed
+- If possible, explain why you changed it
+- Try to keep one logical change per commit
+
+## 3) `git push` - Send to remote repository
+
+`git push` sends your commits to a remote repository such as GitHub/GitLab.
 
 ```bash
 git push
 ```
 
-Eger ilk kez yeni branch push'luyorsan:
+If you are pushing a new branch for the first time:
 
 ```bash
-git push -u origin <branch-adi>
+git push -u origin <branch-name>
 ```
 
-Ornek:
+Example:
 
 ```bash
-git push -u origin feature/kurulum-dokumani
+git push -u origin feature/installation-docs
 ```
 
-## Tam akisin en kisa hali
+## Shortest full flow
 
 ```bash
 git status
 git add .
-git commit -m "Degisiklikleri aciklayan mesaj"
+git commit -m "Message describing the changes"
 git push
 ```
 
-## SIk yapilan hatalar
+## Common mistakes
 
-- `nothing to commit`: `git add` yapmamis olabilirsin veya dosyada degisiklik yoktur.
-- `non-fast-forward` / push reddedildi: once uzak degisiklikleri cek (`git pull`) sonra tekrar push et.
-- Yanlis branch: `git branch` ile aktif branch'i kontrol et.
+- `nothing to commit`: you may have forgotten `git add`, or there are no file changes.
+- `non-fast-forward` / push rejected: pull remote changes first (`git pull`), then push again.
+- Wrong branch: check your current branch with `git branch`.
 

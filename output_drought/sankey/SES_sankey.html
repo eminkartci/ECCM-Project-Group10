@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<title>SES Sankey — Kuraklık senaryosu</title>
+<title>SES Sankey — Drought scenario</title>
 <style>
 html, body { min-height: 100%; margin: 0; }
 #chart { height: 500px; }
@@ -35,7 +35,7 @@ h1 {
 </style>
 </head>
 <body>
-<h1>EnergyScope Sankey — <span style="color:#8b4513">Kuraklık</span> (<code>input2sankey.csv</code>)</h1>
+<h1>EnergyScope Sankey — <span style="color:#8b4513">Drought</span> (<code>input2sankey.csv</code>)</h1>
 <div id="chart"></div>
 <script src="d3.min.js"></script>
 <script src="sankey.js"></script>
@@ -71,12 +71,12 @@ var path = sankey.link();
 d3.csv("input2sankey.csv", function(error, data) {
 	if (error) {
 		document.getElementById("chart").innerHTML =
-			"<p style=\"padding:1rem;font-size:1.2rem\">CSV yüklenemedi. Bu HTML dosyasını <strong>aynı klasörde</strong> <code>input2sankey.csv</code> ile birlikte açın (veya yerel sunucu kullanın).<br><br>Hata: " + String(error) + "</p>";
+			"<p style=\"padding:1rem;font-size:1.2rem\">Failed to load CSV. Open this HTML file in the <strong>same folder</strong> as <code>input2sankey.csv</code> (or use a local server).<br><br>Error: " + String(error) + "</p>";
 		return;
 	}
 	if (!data || !data.length) {
 		document.getElementById("chart").innerHTML =
-			"<p style=\"padding:1rem\">input2sankey.csv boş veya yok. Önce <code>ampl ses_main_drought.run</code> çalıştırın.</p>";
+			"<p style=\"padding:1rem\">input2sankey.csv is empty or missing. Run <code>ampl ses_main_drought.run</code> first.</p>";
 		return;
 	}
 

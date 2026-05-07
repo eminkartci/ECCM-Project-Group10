@@ -1,0 +1,16 @@
+# ================================================================
+# TURKEY REFERENCE SCENARIO - 2035
+# WARNING: Placeholder setup currently reuses 2024 values.
+# TODO: Update capacities, demand, and prices for 2035.
+# ================================================================
+
+include scenarios/turkey_reference_case/ses_main_turkey_reference_case.dat;
+
+# Hydro availability calibration note:
+# Source: User-provided reservoir table image (Periods / Years / Reservoir / Min Reserv / Max Reserv),
+# shared in this chat. For reference scenarios, ratio uses Reservoir(year) / Reservoir(2024).
+# 2035 ratio = 15.6418 / 25.709 = 0.608420
+let f_min["HYDRO_DAM"] := 21.886 * 0.608420;
+let f_max["HYDRO_DAM"] := 30.000 * 0.608420;
+let f_min["HYDRO_RIVER"] := 10.421 * 0.608420;
+let f_max["HYDRO_RIVER"] := 15.000 * 0.608420;

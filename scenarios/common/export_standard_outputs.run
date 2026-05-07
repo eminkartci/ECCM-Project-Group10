@@ -1,0 +1,46 @@
+param OUTPUT_DIR symbolic;
+
+for {i in _SETS} {
+  print "display " & i & " > " & OUTPUT_DIR & "/sets.txt;" > comfile.txt;
+}
+
+for {i in _PARS} {
+  print "printf 'param ' > " & OUTPUT_DIR & "/params.txt;" > comfile.txt;
+  print "display " & i & " > " & OUTPUT_DIR & "/params.txt;" > comfile.txt;
+  if indexarity(i) == 0 then print "print ';' > " & OUTPUT_DIR & "/params.txt;" > comfile.txt;
+}
+
+include comfile.txt;
+
+printf "%s\t%s\n", "Name", "Yearly output" > (OUTPUT_DIR & "/total_output.txt");
+for {i in TECHNOLOGIES union RESOURCES diff STORAGE_TECH}{
+  printf "%s\t%.3f\n", i, sum{t in PERIODS} (F_Mult_t[i, t] * period_duration[t]) >> (OUTPUT_DIR & "/total_output.txt");
+}
+
+printf "%s\t%s\t%s\t%s\n", "Name", "C_inv", "C_maint", "C_op" > (OUTPUT_DIR & "/cost_breakdown.txt");
+for {i in TECHNOLOGIES union RESOURCES}{
+  if i in TECHNOLOGIES then
+    printf "%s\t%.6f\t%.6f\t%.6f\n", i, tau[i] * C_inv[i], C_maint[i], 0 > (OUTPUT_DIR & "/cost_breakdown.txt")
+  else
+    printf "%s\t%.6f\t%.6f\t%.6f\n", i, 0, 0, C_op[i] > (OUTPUT_DIR & "/cost_breakdown.txt");
+}
+
+printf "%s\t%s\t%s\n", "Name", "GWP_constr", "GWP_op" > (OUTPUT_DIR & "/gwp_breakdown.txt");
+for {i in TECHNOLOGIES union RESOURCES}{
+  if i in TECHNOLOGIES then
+    printf "%s\t%.6f\t%.6f\n", i, GWP_constr[i] / lifetime[i], 0 > (OUTPUT_DIR & "/gwp_breakdown.txt")
+  else
+    printf "%s\t%.6f\t%.6f\n", i, 0, GWP_op[i] > (OUTPUT_DIR & "/gwp_breakdown.txt");
+}
+
+printf "%s\t%s\n", "Name", "Mult" > (OUTPUT_DIR & "/f_mult.txt");
+for {i in TECHNOLOGIES}{
+  printf "%s\t%.6f\n", i, F_Mult[i] > (OUTPUT_DIR & "/f_mult.txt");
+}
+
+for {i in END_USES_TYPES}{
+  printf "%s\t%.3f\n", i, sum{t in PERIODS}(Losses[i, t] * period_duration[t]) > (OUTPUT_DIR & "/losses.txt");
+}
+
+printf "%s\t%.12g\n", "TotalCost", TotalCost > (OUTPUT_DIR & "/scenario_metrics.txt");
+printf "%s\t%.12g\n", "TotalGWP", TotalGWP >> (OUTPUT_DIR & "/scenario_metrics.txt");

@@ -1,0 +1,16 @@
+# ================================================================
+# TURKEY REFERENCE SCENARIO - 2024
+# WARNING: This file currently reuses 2024 calibrated values.
+# TODO: Replace with finalized scenario-specific values.
+# ================================================================
+
+include scenarios/turkey_reference_case/ses_main_turkey_reference_case.dat;
+
+# Hydro availability calibration note:
+# Source: User-provided reservoir table image (Periods / Years / Reservoir / Min Reserv / Max Reserv),
+# shared in this chat. For reference scenarios, ratio uses Reservoir(year) / Reservoir(2024).
+# 2024 ratio = 25.709 / 25.709 = 1.0
+let f_min["HYDRO_DAM"] := 21.886 * 1.000000;
+let f_max["HYDRO_DAM"] := 30.000 * 1.000000;
+let f_min["HYDRO_RIVER"] := 10.421 * 1.000000;
+let f_max["HYDRO_RIVER"] := 15.000 * 1.000000;

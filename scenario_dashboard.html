@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scenario Comparison Dashboard</title>
+    <link rel="stylesheet" href="./scenario_dashboard.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>Scenario Comparison Dashboard</h1>
+      <p>
+        Reads precomputed scenario data from Python output and compares scenarios.
+      </p>
+      <div class="controls">
+        <button id="pick-folder-btn">Select Project Folder</button>
+        <button id="reload-btn" disabled>Reload</button>
+      </div>
+      <p class="hint">
+        Warning: If your scenario files still reuse 2024 values, comparisons are placeholders.
+      </p>
+      <p id="status" class="status">Waiting for precomputed data...</p>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <h2>Detected Scenarios</h2>
+        <div id="scenario-list"></div>
+      </section>
+
+      <section class="card">
+        <h2>Solution Status (Expected 6 Scenarios)</h2>
+        <div id="solution-status"></div>
+      </section>
+
+      <section class="card">
+        <h2>Core Metrics</h2>
+        <div id="metrics-table"></div>
+      </section>
+
+      <section class="card">
+        <h2>Total Cost Comparison</h2>
+        <canvas id="cost-chart" width="800" height="320"></canvas>
+      </section>
+
+      <section class="card">
+        <h2>Total GWP Comparison</h2>
+        <canvas id="gwp-chart" width="800" height="320"></canvas>
+      </section>
+
+      <section class="card">
+        <h2>Emissions Intensity (GWP / Electricity Output)</h2>
+        <canvas id="intensity-chart" width="800" height="320"></canvas>
+      </section>
+
+      <section class="card">
+        <h2>Technology Output Comparison (Top 10)</h2>
+        <label for="tech-selector">Technology:</label>
+        <select id="tech-selector"></select>
+        <canvas id="tech-chart" width="800" height="320"></canvas>
+      </section>
+
+      <section class="card">
+        <h2>Cost Breakdown Pivot (Top 15 by C_op sum)</h2>
+        <div id="cost-pivot"></div>
+      </section>
+    </main>
+
+    <script src="./scenario_dashboard_data.js"></script>
+    <script src="./scenario_dashboard.js"></script>
+  </body>
+</html>

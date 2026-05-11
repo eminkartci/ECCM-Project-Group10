@@ -1,16 +1,78 @@
 # ================================================================
 # TURKEY DROUGHT SCENARIO - 2035
-# WARNING: Placeholder setup currently reuses reference 2024 values.
-# TODO: Add drought assumptions and 2035-specific inputs.
+# ================================================================
+#
+# Demand (sectoral electricity, TWh -> GWh) and installed capacity
+# (GW) from user-provided Turkish projection tables (screenshots):
+#   /Users/eminkartci/.cursor/projects/Users-eminkartci-Desktop-codenv-ECCM-Project-Group10/assets/Screenshot_2026-05-11_at_21.28.58-de1cedd0-380b-48f7-bea4-0fb8d19df89f.png (tüketim)
+#   /Users/eminkartci/.cursor/projects/Users-eminkartci-Desktop-codenv-ECCM-Project-Group10/assets/Screenshot_2026-05-11_at_21.31.08-0431a9b7-db05-466c-a75b-231f429b2c1b.png (kurulu güç)
+#
+# Sector demand rows: Sanayi, Mesken, Hizmetler, Ulaştırma (Sektörler Toplam 429.6 TWh).
+# Capacity rows: Kömür, Gaz, Nükleer, Hidrolik, Rüzgar, Güneş, Diğer (Toplam 189.7 GW).
+#
+# Same non-hydro capacities and sector demand as the 2035 reference scenario.
+# Only the hydro availability is reduced to the drought level:
+#   Hydro ratio uses Min Reserv(year) / Reservoir(2024) instead of Reservoir(year) / Reservoir(2024).
+#   2035 Min Reserv value is negative (-0.27622), so the drought ratio is clamped to 0.0.
 # ================================================================
 
 include scenarios/turkey_reference_case/ses_main_turkey_reference_case.dat;
 
-# Hydro availability calibration note:
-# Source: User-provided reservoir table image (Periods / Years / Reservoir / Min Reserv / Max Reserv),
-# shared in this chat. For drought scenarios, ratio uses Min Reserv(year) / Reservoir(2024).
-# 2035 Min Reserv value is negative (-0.27622), so ratio is clamped to 0.0.
+# ----------------------------------------------------------------
+# 1) INSTALLED CAPACITY — 2035 TURKEY (GW -> model f_min / f_max)
+# ----------------------------------------------------------------
+
+# Nuclear — same discrete-GW rule as reference 2035 (ref_size 1 GW).
+let f_min["NUCLEAR"] := 7.000;
+let f_max["NUCLEAR"] := 8.000;
+
+# Natural gas (Gaz 35.5 GW -> CCGT)
+let f_min["CCGT"] := 35.500;
+let f_max["CCGT"] := 37.800;
+
+# Coal (Kömür 24.3 GW total -> COAL_US + COAL_IGCC, 2024 share split)
+let f_min["COAL_US"] := 12.731;
+let f_min["COAL_IGCC"] := 11.569;
+let f_max["COAL_US"] := 13.200;
+let f_max["COAL_IGCC"] := 12.000;
+
+# Hydro: DROUGHT clamp -> 0 GW (Min Reserv 2035 is negative)
 let f_min["HYDRO_DAM"] := 0;
 let f_max["HYDRO_DAM"] := 0;
 let f_min["HYDRO_RIVER"] := 0;
 let f_max["HYDRO_RIVER"] := 0;
+
+# Solar PV (Güneş 52.9 GW)
+let f_min["PV"] := 52.900;
+let f_max["PV"] := 56.700;
+
+# Wind (Rüzgar 29.6 GW)
+let f_min["WIND"] := 29.600;
+let f_max["WIND"] := 31.500;
+
+# Other (Diğer 5.1 GW -> biomass + geothermal, 2024 share split)
+let f_min["IND_COGEN_WOOD"] := 3.401;
+let f_max["IND_COGEN_WOOD"] := 3.700;
+let f_min["GEOTHERMAL"] := 1.699;
+let f_max["GEOTHERMAL"] := 1.920;
+
+# ----------------------------------------------------------------
+# 2) LOCK NEW-BUILD HYDRO TECHNOLOGIES (inherited intent)
+# ----------------------------------------------------------------
+
+let f_min["NEW_HYDRO_DAM"] := 0;
+let f_min["NEW_HYDRO_RIVER"] := 0;
+let f_max["NEW_HYDRO_DAM"] := 0;
+let f_max["NEW_HYDRO_RIVER"] := 0;
+
+# ----------------------------------------------------------------
+# 3) ELECTRICITY DEMAND — 2035 (GWh/year)
+# ----------------------------------------------------------------
+# Mesken 85.6, Hizmetler 111.5, Sanayi 208.0, Ulaştırma 24.5 TWh
+
+let end_uses_demand_year["ELECTRICITY", "HOUSEHOLDS"] := 85600;
+let end_uses_demand_year["ELECTRICITY", "SERVICES"] := 111500;
+let end_uses_demand_year["ELECTRICITY", "INDUSTRY"] := 208000;
+let end_uses_demand_year["ELECTRICITY", "TRANSPORTATION"] := 24500;
+
+include scenarios/turkey_weo2025_cps_fuel_operations_2035.dat;

@@ -1,7 +1,7 @@
 # ================================================================
 # TURKEY DROUGHT SCENARIO - 2024
-# WARNING: Placeholder setup currently reuses reference 2024 values.
-# TODO: Add drought assumptions (hydro limits, demand impacts, etc.).
+# Talep: reference case ile aynı (2025 sektör elektriği TWh tablosu).
+# Kuraklık: hidro f_min/f_max aşağıda 2024 oranı ile.
 # ================================================================
 
 include scenarios/turkey_reference_case/ses_main_turkey_reference_case.dat;

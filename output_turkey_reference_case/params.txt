@@ -1,6 +1,6 @@
 param end_uses_demand_year [*,*]
 :                  HOUSEHOLDS   INDUSTRY  SERVICES TRANSPORTATION    :=
-ELECTRICITY          87000      153000     96000        12000
+ELECTRICITY          69200      156200     98400         2200
 HEAT_HIGH_T              0       19021.5       0            0
 HEAT_LOW_T_HW         7537.8      1281.8    3256            0
 HEAT_LOW_T_SH        29489.2      4947.5   14524.8          0
@@ -487,41 +487,41 @@ BUS_COACH_FC_HYBRIDH2  1               DEC_SOLAR 20         IND_BOILER_WOOD 17
 ;
 
 param f_max [*] :=
- BUS_COACH_CNG_STOICH    16.7              DHN_DEEP_GEO    20
-     BUS_COACH_DIESEL    16.7               DHN_HP_ELEC    20
-BUS_COACH_FC_HYBRIDH2    16.7                EFFICIENCY    20
-   BUS_COACH_HYDIESEL    16.7          GASIFICATION_SNG    20
-              CAR_BEV    16.7                GEOTHERMAL    11.154
-           CAR_DIESEL    16.7                      GRID    20
-        CAR_FUEL_CELL    16.7                H2_BIOMASS    20
-         CAR_GASOLINE    16.7           H2_ELECTROLYSIS    20
-              CAR_HEV    16.7                     H2_NG    20
-               CAR_NG    16.7                 HYDRO_DAM   121.886
-             CAR_PHEV    16.7               HYDRO_RIVER   110.421
-                 CCGT   125.384         IND_BOILER_COAL    20
-             CCGT_CCS    10              IND_BOILER_GAS    20
-            COAL_IGCC    13              IND_BOILER_OIL    20
-        COAL_IGCC_CCS    10            IND_BOILER_WASTE    20
-              COAL_US    14             IND_BOILER_WOOD    20
-          COAL_US_CCS    10               IND_COGEN_GAS    20
-     DEC_ADVCOGEN_GAS    20             IND_COGEN_WASTE    20
-      DEC_ADVCOGEN_H2    20              IND_COGEN_WOOD    12.308
-       DEC_BOILER_GAS    20             IND_DIRECT_ELEC    20
-       DEC_BOILER_OIL    20               NEW_HYDRO_DAM     0
-      DEC_BOILER_WOOD    20             NEW_HYDRO_RIVER     0
-        DEC_COGEN_GAS    20                     NUCLEAR   100
-        DEC_COGEN_OIL    20                   POWER2GAS 1e+05
-      DEC_DIRECT_ELEC    20                 POWER2GAS_1    20
-          DEC_HP_ELEC    20                 POWER2GAS_2    20
-            DEC_SOLAR    20                 POWER2GAS_3    20
-         DEC_THHP_GAS    20                PUMPED_HYDRO  2400
-                  DHN    20                          PV   119.615
-       DHN_BOILER_GAS    20                   PYROLYSIS    20
-       DHN_BOILER_OIL    20               TRAIN_FREIGHT     3.2
-      DHN_BOILER_WOOD    20                   TRAIN_PUB    16.7
-        DHN_COGEN_GAS    20             TRAMWAY_TROLLEY    16.7
-      DHN_COGEN_WASTE    20                       TRUCK     3.2
-       DHN_COGEN_WOOD    20                        WIND   112.692
+ BUS_COACH_CNG_STOICH    16.7            DHN_DEEP_GEO    20
+     BUS_COACH_DIESEL    16.7             DHN_HP_ELEC    20
+BUS_COACH_FC_HYBRIDH2    16.7              EFFICIENCY    20
+   BUS_COACH_HYDIESEL    16.7        GASIFICATION_SNG    20
+              CAR_BEV    16.7              GEOTHERMAL     1.3
+           CAR_DIESEL    16.7                    GRID    20
+        CAR_FUEL_CELL    16.7              H2_BIOMASS    20
+         CAR_GASOLINE    16.7         H2_ELECTROLYSIS    20
+              CAR_HEV    16.7                   H2_NG    20
+               CAR_NG    16.7               HYDRO_DAM    30
+             CAR_PHEV    16.7             HYDRO_RIVER    15
+                 CCGT    27           IND_BOILER_COAL    20
+             CCGT_CCS    10            IND_BOILER_GAS    20
+            COAL_IGCC    11            IND_BOILER_OIL    20
+        COAL_IGCC_CCS    10          IND_BOILER_WASTE    20
+              COAL_US    12           IND_BOILER_WOOD    20
+          COAL_US_CCS    10             IND_COGEN_GAS    20
+     DEC_ADVCOGEN_GAS    20           IND_COGEN_WASTE    20
+      DEC_ADVCOGEN_H2    20            IND_COGEN_WOOD     2.5
+       DEC_BOILER_GAS    20           IND_DIRECT_ELEC    20
+       DEC_BOILER_OIL    20             NEW_HYDRO_DAM     0
+      DEC_BOILER_WOOD    20           NEW_HYDRO_RIVER     0
+        DEC_COGEN_GAS    20                   NUCLEAR     0
+        DEC_COGEN_OIL    20                 POWER2GAS 1e+05
+      DEC_DIRECT_ELEC    20               POWER2GAS_1    20
+          DEC_HP_ELEC    20               POWER2GAS_2    20
+            DEC_SOLAR    20               POWER2GAS_3    20
+         DEC_THHP_GAS    20              PUMPED_HYDRO  2400
+                  DHN    20                        PV    21
+       DHN_BOILER_GAS    20                 PYROLYSIS    20
+       DHN_BOILER_OIL    20             TRAIN_FREIGHT     3.2
+      DHN_BOILER_WOOD    20                 TRAIN_PUB    16.7
+        DHN_COGEN_GAS    20           TRAMWAY_TROLLEY    16.7
+      DHN_COGEN_WASTE    20                     TRUCK     3.2
+       DHN_COGEN_WOOD    20                      WIND    13.5
 ;
 
 param f_min [*] :=
@@ -902,8 +902,8 @@ param c_op [*,*]
 :               1        2        3        4        5        6        7      :=
 BIODIESEL     0.0852   0.0852   0.0852   0.0852   0.0852   0.0852   0.0852
 BIOETHANOL    0.088    0.088    0.088    0.088    0.088    0.088    0.088
-COAL          0.022    0.022    0.022    0.022    0.022    0.022    0.022
-COAL_CCS      0.022    0.022    0.022    0.022    0.022    0.022    0.022
+COAL          0.026    0.026    0.026    0.026    0.026    0.026    0.026
+COAL_CCS      0.035    0.035    0.035    0.035    0.035    0.035    0.035
 DIESEL        0.078    0.078    0.078    0.078    0.078    0.078    0.078
 ELECTRICITY   0.0901   0.0901   0.0901   0.0901   0.0901   0.0901   0.0901
 ELEC_EXPORT   0        0        0        0        0        0        0
@@ -911,8 +911,8 @@ GASOLINE      0.088    0.088    0.088    0.088    0.088    0.088    0.088
 H2            0        0        0        0        0        0        0
 LFO           0.078    0.078    0.078    0.078    0.078    0.078    0.078
 LNG           0        0        0        0        0        0        0
-NG            0.021    0.021    0.021    0.021    0.021    0.021    0.021
-NG_CCS        0.038    0.038    0.038    0.038    0.038    0.038    0.038
+NG            0.04     0.04     0.04     0.04     0.04     0.04     0.04
+NG_CCS        0.055    0.055    0.055    0.055    0.055    0.055    0.055
 SNG           0.0348   0.0348   0.0348   0.0348   0.0348   0.0348   0.0348
 URANIUM       0.007    0.007    0.007    0.007    0.007    0.007    0.007
 WASTE         0        0        0        0        0        0        0
@@ -921,8 +921,8 @@ WOOD          0.018    0.018    0.018    0.018    0.018    0.018    0.018
 :               8        9        10       11       12      :=
 BIODIESEL     0.0852   0.0852   0.0852   0.0852   0.0852
 BIOETHANOL    0.088    0.088    0.088    0.088    0.088
-COAL          0.022    0.022    0.022    0.022    0.022
-COAL_CCS      0.022    0.022    0.022    0.022    0.022
+COAL          0.026    0.026    0.026    0.026    0.026
+COAL_CCS      0.035    0.035    0.035    0.035    0.035
 DIESEL        0.078    0.078    0.078    0.078    0.078
 ELECTRICITY   0.0901   0.0901   0.0901   0.0901   0.0901
 ELEC_EXPORT   0        0        0        0        0
@@ -930,8 +930,8 @@ GASOLINE      0.088    0.088    0.088    0.088    0.088
 H2            0        0        0        0        0
 LFO           0.078    0.078    0.078    0.078    0.078
 LNG           0        0        0        0        0
-NG            0.021    0.021    0.021    0.021    0.021
-NG_CCS        0.038    0.038    0.038    0.038    0.038
+NG            0.04     0.04     0.04     0.04     0.04
+NG_CCS        0.055    0.055    0.055    0.055    0.055
 SNG           0.0348   0.0348   0.0348   0.0348   0.0348
 URANIUM       0.007    0.007    0.007    0.007    0.007
 WASTE         0        0        0        0        0
@@ -1038,5 +1038,32 @@ MOB_FREIGHT_ROAD  0
 ;
 
 param peak_dhn_factor = 2
+
+;
+param chf_per_eur = 1
+
+;
+param turkey_fuel_EUR_per_MWh__NG = 40
+
+;
+param turkey_fuel_EUR_per_MWh__NG_CCS = 55
+
+;
+param turkey_fuel_EUR_per_MWh__COAL = 26
+
+;
+param turkey_fuel_EUR_per_MWh__COAL_CCS = 35
+
+;
+param turkey_fuel_EUR_per_MWh__DIESEL = 78
+
+;
+param turkey_fuel_EUR_per_MWh__LFO = 78
+
+;
+param turkey_fuel_EUR_per_MWh__WOOD = 18
+
+;
+param turkey_fuel_EUR_per_MWh__URANIUM = 7
 
 ;

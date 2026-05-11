@@ -1,68 +1,316 @@
 <!doctype html>
-<html lang="en">
+<html lang="tr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Scenario Comparison Dashboard</title>
+    <title>Senaryo Karşılaştırma Paneli</title>
     <link rel="stylesheet" href="./scenario_dashboard.css" />
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   </head>
   <body>
     <header class="header">
-      <h1>Scenario Comparison Dashboard</h1>
-      <p>
-        Reads precomputed scenario data from Python output and compares scenarios.
+      <h1>Senaryo karşılaştırma paneli</h1>
+      <p class="header-lead">
+        Önceden üretilmiş <code>output_*</code> klasörlerindeki metrikleri okur; senaryoları seçerek grafik ve
+        tabloları anında güncelleyebilirsiniz. Klasör seçerek projeyi taratmak da mümkündür.
       </p>
       <div class="controls">
-        <button id="pick-folder-btn">Select Project Folder</button>
-        <button id="reload-btn" disabled>Reload</button>
+        <button type="button" id="pick-folder-btn">Proje klasörü seç</button>
+        <button type="button" id="reload-btn" disabled>Yeniden yükle</button>
+        <button type="button" id="export-all-tables-btn" class="btn-secondary" title="Tüm veri tablolarını tek dosyada, ayrı sayfalar halinde indirir">
+          Tüm tabloları XLSX
+        </button>
       </div>
-      <p class="hint">
-        Warning: If your scenario files still reuse 2024 values, comparisons are placeholders.
-      </p>
-      <p id="status" class="status">Waiting for precomputed data...</p>
+      <p id="status" class="status">Veri bekleniyor…</p>
     </header>
 
-    <main class="grid">
-      <section class="card">
-        <h2>Detected Scenarios</h2>
-        <div id="scenario-list"></div>
+    <div id="scenario-fail-banner" class="scenario-fail-banner" hidden></div>
+
+    <main class="dashboard">
+      <section class="card card--accent" data-collapsible data-card-id="scenario">
+        <div class="card__header">
+          <button
+            type="button"
+            class="card__toggle"
+            id="card-scenario-toggle"
+            aria-expanded="true"
+            aria-controls="card-scenario-body"
+          >
+            <span class="card__chevron" aria-hidden="true"></span>
+            <span class="card__title">Senaryo seçimi</span>
+          </button>
+          <div class="card__tools">
+            <button type="button" class="btn-secondary btn--sm" id="scenarios-all">Tümünü seç</button>
+            <button type="button" class="btn-secondary btn--sm" id="scenarios-none">Tümünü kaldır</button>
+          </div>
+        </div>
+        <div class="card__body" id="card-scenario-body">
+          <p class="card__desc">
+            <strong>Ne işe yarar:</strong> İşaretli senaryolar aşağıdaki tüm grafiklerde, tablolarda ve (açıksa)
+            Sankey diyagramlarında kullanılır.
+            <strong>Veri kaynağı:</strong> Her senaryo bir <code>output_*</code> klasörüdür; özet paket
+            <code>build_scenario_dashboard_data.py</code> ile <code>scenario_dashboard_data.js</code> dosyasına
+            gömülebilir veya klasör taramasıyla okunur.
+          </p>
+          <div id="scenario-toggles" class="scenario-toggles"></div>
+        </div>
       </section>
 
-      <section class="card">
-        <h2>Solution Status (Expected 6 Scenarios)</h2>
-        <div id="solution-status"></div>
+      <section class="card" data-collapsible data-card-id="solution">
+        <div class="card__header">
+          <button
+            type="button"
+            class="card__toggle"
+            id="card-solution-toggle"
+            aria-expanded="true"
+            aria-controls="card-solution-body"
+          >
+            <span class="card__chevron" aria-hidden="true"></span>
+            <span class="card__title">Beklenen senaryolar ve çözüm durumu</span>
+          </button>
+          <div class="card__tools">
+            <button type="button" class="btn-secondary btn--sm btn-export-xlsx" data-export-target="solution-status" data-export-filename="cozum_durumu">
+              XLSX
+            </button>
+          </div>
+        </div>
+        <div class="card__body" id="card-solution-body">
+          <p class="card__desc">
+            <strong>Veri kaynağı:</strong> betikteki beklenen liste ve her klasördeki
+            <code>scenario_metrics.txt</code> (TotalCost / TotalGWP). Koşu başarısızsa
+            <code>run_all_turkey_scenarios.sh</code> aynı klasöre <code>scenario_run_error.txt</code> yazar;
+            özet tabloda ayrıntılar açılır panelde gösterilir.
+          </p>
+          <div class="table-scroll table-scroll--card" id="solution-status"></div>
+        </div>
       </section>
 
-      <section class="card">
-        <h2>Core Metrics</h2>
-        <div id="metrics-table"></div>
+      <section class="card" data-collapsible data-card-id="energy">
+        <div class="card__header">
+          <button
+            type="button"
+            class="card__toggle"
+            id="card-energy-toggle"
+            aria-expanded="true"
+            aria-controls="card-energy-body"
+          >
+            <span class="card__chevron" aria-hidden="true"></span>
+            <span class="card__title">Enerji özeti: talep ve teknoloji çıktıları</span>
+          </button>
+          <div class="card__tools">
+            <button type="button" class="btn-secondary btn--sm btn-export-xlsx" data-export-target="energy-summary-table" data-export-filename="enerji_ozeti">
+              XLSX
+            </button>
+            <button type="button" class="btn-secondary btn--sm btn-export-xlsx" data-export-target="fuel-share-table" data-export-filename="yakit_paylari">
+              Yakıt XLSX
+            </button>
+          </div>
+        </div>
+        <div class="card__body" id="card-energy-body">
+          <p class="card__desc">
+            <strong>Talep (taşıyıcı):</strong> <code>End_Uses.txt</code> — dönem sütunlarının mutlak değerleri toplanır.
+            Bu dosya yalnızca koşu betiği yazdırdıysa oluşur; <code>export_standard_outputs.run</code> ile tüm
+            <code>output_*</code> klasörlerine eklenmiştir (yeniden çalıştırmanız gerekir).
+            <strong>Üretim:</strong> <code>total_output.txt</code> teknoloji başına yıllık çıktı.
+            <strong>Elektrik üretimi özeti:</strong> <code>sets.txt</code> içindeki ELECTRICITY teknoloji kümesi ile
+            <code>total_output.txt</code> toplanır (tek <code>ELECTRICITY</code> satırına bağlı değildir).
+          </p>
+          <div id="energy-summary-table" class="table-scroll table-scroll--card"></div>
+          <div class="chart-block">
+            <h3 class="chart-title">Taşıyıcı bazında talep (üst kalemler)</h3>
+            <div class="chart-canvas-wrap">
+              <canvas id="enduse-chart" width="960" height="360"></canvas>
+            </div>
+          </div>
+          <div class="chart-block">
+            <h3 class="chart-title">Yakıt üretimi payları (toplam yakıt çıktısı içinde %)</h3>
+            <p class="card__desc card__desc--tight">
+              <code>sets.txt</code> içindeki <code>RESOURCES</code> kümesinden elektrik ve <code>ELEC_EXPORT</code>
+              çıkarıldı; her senaryoda bu yakıtların <code>total_output.txt</code> yıllık değerlerinin toplamına göre
+              yüzde. Tablo tam liste; grafikte ince dilimler &quot;Diğer&quot; altında birleştirilir.
+            </p>
+            <div id="fuel-share-table" class="table-scroll table-scroll--card"></div>
+            <div class="chart-canvas-wrap">
+              <canvas id="fuel-share-chart" width="960" height="340"></canvas>
+            </div>
+          </div>
+          <div class="chart-block">
+            <h3 class="chart-title">Kurulu güç (GW): yıl ve yakıt — Referans vs Kuraklık</h3>
+            <p class="card__desc card__desc--tight">
+              <strong>Kaynak:</strong> çözümden sonra <code>installed_capacity_by_fuel_gw.txt</code> (veya yedek olarak
+              <code>f_mult.txt</code> + <code>sets.txt</code>). Dikey eksen GW; her yıl için iki yığılmış sütun
+              (Referans / Kuraklık). Eski çıktılar için modeli yeniden koşturun.
+            </p>
+            <div class="card__tools card__tools--tight">
+              <button
+                type="button"
+                class="btn-secondary btn--sm btn-export-xlsx"
+                data-export-target="installed-capacity-table"
+                data-export-filename="kurulu_guc_yil_yakit"
+              >
+                Tablo XLSX
+              </button>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="installed-capacity-year-chart" width="960" height="400"></canvas>
+            </div>
+            <div id="installed-capacity-table" class="table-scroll table-scroll--card"></div>
+          </div>
+          <div class="chart-block">
+            <h3 class="chart-title">Teknoloji çıktıları (üst kalemler)</h3>
+            <div class="chart-canvas-wrap">
+              <canvas id="production-chart" width="960" height="360"></canvas>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section class="card">
-        <h2>Total Cost Comparison</h2>
-        <canvas id="cost-chart" width="800" height="320"></canvas>
+      <section class="card" data-collapsible data-card-id="cost-gwp">
+        <div class="card__header">
+          <button
+            type="button"
+            class="card__toggle"
+            id="card-cost-gwp-toggle"
+            aria-expanded="true"
+            aria-controls="card-cost-gwp-body"
+          >
+            <span class="card__chevron" aria-hidden="true"></span>
+            <span class="card__title">Maliyet ve sera gazı (GWP)</span>
+          </button>
+        </div>
+        <div class="card__body" id="card-cost-gwp-body">
+          <p class="card__desc">
+            <strong>Veri kaynağı:</strong> <code>scenario_metrics.txt</code> içindeki TotalCost ve TotalGWP.
+            Yoğunluk: GWP bölü <code>total_output.txt</code> içindeki ELECTRICITY satırı (GWh); yoksa çizilmez.
+          </p>
+          <div class="chart-row">
+            <div class="chart-block">
+              <h3 class="chart-title">Toplam maliyet</h3>
+              <div class="chart-canvas-wrap chart-canvas-wrap--sm">
+                <canvas id="cost-chart" width="480" height="300"></canvas>
+              </div>
+            </div>
+            <div class="chart-block">
+              <h3 class="chart-title">Toplam GWP</h3>
+              <div class="chart-canvas-wrap chart-canvas-wrap--sm">
+                <canvas id="gwp-chart" width="480" height="300"></canvas>
+              </div>
+            </div>
+            <div class="chart-block">
+              <h3 class="chart-title">GWP yoğunluğu (GWP / elektrik çıktısı GWh)</h3>
+              <div class="chart-canvas-wrap chart-canvas-wrap--sm">
+                <canvas id="intensity-chart" width="480" height="300"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section class="card">
-        <h2>Total GWP Comparison</h2>
-        <canvas id="gwp-chart" width="800" height="320"></canvas>
+      <section class="card" data-collapsible data-card-id="tech">
+        <div class="card__header">
+          <button
+            type="button"
+            class="card__toggle"
+            id="card-tech-toggle"
+            aria-expanded="true"
+            aria-controls="card-tech-body"
+          >
+            <span class="card__chevron" aria-hidden="true"></span>
+            <span class="card__title">Teknoloji detayı</span>
+          </button>
+        </div>
+        <div class="card__body" id="card-tech-body">
+          <p class="card__desc">
+            Seçilen teknoloji için yıllık çıktı; <strong>kaynak:</strong> <code>total_output.txt</code>.
+          </p>
+          <label class="inline-label" for="tech-selector">Teknoloji:</label>
+          <select id="tech-selector"></select>
+          <div class="chart-canvas-wrap">
+            <canvas id="tech-chart" width="960" height="320"></canvas>
+          </div>
+        </div>
       </section>
 
-      <section class="card">
-        <h2>Emissions Intensity (GWP / Electricity Output)</h2>
-        <canvas id="intensity-chart" width="800" height="320"></canvas>
+      <section class="card" data-collapsible data-card-id="cost-pivot">
+        <div class="card__header">
+          <button
+            type="button"
+            class="card__toggle"
+            id="card-cost-pivot-toggle"
+            aria-expanded="true"
+            aria-controls="card-cost-pivot-body"
+          >
+            <span class="card__chevron" aria-hidden="true"></span>
+            <span class="card__title">Maliyet kırılımı (C_op toplamına göre üst 15)</span>
+          </button>
+          <div class="card__tools">
+            <button type="button" class="btn-secondary btn--sm btn-export-xlsx" data-export-target="cost-pivot" data-export-filename="maliyet_kirilimi">
+              XLSX
+            </button>
+          </div>
+        </div>
+        <div class="card__body" id="card-cost-pivot-body">
+          <p class="card__desc">
+            <strong>Veri kaynağı:</strong> <code>cost_breakdown.txt</code> — yatırım, bakım, işletme ve toplam.
+          </p>
+          <div class="table-scroll table-scroll--card" id="cost-pivot"></div>
+        </div>
       </section>
 
-      <section class="card">
-        <h2>Technology Output Comparison (Top 10)</h2>
-        <label for="tech-selector">Technology:</label>
-        <select id="tech-selector"></select>
-        <canvas id="tech-chart" width="800" height="320"></canvas>
+      <section class="card" data-collapsible data-card-id="metrics">
+        <div class="card__header">
+          <button
+            type="button"
+            class="card__toggle"
+            id="card-metrics-toggle"
+            aria-expanded="true"
+            aria-controls="card-metrics-body"
+          >
+            <span class="card__chevron" aria-hidden="true"></span>
+            <span class="card__title">Özet tablo</span>
+          </button>
+          <div class="card__tools">
+            <button type="button" class="btn-secondary btn--sm btn-export-xlsx" data-export-target="metrics-table" data-export-filename="ozet_metrikler">
+              XLSX
+            </button>
+          </div>
+        </div>
+        <div class="card__body" id="card-metrics-body">
+          <p class="card__desc">
+            <strong>Veri kaynağı:</strong> <code>scenario_metrics.txt</code> ve çözüm bayrağı.
+          </p>
+          <div class="table-scroll table-scroll--card" id="metrics-table"></div>
+        </div>
       </section>
 
-      <section class="card">
-        <h2>Cost Breakdown Pivot (Top 15 by C_op sum)</h2>
-        <div id="cost-pivot"></div>
+      <section class="card" data-collapsible data-card-id="sankey">
+        <div class="card__header">
+          <button
+            type="button"
+            class="card__toggle"
+            id="card-sankey-toggle"
+            aria-expanded="true"
+            aria-controls="card-sankey-body"
+          >
+            <span class="card__chevron" aria-hidden="true"></span>
+            <span class="card__title">Sankey diyagramları (enerji akışı)</span>
+          </button>
+          <div class="card__tools">
+            <label class="toggle-inline toggle-inline--card">
+              <input type="checkbox" id="sankey-master-toggle" checked />
+              Sankey göster
+            </label>
+          </div>
+        </div>
+        <div class="card__body" id="card-sankey-body">
+          <p class="card__desc">
+            <strong>Veri kaynağı:</strong> her senaryo klasöründe <code>sankey/input2sankey.csv</code> (kaynak → hedef
+            akışları, TWh). <code>output_turkey_reference_case/dashboard.html</code> ile aynı yapı: Plotly Sankey,
+            senaryo başlığı ve akış sayısı; seçili senaryolar ve &quot;Sankey göster&quot; açıkken çizilir.
+          </p>
+          <div id="sankey-stack" class="sankey-stack"></div>
+        </div>
       </section>
     </main>
 

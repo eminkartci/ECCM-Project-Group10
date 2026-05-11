@@ -1,7 +1,7 @@
 # ================================================================
 # TURKEY REFERENCE SCENARIO - 2024
-# WARNING: This file currently reuses 2024 calibrated values.
-# TODO: Replace with finalized scenario-specific values.
+# Talep: include dosyasındaki 2025 sektör elektriği (TWh tablosu).
+# Kapasite: 2024 hidro oranı (rezervuar tablosu).
 # ================================================================
 
 include scenarios/turkey_reference_case/ses_main_turkey_reference_case.dat;

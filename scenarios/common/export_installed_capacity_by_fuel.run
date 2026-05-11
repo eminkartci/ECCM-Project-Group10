@@ -1,0 +1,35 @@
+# Requires: OUTPUT_DIR, solved model with F_Mult.
+# Kurulu güç (GW): optimal F_Mult; elektrik teknolojileri yakıt/tekno gruplarına toplanır.
+# biomass (IND_COGEN_WOOD) elektrik kümesinde değildir; ayrı satır olarak eklenir.
+#
+# Not: F_Mult bir değişken olduğundan param := ... ile toplanamaz; printf ifadelerinde toplanır.
+
+printf "%s\t%s\n", "fuel_group", "installed_GW" > (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
+
+printf "%s\t%.6f\n", "nuclear", sum {i in TECHNOLOGIES} (if i = "NUCLEAR" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
+printf "%s\t%.6f\n", "natural_gas", sum {i in TECHNOLOGIES} (if i = "CCGT" or i = "CCGT_CCS" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
+printf "%s\t%.6f\n", "coal",
+  sum {i in TECHNOLOGIES}
+    (if i = "COAL_US" or i = "COAL_IGCC" or i = "COAL_US_CCS" or i = "COAL_IGCC_CCS" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
+printf "%s\t%.6f\n", "hydro",
+  sum {i in TECHNOLOGIES}
+    (if i = "HYDRO_DAM" or i = "NEW_HYDRO_DAM" or i = "HYDRO_RIVER" or i = "NEW_HYDRO_RIVER" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
+printf "%s\t%.6f\n", "solar_pv", sum {i in TECHNOLOGIES} (if i = "PV" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
+printf "%s\t%.6f\n", "wind", sum {i in TECHNOLOGIES} (if i = "WIND" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
+printf "%s\t%.6f\n", "geothermal", sum {i in TECHNOLOGIES} (if i = "GEOTHERMAL" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
+printf "%s\t%.6f\n", "biomass", sum {i in TECHNOLOGIES} (if i = "IND_COGEN_WOOD" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
+
+printf "%s\t%.6f\n", "other_electric",
+  max(0,
+    sum {i in TECHNOLOGIES_OF_END_USES_TYPE["ELECTRICITY"]} F_Mult[i]
+    - sum {i in TECHNOLOGIES} (if i = "NUCLEAR" then F_Mult[i] else 0)
+    - sum {i in TECHNOLOGIES} (if i = "CCGT" or i = "CCGT_CCS" then F_Mult[i] else 0)
+    - sum {i in TECHNOLOGIES}
+      (if i = "COAL_US" or i = "COAL_IGCC" or i = "COAL_US_CCS" or i = "COAL_IGCC_CCS" then F_Mult[i] else 0)
+    - sum {i in TECHNOLOGIES}
+      (if i = "HYDRO_DAM" or i = "NEW_HYDRO_DAM" or i = "HYDRO_RIVER" or i = "NEW_HYDRO_RIVER" then F_Mult[i] else 0)
+    - sum {i in TECHNOLOGIES} (if i = "PV" then F_Mult[i] else 0)
+    - sum {i in TECHNOLOGIES} (if i = "WIND" then F_Mult[i] else 0)
+    - sum {i in TECHNOLOGIES} (if i = "GEOTHERMAL" then F_Mult[i] else 0)) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
+
+printf "%s\t%.6f\n", "electricity_techs_total_GW", sum {i in TECHNOLOGIES_OF_END_USES_TYPE["ELECTRICITY"]} F_Mult[i] >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");

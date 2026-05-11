@@ -34,6 +34,8 @@ set BOILERS within TECHNOLOGIES; # cogeneration tech
 
 ### PARAMETERS ###
 param end_uses_demand_year {END_USES_INPUT, SECTORS} >= 0 default 0; # table end-uses demand vs sectors (input from demand-side model). Yearly values.
+# Yearly low-T heat demand from data (HW+SH). If zero, op_strategy_decen_1_linear must not divide by End_Uses_Input HW+SH (e.g. electricity-only Turkey runs).
+param heat_lt_input_demand_sum := sum {s in SECTORS} (end_uses_demand_year["HEAT_LOW_T_HW", s] + end_uses_demand_year["HEAT_LOW_T_SH", s]);
 param i_rate > 0; # discount rate (real discount rate)
 
 # Share public vs private mobility
@@ -267,7 +269,7 @@ subject to f_min_perc {i in END_USES_TYPES, j in TECHNOLOGIES_OF_END_USES_TYPE[i
 var X_Solar_Backup_Aux {TECHNOLOGIES_OF_END_USES_TYPE["HEAT_LOW_T_DECEN"] diff {"DEC_SOLAR"}, t in PERIODS} >= 0;
 
 subject to op_strategy_decen_1_linear {i in TECHNOLOGIES_OF_END_USES_TYPE["HEAT_LOW_T_DECEN"] diff {"DEC_SOLAR"}, t in PERIODS}:
-	F_Mult_t [i, t] + X_Solar_Backup_Aux [i, t] >= sum {t2 in PERIODS} (F_Mult_t [i, t2] * period_duration [t2]) * ((End_Uses_Input["HEAT_LOW_T_HW"] / Total_Time + End_Uses_Input["HEAT_LOW_T_SH"] * heating_month [t] / period_duration [t]) / (End_Uses_Input["HEAT_LOW_T_HW"] + End_Uses_Input["HEAT_LOW_T_SH"]));
+	F_Mult_t [i, t] + X_Solar_Backup_Aux [i, t] >= sum {t2 in PERIODS} (F_Mult_t [i, t2] * period_duration [t2]) * (if heat_lt_input_demand_sum > 0 then (End_Uses_Input["HEAT_LOW_T_HW"] / Total_Time + End_Uses_Input["HEAT_LOW_T_SH"] * heating_month [t] / period_duration [t]) / (End_Uses_Input["HEAT_LOW_T_HW"] + End_Uses_Input["HEAT_LOW_T_SH"]) else 0);
 
 # These three constraints impose that: X_solar_backup_aux [i, t] = F_Mult_t ["DEC_SOLAR", t] * y_solar_backup [i]
 # from: http://www.leandro-coelho.com/linearization-product-variables/

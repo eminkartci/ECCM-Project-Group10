@@ -69,36 +69,76 @@ let f_max["NEW_HYDRO_RIVER"] := 0;
 
 
 # ----------------------------------------------------------------
-# 3) FUEL PRICE CALIBRATION
-# Units: MCHF/GWh
+# 3) FUEL PRICE CALIBRATION (TURKEY)
 # ----------------------------------------------------------------
 #
-# Conversion:
-# 1 EUR/MWh_th = 0.001 MCHF/GWh
+# Primary input unit for Turkey fuel prices: [EUR/MWh] (LHV, thermal basis).
+# Model parameter c_op must be in [MCHF/GWh] (model/ses_main.mod, line 75).
 #
-# v3 adjustment:
-# - Previous version made coal too dominant.
-# - Coal price increased from 0.019 to 0.026.
-# - NG reduced from 0.045 to 0.040.
+# Conversion used here:
+#   c_op [MCHF/GWh] = price_EUR_per_MWh * chf_per_eur * 0.001
+# where chf_per_eur is CHF per EUR (set to 1.0 if you treat MCHF numerically like MEUR
+# for these coefficients, or replace with a spot rate, e.g. SNB).
+#
+# v3 adjustment (same numeric outcome as before, now read from EUR/MWh):
+# - Coal price increased from 0.019 to 0.026 MCHF/GWh (19 -> 26 EUR/MWh).
+# - NG reduced from 0.045 to 0.040 MCHF/GWh (45 -> 40 EUR/MWh).
 # - This should move the mix closer to:
 #   Coal ~35%, NG ~19%, Hydro ~22%, Wind ~11%, Solar ~7%.
 
-let {t in PERIODS} c_op["NG", t] := 0.040;
-let {t in PERIODS} c_op["NG_CCS", t] := 0.055;
+param chf_per_eur := 1.0;  # CHF per EUR; multiplies all turkey_fuel_* EUR/MWh inputs
 
-let {t in PERIODS} c_op["COAL", t] := 0.026;
-let {t in PERIODS} c_op["COAL_CCS", t] := 0.035;
+param turkey_fuel_EUR_per_MWh__NG       := 40;
+param turkey_fuel_EUR_per_MWh__NG_CCS   := 55;
+param turkey_fuel_EUR_per_MWh__COAL     := 26;
+param turkey_fuel_EUR_per_MWh__COAL_CCS  := 35;
+param turkey_fuel_EUR_per_MWh__DIESEL   := 78;
+param turkey_fuel_EUR_per_MWh__LFO      := 78;
+param turkey_fuel_EUR_per_MWh__WOOD     := 18;
+param turkey_fuel_EUR_per_MWh__URANIUM  := 7;
 
-let {t in PERIODS} c_op["DIESEL", t] := 0.078;
-let {t in PERIODS} c_op["LFO", t] := 0.078;
+let {t in PERIODS} c_op["NG", t] :=
+	turkey_fuel_EUR_per_MWh__NG * chf_per_eur * 0.001;
+let {t in PERIODS} c_op["NG_CCS", t] :=
+	turkey_fuel_EUR_per_MWh__NG_CCS * chf_per_eur * 0.001;
 
-let {t in PERIODS} c_op["WOOD", t] := 0.018;
-let {t in PERIODS} c_op["URANIUM", t] := 0.007;
+let {t in PERIODS} c_op["COAL", t] :=
+	turkey_fuel_EUR_per_MWh__COAL * chf_per_eur * 0.001;
+let {t in PERIODS} c_op["COAL_CCS", t] :=
+	turkey_fuel_EUR_per_MWh__COAL_CCS * chf_per_eur * 0.001;
+
+let {t in PERIODS} c_op["DIESEL", t] :=
+	turkey_fuel_EUR_per_MWh__DIESEL * chf_per_eur * 0.001;
+let {t in PERIODS} c_op["LFO", t] :=
+	turkey_fuel_EUR_per_MWh__LFO * chf_per_eur * 0.001;
+
+let {t in PERIODS} c_op["WOOD", t] :=
+	turkey_fuel_EUR_per_MWh__WOOD * chf_per_eur * 0.001;
+let {t in PERIODS} c_op["URANIUM", t] :=
+	turkey_fuel_EUR_per_MWh__URANIUM * chf_per_eur * 0.001;
 
 
 # ----------------------------------------------------------------
-# 4) ELECTRICITY DEMAND — 2024 TURKEY
-# Units: GWh/year
+# 3b) DEMAND SIDE — only sectoral electricity below; zero CH baseline
+# ----------------------------------------------------------------
+# scenarios/baseline/ses_main.dat defines LIGHTING, heat, and mobility
+# (Mpkm/Mtkm) demands. Without these lets, Turkey runs still optimize
+# those end uses. Set every non-ELECTRICITY END_USES_INPUT row to zero.
+
+let {s in SECTORS} end_uses_demand_year["LIGHTING", s] := 0;
+let {s in SECTORS} end_uses_demand_year["HEAT_HIGH_T", s] := 0;
+let {s in SECTORS} end_uses_demand_year["HEAT_LOW_T_SH", s] := 0;
+let {s in SECTORS} end_uses_demand_year["HEAT_LOW_T_HW", s] := 0;
+let {s in SECTORS} end_uses_demand_year["MOBILITY_PASSENGER", s] := 0;
+let {s in SECTORS} end_uses_demand_year["MOBILITY_FREIGHT", s] := 0;
+
+
+# ----------------------------------------------------------------
+# 4) ELECTRICITY DEMAND — 2025 (near-term / “2024” senaryo yılı)
+# Units: GWh/year (TWh × 1000)
+# Kaynak: Elektrik Tüketiminde Sektörler tablosu — 2025 sütunu (TWh):
+#   Sanayi 156.2, Mesken 69.2, Hizmetler 98.4, Ulaştırma 2.2
+#   → Sektörler toplamı 326.0 TWh = 326_000 GWh
 # ----------------------------------------------------------------
 #
 # Total electricity demand target:
@@ -132,10 +172,10 @@ let avail["ELEC_EXPORT"] := 3500;
 # Biomass + Geo   ≈ 5–6%
 #
 # If coal is still too high:
-#   increase c_op["COAL"] to 0.028–0.030
+#   increase turkey_fuel_EUR_per_MWh__COAL to ~28–30 EUR/MWh
 #
 # If NG becomes too high:
-#   increase c_op["NG"] to 0.043–0.045
+#   increase turkey_fuel_EUR_per_MWh__NG to ~43–45 EUR/MWh
 #
 # If wind/solar remain too low:
 #   inherited availability / capacity-factor parameters must be adjusted.

@@ -178,7 +178,7 @@
 
     <div class="layout">
       <div class="panel">
-        <h2>Sankey (from <code>sankey/input2sankey.csv</code>)</h2>
+        <h2>Sankey (sankey/input2sankey.csv)</h2>
         <div id="sankeyChart"></div>
       </div>
       <div class="panel">
@@ -261,16 +261,13 @@
     }
 
     async function loadAll() {
-      const results = await Promise.allSettled(
-        RESULT_FILES.map(async (file) => ({ file, text: await fetchText(file) }))
-      );
       state.cache = {};
-      for (const res of results) {
-        if (res.status === "fulfilled") {
-          state.cache[res.value.file] = { ok: true, text: res.value.text };
-        } else {
-          const file = RESULT_FILES[results.indexOf(res)];
-          state.cache[file] = { ok: false, text: String(res.reason) };
+      for (const file of RESULT_FILES) {
+        try {
+          const text = await fetchText(file);
+          state.cache[file] = { ok: true, text };
+        } catch (e) {
+          state.cache[file] = { ok: false, text: String(e) };
         }
       }
     }
@@ -303,15 +300,22 @@
     }
 
     function renderSankey() {
+      const host = document.getElementById("sankeyChart");
+      host.innerHTML = "";
       const t = getTable("sankey/input2sankey.csv");
-      if (!t.rows.length || typeof Plotly === "undefined") {
-        document.getElementById("sankeyChart").textContent = "Sankey data unavailable.";
+      if (typeof Plotly === "undefined") {
+        host.textContent = "Plotly failed to load; cannot draw Sankey.";
+        return;
+      }
+      if (!t.rows.length) {
+        host.textContent =
+          "No Sankey link rows in sankey/input2sankey.csv (header only or missing file). Re-run the model after a successful solve.";
         return;
       }
       const names = [...new Set(t.rows.flatMap((r) => [r.source, r.target]))];
       const idx = new Map(names.map((n, i) => [n, i]));
       const nodeColors = names.map(() => "rgba(59,130,246,0.7)");
-      const labelColor = Object.fromEntries(t.rows.map((r) => [r.source, r.layerColor]));
+      const labelColor = Object.fromEntries(t.rows.map((r) => [r.source, r.layerColor || r.layercolor]));
       names.forEach((n, i) => { if (labelColor[n]) nodeColors[i] = labelColor[n]; });
       const trace = {
         type: "sankey",

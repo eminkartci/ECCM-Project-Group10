@@ -54,19 +54,89 @@ RUN_FILES=(
   "scenarios/turkey_drought_2035/ses_main_turkey_drought_2035.run"
 )
 
+# Match OUTPUT_DIR in each ses_main_turkey_*.run (fresh outputs, no stale files).
+OUTPUT_DIRS=(
+  "output_turkey_reference_2024"
+  "output_turkey_reference_2030"
+  "output_turkey_reference_2035"
+  "output_turkey_drought_2024"
+  "output_turkey_drought_2030"
+  "output_turkey_drought_2035"
+)
+
+echo "Removing prior scenario output directories..."
+for out_dir in "${OUTPUT_DIRS[@]}"; do
+  rm -rf "$ROOT_DIR/$out_dir"
+done
+echo "Done. (${#OUTPUT_DIRS[@]} directories cleared or absent.)"
+
 echo "Starting batch scenario run..."
 echo "WARNING: All scenario .dat files currently reuse 2024 values."
 echo "WARNING: Update year-specific and drought-specific assumptions before final analysis."
 
+LOG_ROOT="$ROOT_DIR/scenario_run_logs"
+mkdir -p "$LOG_ROOT"
+FAILED_RUNS=()
+
+# AMPL may exit 0 even when the solver reports infeasibility; detect failure by missing scenario_metrics.txt.
+write_run_error_file() {
+  local out_dir="$1"
+  local run_file="$2"
+  local tmp_log="$3"
+  local dest="$ROOT_DIR/$out_dir/scenario_run_error.txt"
+  {
+    echo "Senaryo koşusu tam çıktı üretmedi (scenario_metrics.txt yok veya çözüm dışa aktarılmadı)."
+    echo "Betik: ${run_file}"
+    echo "Çıktı klasörü: ${out_dir}/"
+    echo ""
+    echo "--- Çözücü / presolve ile ilgili satırlar (grep) ---"
+    grep -E "cannot hold|infeasible|Infeasible|unbounded|Unbounded|no solution|No solution|failed|Failed" "$tmp_log" 2>/dev/null | tail -n 40 || echo "(eşleşen satır yok)"
+    echo ""
+    echo "--- AMPL / Gurobi günlüğünün son 100 satırı ---"
+    tail -n 100 "$tmp_log"
+  } >"$dest"
+  echo "  Wrote: $dest"
+}
+
 for run_file in "${RUN_FILES[@]}"; do
   echo "------------------------------------------------------------"
   echo "Running: ${run_file}"
-  "$AMPL_BIN" "$run_file"
-  echo "Completed: ${run_file}"
+  tmp_log="$(mktemp)"
+  OUTPUT_DIR_FOR_RUN="$(grep -E '^param OUTPUT_DIR symbolic :=' "$ROOT_DIR/$run_file" 2>/dev/null | head -1 | sed -n 's/.*"\([^"]*\)".*/\1/p')"
+  if [[ -z "$OUTPUT_DIR_FOR_RUN" ]]; then
+    echo "  WARNING: could not parse OUTPUT_DIR from ${run_file}"
+  fi
+
+  set +e
+  "$AMPL_BIN" "$run_file" >"$tmp_log" 2>&1
+  ampl_rc=$?
+  set -e
+
+  cp -f "$tmp_log" "$LOG_ROOT/$(basename "$run_file" .run).log"
+
+  metrics_path="$ROOT_DIR/${OUTPUT_DIR_FOR_RUN}/scenario_metrics.txt"
+  if [[ -n "$OUTPUT_DIR_FOR_RUN" && -f "$metrics_path" ]]; then
+    echo "Completed: ${run_file}"
+  else
+    echo "FAILED (no scenario_metrics.txt): ${run_file}"
+    FAILED_RUNS+=("$run_file")
+    if [[ -n "$OUTPUT_DIR_FOR_RUN" ]]; then
+      mkdir -p "$ROOT_DIR/$OUTPUT_DIR_FOR_RUN"
+      write_run_error_file "$OUTPUT_DIR_FOR_RUN" "$run_file" "$tmp_log"
+    fi
+    if [[ "$ampl_rc" -ne 0 ]]; then
+      echo "  AMPL exit code: ${ampl_rc}"
+    fi
+  fi
+  rm -f "$tmp_log"
 done
 
 echo "------------------------------------------------------------"
-echo "All scenario runs completed."
+if ((${#FAILED_RUNS[@]} > 0)); then
+  echo "Batch finished with ${#FAILED_RUNS[@]} failing scenario(s) (see scenario_run_error.txt in each output_* folder)."
+else
+  echo "All scenario runs completed successfully (scenario_metrics.txt present for each run)."
+fi
 
 echo "Generating scenario comparison data..."
 python3 "$ROOT_DIR/build_scenario_dashboard_data.py"

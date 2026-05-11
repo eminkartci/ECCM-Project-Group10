@@ -1,0 +1,39 @@
+# ----------------------------------------------------------------
+# WEO 2025 CPS — fuel operating prices for 2030
+# ----------------------------------------------------------------
+#
+# Source: IEA World Energy Outlook 2025, Table 2.3 (wholesale fossil fuel prices),
+#         Current Policies Scenario (CPS), European Union natural gas and steam coal;
+#         IEA crude oil basket for liquid-fuel proxy (DIESEL / LFO).
+# USD->EUR = 0.920 (same convention as the group fuel-price spreadsheet).
+#
+# 2030 CPS values: linear interpolation between 2024 and 2035 CPS endpoints in Table 2.3
+# (6/11 of the interval from 2024 to 2035).
+#
+# Conversions to EUR/MWh_th (thermal) for SES c_op [MCHF/GWh]:
+#   Natural gas:  EUR/MWh = (USD/MBtu / 0.29307107) * USD_to_EUR
+#   Steam coal:   EUR/MWh = (USD/tonne / 6.967) * USD_to_EUR   (~6 000 kcal/kg, ~6.967 MWh_th/t)
+#   Crude (oil):  EUR/MWh = (USD/bbl / (5.8/3.6)) * USD_to_EUR   (~5.8 GJ/bbl → MWh)
+#
+# c_op = EUR/MWh_th * chf_per_eur * 0.001   (chf_per_eur from ses_main_turkey_reference_case.dat)
+#
+# NG_CCS / COAL_CCS: same absolute premia as the 2024 Turkey calibration (+15 and +9 EUR/MWh vs NG/COAL).
+
+param weo25_cps2030_eur_mwh__NG      := 30.27872448078271;
+param weo25_cps2030_eur_mwh__COAL    := 13.34916554666806;
+param weo25_cps2030_eur_mwh__OIL     := 48.22645768025079;
+
+let {t in PERIODS} c_op["NG", t] :=
+	weo25_cps2030_eur_mwh__NG * chf_per_eur * 0.001;
+let {t in PERIODS} c_op["NG_CCS", t] :=
+	(weo25_cps2030_eur_mwh__NG + 15) * chf_per_eur * 0.001;
+
+let {t in PERIODS} c_op["COAL", t] :=
+	weo25_cps2030_eur_mwh__COAL * chf_per_eur * 0.001;
+let {t in PERIODS} c_op["COAL_CCS", t] :=
+	(weo25_cps2030_eur_mwh__COAL + 9) * chf_per_eur * 0.001;
+
+let {t in PERIODS} c_op["DIESEL", t] :=
+	weo25_cps2030_eur_mwh__OIL * chf_per_eur * 0.001;
+let {t in PERIODS} c_op["LFO", t] :=
+	weo25_cps2030_eur_mwh__OIL * chf_per_eur * 0.001;

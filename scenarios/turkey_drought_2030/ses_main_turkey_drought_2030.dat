@@ -1,16 +1,80 @@
 # ================================================================
 # TURKEY DROUGHT SCENARIO - 2030
-# WARNING: Placeholder setup currently reuses reference 2024 values.
-# TODO: Add drought assumptions and 2030-specific inputs.
+# ================================================================
+#
+# Demand (sectoral electricity, TWh -> GWh) and installed capacity
+# (GW) from user-provided Turkish projection tables (screenshots):
+#   /Users/eminkartci/.cursor/projects/Users-eminkartci-Desktop-codenv-ECCM-Project-Group10/assets/Screenshot_2026-05-11_at_21.28.58-de1cedd0-380b-48f7-bea4-0fb8d19df89f.png (tüketim)
+#   /Users/eminkartci/.cursor/projects/Users-eminkartci-Desktop-codenv-ECCM-Project-Group10/assets/Screenshot_2026-05-11_at_21.31.08-0431a9b7-db05-466c-a75b-231f429b2c1b.png (kurulu güç)
+#
+# Sector demand rows: Sanayi, Mesken, Hizmetler, Ulaştırma (Sektörler Toplam 387.3 TWh).
+# Capacity rows: Kömür, Gaz, Nükleer, Hidrolik, Rüzgar, Güneş, Diğer (Toplam 149.1 GW).
+#
+# Same non-hydro capacities and sector demand as the 2030 reference scenario.
+# Only the hydro availability is reduced to the drought level:
+#   Hydro ratio uses Min Reserv(year) / Reservoir(2024) instead of Reservoir(year) / Reservoir(2024).
+#   2030 drought ratio = 4.299783 / 25.709 = 0.167247
 # ================================================================
 
 include scenarios/turkey_reference_case/ses_main_turkey_reference_case.dat;
 
-# Hydro availability calibration note:
-# Source: User-provided reservoir table image (Periods / Years / Reservoir / Min Reserv / Max Reserv),
-# shared in this chat. For drought scenarios, ratio uses Min Reserv(year) / Reservoir(2024).
-# 2030 drought ratio = 4.299783 / 25.709 = 0.167247
-let f_min["HYDRO_DAM"] := 21.886 * 0.167247;
-let f_max["HYDRO_DAM"] := 30.000 * 0.167247;
-let f_min["HYDRO_RIVER"] := 10.421 * 0.167247;
-let f_max["HYDRO_RIVER"] := 15.000 * 0.167247;
+# ----------------------------------------------------------------
+# 1) INSTALLED CAPACITY — 2030 TURKEY (GW -> model f_min / f_max)
+# ----------------------------------------------------------------
+
+# Nuclear (Nükleer 4.8 GW)
+let f_min["NUCLEAR"] := 4.800;
+let f_max["NUCLEAR"] := 5.200;
+
+# Natural gas (Gaz 30.3 GW -> CCGT)
+let f_min["CCGT"] := 30.300;
+let f_max["CCGT"] := 32.200;
+
+# Coal (Kömür 22.8 GW total -> COAL_US + COAL_IGCC, 2024 share split)
+let f_min["COAL_US"] := 11.953;
+let f_min["COAL_IGCC"] := 10.847;
+let f_max["COAL_US"] := 12.400;
+let f_max["COAL_IGCC"] := 11.300;
+
+# Hydro drought: continuous GW band (~4 GW dam, ~2 GW river) lies strictly between
+# ref_size multiples (HYDRO_DAM 8.08 GW/unit, HYDRO_RIVER 3.8 GW/unit) → presolve infeasible.
+# Allow 0 or one reference block per type (solver chooses).
+let f_min["HYDRO_DAM"] := 0;
+let f_max["HYDRO_DAM"] := 8.08;
+let f_min["HYDRO_RIVER"] := 0;
+let f_max["HYDRO_RIVER"] := 3.8;
+
+# Solar PV (Güneş 32.9 GW)
+let f_min["PV"] := 32.900;
+let f_max["PV"] := 35.300;
+
+# Wind (Rüzgar 18.1 GW)
+let f_min["WIND"] := 18.100;
+let f_max["WIND"] := 19.300;
+
+# Other (Diğer 5.1 GW -> biomass + geothermal, 2024 share split)
+let f_min["IND_COGEN_WOOD"] := 3.401;
+let f_max["IND_COGEN_WOOD"] := 3.700;
+let f_min["GEOTHERMAL"] := 1.699;
+let f_max["GEOTHERMAL"] := 1.920;
+
+# ----------------------------------------------------------------
+# 2) LOCK NEW-BUILD HYDRO TECHNOLOGIES (inherited intent)
+# ----------------------------------------------------------------
+
+let f_min["NEW_HYDRO_DAM"] := 0;
+let f_min["NEW_HYDRO_RIVER"] := 0;
+let f_max["NEW_HYDRO_DAM"] := 0;
+let f_max["NEW_HYDRO_RIVER"] := 0;
+
+# ----------------------------------------------------------------
+# 3) ELECTRICITY DEMAND — 2030 (GWh/year)
+# ----------------------------------------------------------------
+# Mesken 83.1, Hizmetler 114.5, Sanayi 181.1, Ulaştırma 8.5 TWh
+
+let end_uses_demand_year["ELECTRICITY", "HOUSEHOLDS"] := 83100;
+let end_uses_demand_year["ELECTRICITY", "SERVICES"] := 114500;
+let end_uses_demand_year["ELECTRICITY", "INDUSTRY"] := 181100;
+let end_uses_demand_year["ELECTRICITY", "TRANSPORTATION"] := 8500;
+
+include scenarios/turkey_weo2025_cps_fuel_operations_2030.dat;

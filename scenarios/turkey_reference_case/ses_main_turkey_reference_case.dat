@@ -32,6 +32,14 @@ let f_min["COAL_IGCC"] := 10.404;
 let f_max["COAL_US"] := 12.000;
 let f_max["COAL_IGCC"] := 11.000;
 
+# Kömür — yıllık elektrik üretimi üst sınırı (model/ses_main.mod: f_max_perc)
+# Her kömür teknolojisi, ELECTRICITY teknoloji kümesinin yıllık toplam çıktısının en fazla %20’si;
+# COAL_US + COAL_IGCC birlikte en fazla ~%40 (ikisi de doluysa).
+let fmax_perc["COAL_US"] := 0.20;
+let fmax_perc["COAL_IGCC"] := 0.20;
+let fmax_perc["COAL_US_CCS"] := 0.20;
+let fmax_perc["COAL_IGCC_CCS"] := 0.20;
+
 # Hydro
 # f_max has larger tolerance due to SES integer unit structure.
 let f_min["HYDRO_DAM"] := 21.886;
@@ -69,30 +77,29 @@ let f_max["NEW_HYDRO_RIVER"] := 0;
 
 
 # ----------------------------------------------------------------
-# 3) FUEL PRICE CALIBRATION (TURKEY)
+# 3) FUEL PRICES — IEA WEO 2025 STEPS (2024 anchor) + EUR dönüşümü
 # ----------------------------------------------------------------
 #
-# Primary input unit for Turkey fuel prices: [EUR/MWh] (LHV, thermal basis).
-# Model parameter c_op must be in [MCHF/GWh] (model/ses_main.mod, line 75).
+# Birim: EUR/MWh_th (LHV, termal); c_op [MCHF/GWh] = EUR/MWh × chf_per_eur × 0.001
 #
-# Conversion used here:
-#   c_op [MCHF/GWh] = price_EUR_per_MWh * chf_per_eur * 0.001
-# where chf_per_eur is CHF per EUR (set to 1.0 if you treat MCHF numerically like MEUR
-# for these coefficients, or replace with a spot rate, e.g. SNB).
+# Metod (özet): Uzun dönem WEO 2025 Table 2.3; Türkiye için şeffaf proxy olarak AB ithalat
+# benchmark’ları (boru+LNG gaz, 6 000 kcal/kg buhar kömürü, IEA ham petrol sepeti → DIESEL/LFO).
+# Referans senaryo: STEPS (Stated Policies). Duyarlılık: CPS (yüksek fosil) / NZE (düşük) —
+# ayrı dosyalarda tutulabilir (ör. turkey_weo2025_cps_fuel_operations_*.dat).
 #
-# v4 TEİAŞ 2024 generation-mix calibration (EUR/MWh LHV):
-# - Coal raised to reduce coal dispatch (~35% target).
-# - NG lowered slightly so CCGT share moves toward ~19%.
-# - Biomass grid share is not represented (IND_COGEN_WOOD is heat-sector only).
+# 2024 STEPS anchor (sabit 2024 USD/MWh_th infografi): NG 35.1, buhar kömürü 16.1, petrol 46.5
+# EUR/MWh_th = USD/MWh_th × USD_to_EUR ,  USD_to_EUR = 0.920
+#
+# Kömür elektrik payı üst sınırı %40 için bkz. fmax_perc (yukarıda).
 
-param chf_per_eur := 1.0;  # CHF per EUR; multiplies all turkey_fuel_* EUR/MWh inputs
+param chf_per_eur := 1.0;
 
-param turkey_fuel_EUR_per_MWh__NG       := 42.0;
-param turkey_fuel_EUR_per_MWh__NG_CCS   := 57.0;
-param turkey_fuel_EUR_per_MWh__COAL     := 29.0;
-param turkey_fuel_EUR_per_MWh__COAL_CCS  := 38.0;
-param turkey_fuel_EUR_per_MWh__DIESEL   := 78;
-param turkey_fuel_EUR_per_MWh__LFO      := 78;
+param turkey_fuel_EUR_per_MWh__NG       := 32.292;   # 35.1 * 0.920
+param turkey_fuel_EUR_per_MWh__NG_CCS   := 47.292;   # NG + 15
+param turkey_fuel_EUR_per_MWh__COAL     := 14.812;   # 16.1 * 0.920
+param turkey_fuel_EUR_per_MWh__COAL_CCS  := 23.812;   # COAL + 9
+param turkey_fuel_EUR_per_MWh__DIESEL   := 42.780;   # 46.5 * 0.920 (petrol proxy)
+param turkey_fuel_EUR_per_MWh__LFO      := 42.780;
 param turkey_fuel_EUR_per_MWh__WOOD     := 18;
 param turkey_fuel_EUR_per_MWh__URANIUM  := 7;
 
@@ -133,15 +140,12 @@ let {s in SECTORS} end_uses_demand_year["MOBILITY_FREIGHT", s] := 0;
 
 
 # ----------------------------------------------------------------
-# 4) ELECTRICITY DEMAND — 2025 (near-term / “2024” senaryo yılı)
-# Units: GWh/year (TWh × 1000)
-# Kaynak: Elektrik Tüketiminde Sektörler tablosu — 2025 sütunu (TWh):
-#   Sanayi 156.2, Mesken 69.2, Hizmetler 98.4, Ulaştırma 2.2
-#   → Sektörler toplamı 326.0 TWh = 326_000 GWh
+# 4) ELECTRICITY DEMAND — varsayılan (2030/2035 ve genel referans)
+# Units: GWh/year
+# 2024 referans / 2024 kuraklık: scenarios/turkey_reference_2024 ve turkey_drought_2024
+# dosyalarında TEİAŞ 2024 üretim sırasına (~341,85 TWh) ölçeklenmiş talep ile override edilir.
+# Aşağıdaki 348 TWh tabanını 2030–2035 senaryoları kullanır (orijinal sektör oranları).
 # ----------------------------------------------------------------
-#
-# Total electricity demand target:
-# 348 TWh = 348,000 GWh
 
 let end_uses_demand_year["ELECTRICITY", "HOUSEHOLDS"] := 87000;
 let end_uses_demand_year["ELECTRICITY", "SERVICES"] := 96000;
@@ -158,19 +162,9 @@ let avail["ELEC_EXPORT"] := 3500;
 
 
 # ----------------------------------------------------------------
-# 6) CALIBRATION TARGET
+# 6) POLİCY NOTLARI
 # ----------------------------------------------------------------
 #
-# Compare model output against TEİAŞ 2024 annual generation shares:
-#
-# Coal total      ≈ 35%
-# Natural gas     ≈ 19%
-# Hydro total     ≈ 22%
-# Wind            ≈ 11%
-# Solar           ≈ 7%
-# Biomass + Geo   ≈ 5–6%
-#
-# If coal is still too high: increase turkey_fuel_EUR_per_MWh__COAL (e.g. 32–38).
-# If NG too low: decrease turkey_fuel_EUR_per_MWh__NG slightly (e.g. 34–38).
-# Hydro dam/river split vs TEİAŞ is controlled by f_min/f_max in year .dat files.
+# TEİAŞ 2024 karışımı ile kıyas için bkz. yıllık .dat hidro oranları ve talep.
+# Kömür elektrik payı: fmax_perc ile yıllık üst sınır %40 (iki kömür hattı × %20).
 # ================================================================

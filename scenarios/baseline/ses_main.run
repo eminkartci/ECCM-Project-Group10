@@ -124,9 +124,9 @@ if sum{t in PERIODS}(F_Mult_t ["BUS_COACH_CNG_STOICH", t] * period_duration [t])
 if sum{t in PERIODS}(F_Mult_t ["H2_NG", t] * period_duration [t]) > 10 then
 	printf "%s,%s,%.2f,%s,%s,%s\n", "NG" , "H2 prod", sum{t in PERIODS}(-layers_in_out["H2_NG","NG"] * F_Mult_t ["H2_NG", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output/sankey/input2sankey.csv;
 if sum{t in PERIODS}(F_Mult_t ["CCGT", t] * period_duration [t]) > 10 then
-	printf "%s,%s,%.2f,%s,%s,%s\n", "NG" , "Elec", sum{t in PERIODS}(-layers_in_out["CCGT","NG"] * F_Mult_t ["CCGT", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output/sankey/input2sankey.csv;
+	printf "%s,%s,%.2f,%s,%s,%s\n", "NG" , "Elec", sum{t in PERIODS}(layers_in_out["CCGT","ELECTRICITY"] * F_Mult_t ["CCGT", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output/sankey/input2sankey.csv;
 if sum{t in PERIODS}(F_Mult_t ["CCGT_CCS", t] * period_duration [t]) > 10 then
-	printf "%s,%s,%.2f,%s,%s,%s\n", "NG CCS" , "Elec", sum{t in PERIODS}(-layers_in_out["CCGT_CCS","NG_CCS"] * F_Mult_t ["CCGT_CCS", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output/sankey/input2sankey.csv;
+	printf "%s,%s,%.2f,%s,%s,%s\n", "NG CCS" , "Elec", sum{t in PERIODS}(layers_in_out["CCGT_CCS","ELECTRICITY"] * F_Mult_t ["CCGT_CCS", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output/sankey/input2sankey.csv;
 if sum{t in PERIODS}((F_Mult_t ["IND_COGEN_GAS", t] + F_Mult_t ["DHN_COGEN_GAS", t] + F_Mult_t ["DEC_COGEN_GAS", t] + F_Mult_t ["DEC_ADVCOGEN_GAS", t]) * period_duration [t]) > 10 then
 	printf "%s,%s,%.2f,%s,%s,%s\n", "NG" , "CHP", sum{t in PERIODS}(-layers_in_out["IND_COGEN_GAS","NG"] * F_Mult_t ["IND_COGEN_GAS", t] * period_duration [t] - layers_in_out["DHN_COGEN_GAS","NG"] * F_Mult_t ["DHN_COGEN_GAS", t] * period_duration [t] - layers_in_out["DEC_COGEN_GAS","NG"] * F_Mult_t ["DEC_COGEN_GAS", t] * period_duration [t] - layers_in_out["DEC_ADVCOGEN_GAS","NG"] * F_Mult_t ["DEC_ADVCOGEN_GAS", t] * period_duration [t]) / 1000 , "NG", "#FFD700", "TWh" > output/sankey/input2sankey.csv;
 if sum{t in PERIODS}(F_Mult_t ["DEC_THHP_GAS", t] * period_duration [t]) > 10 then
@@ -144,11 +144,11 @@ if sum{t in PERIODS}((F_Mult_t ["HYDRO_DAM", t] + F_Mult_t ["NEW_HYDRO_DAM", t])
 	printf "%s,%s,%.2f,%s,%s,%s\n", "Hydro Dams" , "Elec", sum{t in PERIODS}(layers_in_out["HYDRO_DAM","ELECTRICITY"] * F_Mult_t ["HYDRO_DAM", t] * period_duration [t] + layers_in_out["NEW_HYDRO_DAM","ELECTRICITY"] * F_Mult_t ["NEW_HYDRO_DAM", t] * period_duration [t]) / 1000 , "Hydro Dam", "#00CED1", "TWh" > output/sankey/input2sankey.csv;
 if sum{t in PERIODS}((F_Mult_t ["HYDRO_RIVER", t] + F_Mult_t ["NEW_HYDRO_RIVER", t]) * period_duration [t]) > 10 then
 	printf "%s,%s,%.2f,%s,%s,%s\n", "Hydro River" , "Elec", sum{t in PERIODS}(layers_in_out["HYDRO_RIVER","ELECTRICITY"] * F_Mult_t ["HYDRO_RIVER", t] * period_duration [t] + layers_in_out["NEW_HYDRO_RIVER","ELECTRICITY"] * F_Mult_t ["NEW_HYDRO_RIVER", t] * period_duration [t]) / 1000 , "Hydro River", "#0000FF", "TWh" > output/sankey/input2sankey.csv;
-# Coal
+# Coal → Elec: elektrik üretimi (TWh); kömür ısı girdisi değil
 if sum{t in PERIODS}((F_Mult_t ["COAL_US", t] + F_Mult_t ["COAL_IGCC", t]) * period_duration [t]) > 10 then
-	printf "%s,%s,%.2f,%s,%s,%s\n", "Coal" , "Elec", sum{t in PERIODS}(-layers_in_out["COAL_US","COAL"] * F_Mult_t ["COAL_US", t] * period_duration [t] - layers_in_out["COAL_IGCC","COAL"] * F_Mult_t ["COAL_IGCC", t] * period_duration [t]) / 1000 , "Coal", "#A0522D", "TWh" > output/sankey/input2sankey.csv;
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Coal" , "Elec", sum{t in PERIODS}(layers_in_out["COAL_US","ELECTRICITY"] * F_Mult_t ["COAL_US", t] * period_duration [t] + layers_in_out["COAL_IGCC","ELECTRICITY"] * F_Mult_t ["COAL_IGCC", t] * period_duration [t]) / 1000 , "Coal", "#A0522D", "TWh" > output/sankey/input2sankey.csv;
 if sum{t in PERIODS}((F_Mult_t ["COAL_US_CCS", t] + F_Mult_t ["COAL_IGCC_CCS", t]) * period_duration [t]) > 10 then
-	printf "%s,%s,%.2f,%s,%s,%s\n", "Coal CCS" , "Elec", sum{t in PERIODS}(-layers_in_out["COAL_US_CCS","COAL_CSS"] * F_Mult_t ["COAL_US_CCS", t] * period_duration [t] - layers_in_out["COAL_IGCC_CCS","COAL"] * F_Mult_t ["COAL_IGCC_CCS", t] * period_duration [t]) / 1000 , "Coal", "#A0522D", "TWh" > output/sankey/input2sankey.csv;
+	printf "%s,%s,%.2f,%s,%s,%s\n", "Coal CCS" , "Elec", sum{t in PERIODS}(layers_in_out["COAL_US_CCS","ELECTRICITY"] * F_Mult_t ["COAL_US_CCS", t] * period_duration [t] + layers_in_out["COAL_IGCC_CCS","ELECTRICITY"] * F_Mult_t ["COAL_IGCC_CCS", t] * period_duration [t]) / 1000 , "Coal", "#A0522D", "TWh" > output/sankey/input2sankey.csv;
 if sum{t in PERIODS}(F_Mult_t ["IND_BOILER_COAL", t] * period_duration [t]) > 10 then
 	printf "%s,%s,%.2f,%s,%s,%s\n", "Coal" , "Boilers", sum{t in PERIODS}(-layers_in_out["IND_BOILER_COAL","COAL"] * F_Mult_t ["IND_BOILER_COAL", t] * period_duration [t]) / 1000 , "Coal", "#A0522D", "TWh" > output/sankey/input2sankey.csv;
 # Solar

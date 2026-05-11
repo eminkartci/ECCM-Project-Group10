@@ -1,10 +1,16 @@
 # ================================================================
 # TURKEY DROUGHT SCENARIO - 2024
-# Talep: reference case ile aynı (2025 sektör elektriği TWh tablosu).
+# Talep: reference 2024 ile aynı — TEİAŞ 2024 üretim sırası (~341,85 TWh), sektör oranları korunur.
 # Kuraklık: hidro f_min/f_max aşağıda 2024 oranı ile.
 # ================================================================
 
 include scenarios/turkey_reference_case/ses_main_turkey_reference_case.dat;
+
+# Sektör talepleri: turkey_reference_2024 ile birebir (GWh/yıl toplam 341 848)
+let end_uses_demand_year["ELECTRICITY", "HOUSEHOLDS"] := 85462;
+let end_uses_demand_year["ELECTRICITY", "SERVICES"] := 94303;
+let end_uses_demand_year["ELECTRICITY", "INDUSTRY"] := 150295;
+let end_uses_demand_year["ELECTRICITY", "TRANSPORTATION"] := 11788;
 
 # Hydro availability calibration note:
 # Source: User-provided reservoir table image (Periods / Years / Reservoir / Min Reserv / Max Reserv),

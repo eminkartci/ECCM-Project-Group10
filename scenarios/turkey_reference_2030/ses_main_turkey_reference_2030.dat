@@ -76,4 +76,5 @@ let end_uses_demand_year["ELECTRICITY", "SERVICES"] := 114500;
 let end_uses_demand_year["ELECTRICITY", "INDUSTRY"] := 181100;
 let end_uses_demand_year["ELECTRICITY", "TRANSPORTATION"] := 8500;
 
-include scenarios/turkey_weo2025_cps_fuel_operations_2030.dat;
+# Yakıt: IEA WEO 2025 STEPS (2030); EUR = USD/MWh_th × 0.920 — bkz. turkey_weo2025_steps_fuel_operations_2030.dat
+include scenarios/turkey_weo2025_steps_fuel_operations_2030.dat;

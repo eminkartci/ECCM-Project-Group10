@@ -71,8 +71,8 @@ done
 echo "Done. (${#OUTPUT_DIRS[@]} directories cleared or absent.)"
 
 echo "Starting batch scenario run..."
-echo "WARNING: All scenario .dat files currently reuse 2024 values."
-echo "WARNING: Update year-specific and drought-specific assumptions before final analysis."
+echo "NOTE: Reference/drought 2030–2035 use IEA WEO 2025 STEPS fuel files; 2024 anchor in ses_main_turkey_reference_case.dat."
+echo "NOTE: CPS fuel files remain for optional high-fossil sensitivity runs (include manually if needed)."
 
 LOG_ROOT="$ROOT_DIR/scenario_run_logs"
 mkdir -p "$LOG_ROOT"

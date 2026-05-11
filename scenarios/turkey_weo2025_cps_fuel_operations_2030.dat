@@ -1,6 +1,9 @@
 # ----------------------------------------------------------------
-# WEO 2025 CPS — fuel operating prices for 2030
+# WEO 2025 CPS — fuel operating prices for 2030 (duyarlılık / yüksek fosil fiyat)
 # ----------------------------------------------------------------
+#
+# Varsayılan Türkiye referans & kuraklık 2030 koşuları STEPS dosyasını kullanır.
+# Bu dosya isteğe bağlı CPS senaryosu içindir.
 #
 # Source: IEA World Energy Outlook 2025, Table 2.3 (wholesale fossil fuel prices),
 #         Current Policies Scenario (CPS), European Union natural gas and steam coal;

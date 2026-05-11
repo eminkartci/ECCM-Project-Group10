@@ -1,10 +1,19 @@
 # ================================================================
 # TURKEY REFERENCE SCENARIO - 2024
-# Talep: include dosyasındaki 2025 sektör elektriği (TWh tablosu).
+# Talep: TEİAŞ 2024 yıllık brüt üretim sırası (~341,85 TWh); sektör payları
+# önceki 348 TWh tablosu ile aynı (Mesken %25, Hizmet %27.59, Sanayi %43.97, Ulaştırma %3.45).
 # Kapasite: 2024 hidro oranı (rezervuar tablosu).
 # ================================================================
 
 include scenarios/turkey_reference_case/ses_main_turkey_reference_case.dat;
+
+# ----------------------------------------------------------------
+# Sektör elektrik talebi (GWh/yıl) — TEİAŞ 341 848 061 MWh ≈ 341 848 GWh toplam
+# ----------------------------------------------------------------
+let end_uses_demand_year["ELECTRICITY", "HOUSEHOLDS"] := 85462;
+let end_uses_demand_year["ELECTRICITY", "SERVICES"] := 94303;
+let end_uses_demand_year["ELECTRICITY", "INDUSTRY"] := 150295;
+let end_uses_demand_year["ELECTRICITY", "TRANSPORTATION"] := 11788;
 
 # Hydro availability calibration note:
 # Source: User-provided reservoir table image (Periods / Years / Reservoir / Min Reserv / Max Reserv),

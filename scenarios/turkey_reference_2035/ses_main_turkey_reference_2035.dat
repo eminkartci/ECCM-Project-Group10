@@ -77,4 +77,5 @@ let end_uses_demand_year["ELECTRICITY", "SERVICES"] := 111500;
 let end_uses_demand_year["ELECTRICITY", "INDUSTRY"] := 208000;
 let end_uses_demand_year["ELECTRICITY", "TRANSPORTATION"] := 24500;
 
-include scenarios/turkey_weo2025_cps_fuel_operations_2035.dat;
+# Yakıt: IEA WEO 2025 STEPS (2035); bkz. turkey_weo2025_steps_fuel_operations_2035.dat
+include scenarios/turkey_weo2025_steps_fuel_operations_2035.dat;

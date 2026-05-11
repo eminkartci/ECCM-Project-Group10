@@ -257,6 +257,49 @@ def parse_sankey_csv(path: Path):
     return links
 
 
+# Sankey export: links into the central "Elec" node (same as dashboard Sankey).
+SANKEY_ELEC_SOURCE_ORDER = [
+    "Nuclear",
+    "NG CCS",
+    "NG",
+    "Coal CCS",
+    "Coal",
+    "Hydro Dams",
+    "Hydro River",
+    "Wind",
+    "Solar",
+    "Geothermal",
+    "Electricity",
+]
+
+
+def aggregate_sankey_supply_to_elec_gwh(links: list) -> dict[str, float]:
+    """Sum realValue (TWh) for target 'Elec' → GWh to align with total_output-style numbers in UI."""
+    out: dict[str, float] = {}
+    for L in links or []:
+        tgt = (L.get("target") or "").strip().lower()
+        if tgt != "elec":
+            continue
+        src = (L.get("source") or "").strip()
+        if not src:
+            continue
+        try:
+            twh = float(L.get("value", 0) or 0)
+        except (TypeError, ValueError):
+            continue
+        if twh <= 0:
+            continue
+        out[src] = out.get(src, 0.0) + twh * 1000.0
+    return out
+
+
+def merge_sankey_elec_row_order(keys: set[str]) -> list[str]:
+    if not keys:
+        return []
+    rest = sorted(k for k in keys if k not in SANKEY_ELEC_SOURCE_ORDER)
+    return [k for k in SANKEY_ELEC_SOURCE_ORDER if k in keys] + rest
+
+
 def parse_cost_breakdown(path: Path):
     result = {}
     if not path.exists():
@@ -327,6 +370,7 @@ def build():
         cost_breakdown = parse_cost_breakdown(d / "cost_breakdown.txt")
         end_uses_annual = parse_end_uses(d / "End_Uses.txt")
         sankey_links = parse_sankey_csv(d / "sankey" / "input2sankey.csv")
+        electricity_sankey_supply_gwh = aggregate_sankey_supply_to_elec_gwh(sankey_links)
         elec_row = total_output.get("ELECTRICITY")
         elec_supply_techs = parse_electricity_supply_techs(d / "sets.txt")
         elec_supply = sum_electricity_supply_gwh(total_output, elec_supply_techs)
@@ -352,6 +396,7 @@ def build():
             "costBreakdown": cost_breakdown,
             "endUsesAnnual": end_uses_annual,
             "sankeyLinks": sankey_links,
+            "electricitySankeySupplyGwh": electricity_sankey_supply_gwh,
             "solved": solved,
             "statusReason": reason,
             "runError": run_error,
@@ -384,6 +429,7 @@ def build():
                 "costBreakdown": {},
                 "endUsesAnnual": {},
                 "sankeyLinks": [],
+                "electricitySankeySupplyGwh": {},
                 "solved": False,
                 "statusReason": "output folder not found",
                 "runError": None,
@@ -436,6 +482,14 @@ def build():
                     if fuel_resources_for_share:
                         break
 
+    sankey_elec_keys: set[str] = set()
+    for s in scenarios:
+        m = s.get("electricitySankeySupplyGwh") or {}
+        for k, v in m.items():
+            if (v or 0) > 0:
+                sankey_elec_keys.add(k)
+    electricity_sankey_supply_row_order = merge_sankey_elec_row_order(sankey_elec_keys)
+
     unsolved_expected = [x for x in expected_status if not x["solved"]]
     solved_expected = [x for x in expected_status if x["solved"]]
     payload = {
@@ -445,6 +499,7 @@ def build():
         "unsolvedExpectedCount": len(unsolved_expected),
         "solvedExpectedCount": len(solved_expected),
         "fuelResourcesForShare": fuel_resources_for_share,
+        "electricitySankeySupplyRowOrder": electricity_sankey_supply_row_order,
         "installedCapacityFuelOrder": INSTALLED_CAPACITY_FUEL_ORDER,
         "installedCapacityFuelLabels": INSTALLED_CAPACITY_FUEL_LABELS_TR,
     }

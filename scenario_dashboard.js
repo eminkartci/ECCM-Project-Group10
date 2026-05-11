@@ -88,6 +88,21 @@ const FUEL_SHARE_COLORS = [
   "#64748b"
 ];
 
+/** Sankey `input2sankey.csv` içinde hedef düğüm `Elec` olan kaynaklar (export_sankey.run ile aynı sıra) */
+const SANKEY_ELEC_SOURCE_ORDER = [
+  "Nuclear",
+  "NG CCS",
+  "NG",
+  "Coal CCS",
+  "Coal",
+  "Hydro Dams",
+  "Hydro River",
+  "Wind",
+  "Solar",
+  "Geothermal",
+  "Electricity"
+];
+
 pickFolderBtn.addEventListener("click", async () => {
   try {
     projectDirHandle = await window.showDirectoryPicker();
@@ -223,6 +238,7 @@ async function loadDashboard() {
     fuelResourcesForShare = [];
     expectedScenarios = [];
     scenarios = await scanScenarios(projectDirHandle);
+    enrichScenariosElectricitySankeySupply();
     if (!scenarios.length) {
       scenarioTogglesEl.innerHTML = "";
       energySummaryEl.innerHTML = "";
@@ -263,6 +279,7 @@ function loadFromPrecomputedData() {
   }
 
   scenarios = payload.scenarios;
+  enrichScenariosElectricitySankeySupply();
   expectedScenarios = Array.isArray(payload.expectedScenarios) ? payload.expectedScenarios : [];
   fuelResourcesForShare = Array.isArray(payload.fuelResourcesForShare) ? payload.fuelResourcesForShare : [];
   installedFuelOrder = Array.isArray(payload.installedCapacityFuelOrder) ? payload.installedCapacityFuelOrder : [];
@@ -581,6 +598,7 @@ async function scanScenarios(rootHandle) {
       costBreakdown: {},
       endUsesAnnual: {},
       sankeyLinks: [],
+      electricitySankeySupplyGwh: {},
       solved: false,
       statusReason: "",
       runError: null,
@@ -625,6 +643,7 @@ async function scanScenarios(rootHandle) {
     if (sankeyFile) {
       scenario.sankeyLinks = parseSankeyCsv(await readText(sankeyFile));
     }
+    scenario.electricitySankeySupplyGwh = aggregateSankeySupplyToElecGwh(scenario.sankeyLinks);
 
     const setsFile = await getOptionalFile(handle, "sets.txt");
     let elecSupplyTechs = [];
@@ -790,6 +809,13 @@ function formatPercent(p) {
   return `${p.toLocaleString("tr-TR", { maximumFractionDigits: 1, minimumFractionDigits: 0 })}%`;
 }
 
+/** total_output yakıt satırları GWh; panelde MWh gösterimi için */
+function formatMwhFromGwh(gwh) {
+  if (!Number.isFinite(gwh)) return "—";
+  const mwh = gwh * 1000;
+  return `${mwh.toLocaleString("tr-TR", { maximumFractionDigits: 0 })} MWh`;
+}
+
 function sumElectricitySupplyGwh(totalOutput, techs) {
   if (!techs.length || !totalOutput) return null;
   let s = 0;
@@ -845,6 +871,60 @@ function parseSankeyCsv(text) {
     });
   }
   return links;
+}
+
+/** Sankey realValue = TWh → GWh (total_output ile aynı birim ailesi; MWh = GWh×1000) */
+function aggregateSankeySupplyToElecGwh(links) {
+  const out = {};
+  if (!Array.isArray(links)) return out;
+  for (const L of links) {
+    if (!L || String(L.target || "").trim().toLowerCase() !== "elec") continue;
+    const src = String(L.source || "").trim();
+    if (!src) continue;
+    const twh = Number(L.value);
+    if (!Number.isFinite(twh) || twh <= 0) continue;
+    out[src] = (out[src] || 0) + twh * 1000;
+  }
+  return out;
+}
+
+function mergeSankeyElecRowOrder(keySet) {
+  const keys = [...keySet].filter(Boolean);
+  if (!keys.length) return [];
+  const rest = keys.filter((k) => !SANKEY_ELEC_SOURCE_ORDER.includes(k)).sort((a, b) => a.localeCompare(b));
+  return [...SANKEY_ELEC_SOURCE_ORDER.filter((k) => keySet.has(k)), ...rest];
+}
+
+function scenarioSankeyElecSupplyTotal(s) {
+  const m = s.electricitySankeySupplyGwh || {};
+  let t = 0;
+  for (const v of Object.values(m)) {
+    if (Number.isFinite(v) && v > 0) t += v;
+  }
+  return t;
+}
+
+function enrichScenariosElectricitySankeySupply() {
+  scenarios.forEach((s) => {
+    if (!s.electricitySankeySupplyGwh || !Object.keys(s.electricitySankeySupplyGwh).length) {
+      s.electricitySankeySupplyGwh = aggregateSankeySupplyToElecGwh(s.sankeyLinks);
+    }
+  });
+}
+
+function fuelShareRowKeysForActive(active) {
+  const anySankey = active.some((s) => scenarioSankeyElecSupplyTotal(s) > 0);
+  if (anySankey) {
+    const union = new Set();
+    active.forEach((s) => {
+      const m = s.electricitySankeySupplyGwh || {};
+      Object.entries(m).forEach(([k, v]) => {
+        if (Number(v) > 0) union.add(k);
+      });
+    });
+    return mergeSankeyElecRowOrder(union);
+  }
+  return getFuelResourceList();
 }
 
 function splitCsvLine(line) {
@@ -961,41 +1041,74 @@ function renderProductionChart(active) {
 
 function renderFuelShares(active) {
   if (!fuelShareTableEl || !fuelShareChart) return;
-  const fuels = getFuelResourceList();
-  if (!fuels.length) {
-    fuelShareTableEl.innerHTML =
-      "<p class=\"muted\"><code>sets.txt</code> yok veya <code>RESOURCES</code> okunamadı. Yakıt listesi için veri paketini yenileyin veya klasör seçin.</p>";
+  const useSankey = active.some((s) => scenarioSankeyElecSupplyTotal(s) > 0);
+  const resourceFuels = getFuelResourceList();
+  const rowKeys = fuelShareRowKeysForActive(active);
+
+  if (!rowKeys.length) {
+    fuelShareTableEl.innerHTML = useSankey
+      ? "<p class=\"muted\">Seçili senaryolarda <code>sankey/input2sankey.csv</code> içinde <code>→ Elec</code> akışı yok.</p>"
+      : "<p class=\"muted\"><code>sets.txt</code> yok veya <code>RESOURCES</code> okunamadı. Yakıt listesi için veri paketini yenileyin veya klasör seçin.</p>";
     clearCanvas(fuelShareChart);
     return;
   }
 
   const agg = new Map();
   active.forEach((s) => {
-    fuels.forEach((f) => {
-      const v = Number(s.totalOutput?.[f]) || 0;
+    rowKeys.forEach((f) => {
+      const v = useSankey
+        ? Number(s.electricitySankeySupplyGwh?.[f]) || 0
+        : Number(s.totalOutput?.[f]) || 0;
       if (v > 0) agg.set(f, (agg.get(f) || 0) + v);
     });
   });
-  const fuelsOrdered = fuels.filter((f) => (agg.get(f) || 0) > 0).sort((a, b) => (agg.get(b) || 0) - (agg.get(a) || 0));
+  const fuelsOrdered = rowKeys.filter((f) => (agg.get(f) || 0) > 0).sort((a, b) => (agg.get(b) || 0) - (agg.get(a) || 0));
   if (!fuelsOrdered.length) {
-    fuelShareTableEl.innerHTML =
-      "<p class=\"muted\">Seçili senaryolarda bu yakıt satırlarında pozitif <code>total_output</code> yok.</p>";
+    fuelShareTableEl.innerHTML = useSankey
+      ? "<p class=\"muted\">Sankey dosyasında Elec hedefine pozitif akış yok.</p>"
+      : "<p class=\"muted\">Seçili senaryolarda bu yakıt satırlarında pozitif <code>total_output</code> yok.</p>";
     clearCanvas(fuelShareChart);
     return;
   }
 
-  const header = active.map((s) => `<th>${escapeHtml(s.label || s.folderName)}</th>`).join("");
+  const firstCol = useSankey
+    ? `Kaynak <span class="fuel-share-th-sub">(Sankey → Elec, <code>input2sankey.csv</code>)</span>`
+    : "Yakıt (RESOURCES)";
+  const footerLabel = useSankey
+    ? `<strong>Toplam</strong> <span class="fuel-share-th-sub">(Sankey → Elec, GWh)</span>`
+    : `<strong>Toplam</strong> <span class="fuel-share-th-sub">(liste içi RESOURCES)</span>`;
+
+  const header = active
+    .map(
+      (s) =>
+        `<th>${escapeHtml(s.label || s.folderName)}<div class="fuel-share-th-sub">MWh · toplam içinde %</div></th>`
+    )
+    .join("");
   const rows = fuelsOrdered
     .map((f) => {
       const cells = active
         .map((s) => {
-          const tot = scenarioFuelTotalFromList(s, fuels);
-          const v = Number(s.totalOutput?.[f]) || 0;
+          const tot = useSankey ? scenarioSankeyElecSupplyTotal(s) : scenarioFuelTotalFromList(s, resourceFuels);
+          const v = useSankey
+            ? Number(s.electricitySankeySupplyGwh?.[f]) || 0
+            : Number(s.totalOutput?.[f]) || 0;
           const pct = tot > 0 ? (100 * v) / tot : 0;
-          return `<td title="${formatNumber(v)} GWh">${formatPercent(pct)}</td>`;
+          if (!(tot > 0)) {
+            return `<td class="fuel-share-cell">—</td>`;
+          }
+          const titleGwh = `${formatNumber(v)} GWh`;
+          return `<td class="fuel-share-cell" title="${titleGwh}"><span class="fuel-share-cell__mwh">${formatMwhFromGwh(v)}</span><span class="fuel-share-cell__pct">${formatPercent(pct)}</span></td>`;
         })
         .join("");
       return `<tr><td>${escapeHtml(f)}</td>${cells}</tr>`;
+    })
+    .join("");
+
+  const footerCells = active
+    .map((s) => {
+      const tot = useSankey ? scenarioSankeyElecSupplyTotal(s) : scenarioFuelTotalFromList(s, resourceFuels);
+      if (!(tot > 0)) return `<td class="fuel-share-cell">—</td>`;
+      return `<td class="fuel-share-cell"><span class="fuel-share-cell__mwh"><strong>${formatMwhFromGwh(tot)}</strong></span><span class="fuel-share-cell__pct">%100</span></td>`;
     })
     .join("");
 
@@ -1003,18 +1116,24 @@ function renderFuelShares(active) {
     <table>
       <thead>
         <tr>
-          <th>Yakıt (RESOURCES)</th>
+          <th>${firstCol}</th>
           ${header}
         </tr>
       </thead>
       <tbody>${rows}</tbody>
+      <tfoot>
+        <tr>
+          <td>${footerLabel}</td>
+          ${footerCells}
+        </tr>
+      </tfoot>
     </table>
   `;
 
-  renderFuelShareStackedChart(fuelShareChart, active, fuels, fuelsOrdered);
+  renderFuelShareStackedChart(fuelShareChart, active, resourceFuels, fuelsOrdered, useSankey);
 }
 
-function renderFuelShareStackedChart(canvas, activeScenarios, allFuels, fuelsOrdered) {
+function renderFuelShareStackedChart(canvas, activeScenarios, resourceFuels, fuelsOrdered, useSankey) {
   const ctx = canvas.getContext("2d");
   const maxSeg = 9;
   const head = fuelsOrdered.slice(0, maxSeg);
@@ -1034,11 +1153,11 @@ function renderFuelShareStackedChart(canvas, activeScenarios, allFuels, fuelsOrd
 
   ctx.fillStyle = "#0f172a";
   ctx.font = "13px system-ui";
-  ctx.fillText("Yakıt payı (%) — her satır bir senaryo", pad.l, 20);
+  ctx.fillText(useSankey ? "Sankey → Elec payı (%) — her satır bir senaryo" : "Yakıt payı (%) — her satır bir senaryo", pad.l, 20);
 
   activeScenarios.forEach((s, si) => {
     const yMid = pad.t + si * rowH + rowH / 2;
-    const tot = scenarioFuelTotalFromList(s, allFuels);
+    const tot = useSankey ? scenarioSankeyElecSupplyTotal(s) : scenarioFuelTotalFromList(s, resourceFuels);
     ctx.fillStyle = "#334155";
     ctx.font = "11px system-ui";
     ctx.textAlign = "right";
@@ -1056,12 +1175,16 @@ function renderFuelShareStackedChart(canvas, activeScenarios, allFuels, fuelsOrd
     let x = x0;
     const segs = [];
     head.forEach((f) => {
-      const v = Number(s.totalOutput?.[f]) || 0;
+      const v = useSankey
+        ? Number(s.electricitySankeySupplyGwh?.[f]) || 0
+        : Number(s.totalOutput?.[f]) || 0;
       segs.push({ label: f, val: v });
     });
     let other = 0;
     tail.forEach((f) => {
-      other += Number(s.totalOutput?.[f]) || 0;
+      other += useSankey
+        ? Number(s.electricitySankeySupplyGwh?.[f]) || 0
+        : Number(s.totalOutput?.[f]) || 0;
     });
     if (tail.length && other > 0) {
       segs.push({ label: "Diğer", val: other });

@@ -30,6 +30,8 @@ export type Scenario = {
   costBreakdown: Record<string, CostBreakdownRow>;
   endUsesAnnual: Record<string, number>;
   sankeyLinks: SankeyLink[];
+  /** Sankey → Elec (GWh); yoksa sankeyLinks’ten türetilir */
+  electricitySankeySupplyGwh?: Record<string, number>;
   solved: boolean;
   statusReason: string;
   runError: string | null;
@@ -52,4 +54,6 @@ export type DashboardPayload = {
   unsolvedExpectedCount: number;
   solvedExpectedCount: number;
   fuelResourcesForShare: string[];
+  /** Sankey Elec kaynak sırası (opsiyonel; boşsa istemci sankey’den üretir) */
+  electricitySankeySupplyRowOrder?: string[];
 };

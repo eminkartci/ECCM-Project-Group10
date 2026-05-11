@@ -8,7 +8,7 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import DashboardTables from "@/components/dashboard/DashboardTables";
 import FailureBanner from "@/components/dashboard/FailureBanner";
 import ScenarioSidebar from "@/components/dashboard/ScenarioSidebar";
-import { techOptionsForScenarios } from "@/lib/dashboardUtils";
+import { aggregateSankeySupplyToElecGwh, techOptionsForScenarios } from "@/lib/dashboardUtils";
 import { exportAllDashboardTables } from "@/lib/xlsxExport";
 import type { DashboardPayload, Scenario } from "@/lib/types";
 
@@ -21,31 +21,58 @@ export default function DashboardApp() {
   const [sankeyVisible, setSankeyVisible] = useState(true);
   const [selectedTech, setSelectedTech] = useState("");
   const [exportToast, setExportToast] = useState<{ text: string; error: boolean } | null>(null);
+  const [dataRefreshKey, setDataRefreshKey] = useState(0);
+  const [isReloading, setIsReloading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      if (dataRefreshKey > 0) setIsReloading(true);
       try {
-        const res = await fetch("/dashboard-data.json", { cache: "no-store" });
-        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+        const url = `/api/dashboard-data?ts=${Date.now()}`;
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({}));
+          const hint = typeof errBody?.error === "string" ? errBody.error : `${res.status} ${res.statusText}`;
+          throw new Error(hint);
+        }
         const data = (await res.json()) as DashboardPayload;
         if (cancelled) return;
         if (!data.scenarios?.length) {
           setLoadError("Senaryo listesi boş.");
+          setPayload(null);
           return;
         }
         setPayload(data);
-        setSelected(new Set(data.scenarios.map((s) => s.folderName)));
+        setSelected((prev) => {
+          const valid = new Set(data.scenarios.map((s) => s.folderName));
+          const next = new Set<string>();
+          prev.forEach((f) => {
+            if (valid.has(f)) next.add(f);
+          });
+          return next.size > 0 ? next : valid;
+        });
         setLoadError(null);
       } catch (e) {
         if (cancelled) return;
         const msg = e instanceof Error ? e.message : String(e);
-        setLoadError(msg);
+        if (dataRefreshKey === 0) {
+          setLoadError(msg);
+          setPayload(null);
+        } else {
+          setExportToast({ text: `Yenileme başarısız: ${msg}`, error: true });
+        }
+      } finally {
+        if (!cancelled) setIsReloading(false);
       }
     })();
     return () => {
       cancelled = true;
     };
+  }, [dataRefreshKey]);
+
+  const onReloadData = useCallback(() => {
+    setDataRefreshKey((k) => k + 1);
   }, []);
 
   useEffect(() => {
@@ -54,7 +81,20 @@ export default function DashboardApp() {
     return () => window.clearTimeout(id);
   }, [exportToast]);
 
-  const scenarios = useMemo(() => payload?.scenarios ?? [], [payload]);
+  const scenarios = useMemo(() => {
+    const raw = payload?.scenarios ?? [];
+    return raw.map((s) => {
+      const fromPayload = s.electricitySankeySupplyGwh;
+      const has =
+        fromPayload &&
+        typeof fromPayload === "object" &&
+        Object.keys(fromPayload).some((k) => Number(fromPayload[k]) > 0);
+      return {
+        ...s,
+        electricitySankeySupplyGwh: has ? fromPayload : aggregateSankeySupplyToElecGwh(s.sankeyLinks),
+      };
+    });
+  }, [payload]);
   const expectedScenarios = useMemo(() => payload?.expectedScenarios ?? [], [payload]);
   const fuelResources = useMemo(() => payload?.fuelResourcesForShare ?? [], [payload]);
 
@@ -112,9 +152,10 @@ export default function DashboardApp() {
       <div className="flex min-h-screen flex-col items-center justify-center bg-slate-950 px-4 text-center">
         <p className="text-lg text-red-300">Veri yüklenemedi</p>
         <p className="mt-2 max-w-md text-sm text-slate-400">
-          <code className="rounded bg-slate-900 px-1">public/dashboard-data.json</code> dosyası gerekli. Repo kökünde{" "}
-          <code className="rounded bg-slate-900 px-1">python3 build_scenario_dashboard_data.py</code> çalıştırıp ardından{" "}
-          <code className="rounded bg-slate-900 px-1">npm run sync-dashboard-data</code> deneyin.
+          Repo kökünde <code className="rounded bg-slate-900 px-1">scenario_dashboard_data.json</code> oluşturun (
+          <code className="rounded bg-slate-900 px-1">python3 build_scenario_dashboard_data.py</code>) veya{" "}
+          <code className="rounded bg-slate-900 px-1">npm run sync-dashboard-data</code> ile{" "}
+          <code className="rounded bg-slate-900 px-1">public/dashboard-data.json</code> kopyalayın.
         </p>
         <p className="mt-4 font-mono text-xs text-slate-600">{loadError}</p>
       </div>
@@ -129,6 +170,8 @@ export default function DashboardApp() {
         generatedAt={payload?.generatedAt}
         scenarioCount={scenarios.length}
         onExportAllTables={onExportAllTables}
+        onReloadData={onReloadData}
+        isReloading={isReloading}
       />
       <FailureBanner expectedScenarios={expectedScenarios} />
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">

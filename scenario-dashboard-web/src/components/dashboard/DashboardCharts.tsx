@@ -5,7 +5,8 @@ import ApexChart from "@/components/charts/ApexChart";
 import { SCENARIO_COLORS } from "@/lib/constants";
 import {
   buildFuelShareStackedPercent,
-  orderedFuelsForShare,
+  fuelShareUsesSankey,
+  orderedFuelShareForTable,
   techOptionsForScenarios,
   topKeysByAggregate,
 } from "@/lib/dashboardUtils";
@@ -105,10 +106,14 @@ export default function DashboardCharts({ active, fuelResources, selectedTech, o
         }))
       : [];
 
-  const fuelsOrdered = orderedFuelsForShare(active, fuelResources);
+  const useSankey = fuelShareUsesSankey(active);
+  const fuelsOrdered = orderedFuelShareForTable(active, fuelResources);
   const fuelBuilt =
-    fuelResources.length && fuelsOrdered.length
-      ? buildFuelShareStackedPercent(active, fuelResources, fuelsOrdered, 9)
+    fuelsOrdered.length > 0
+      ? buildFuelShareStackedPercent(active, fuelResources, fuelsOrdered, 9, {
+          useSankey,
+          resourceKeysForTotal: fuelResources,
+        })
       : null;
 
   const fuelOptions = chartOpts({
@@ -160,7 +165,11 @@ export default function DashboardCharts({ active, fuelResources, selectedTech, o
       </section>
 
       <section>
-        <h3 className="mb-2 text-sm font-semibold text-slate-200">Yakıt üretimi payları (%)</h3>
+        <h3 className="mb-2 text-sm font-semibold text-slate-200">
+          {useSankey
+            ? "Elektrik kaynağı payları — Sankey → Elec (yığılmış %; tablo ile aynı veri)"
+            : "Yakıt üretimi payları (RESOURCES; yığılmış %)"}
+        </h3>
         {!fuelResources.length ? (
           <p className="text-sm text-slate-500">
             <code className="rounded bg-slate-800 px-1">sets.txt</code> yok veya RESOURCES okunamadı.

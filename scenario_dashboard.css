@@ -446,6 +446,35 @@ tbody tr:nth-child(even) td:first-child {
   margin: 0.5rem 0 0;
 }
 
+.fuel-share-th-sub {
+  display: block;
+  margin-top: 0.2rem;
+  font-weight: 400;
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.fuel-share-cell {
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.fuel-share-cell__mwh {
+  display: block;
+  font-variant-numeric: tabular-nums;
+}
+
+.fuel-share-cell__pct {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.82em;
+  color: #94a3b8;
+}
+
+table tfoot .fuel-share-cell__pct {
+  font-size: 0.82em;
+}
+
 /* Failed model runs — banner + solution table */
 .scenario-fail-banner {
   max-width: 1080px;

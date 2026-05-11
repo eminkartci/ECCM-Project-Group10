@@ -6,6 +6,8 @@ type Props = {
   generatedAt?: string;
   scenarioCount: number;
   onExportAllTables: () => void;
+  onReloadData: () => void;
+  isReloading: boolean;
 };
 
 export default function DashboardHeader({
@@ -14,6 +16,8 @@ export default function DashboardHeader({
   generatedAt,
   scenarioCount,
   onExportAllTables,
+  onReloadData,
+  isReloading,
 }: Props) {
   return (
     <header className="border-b border-slate-700/80 bg-slate-900/40 px-4 py-5 sm:px-6 lg:px-8">
@@ -21,11 +25,23 @@ export default function DashboardHeader({
         <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">Senaryo karşılaştırma paneli</h1>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-400">
           Önceden üretilmiş <code className="rounded bg-slate-800 px-1 text-emerald-200/90">output_*</code>{" "}
-          klasörlerinden derlenen metrikler. Veriyi güncellemek için repo kökünde{" "}
-          <code className="rounded bg-slate-800 px-1 text-xs">python3 build_scenario_dashboard_data.py</code> ve{" "}
-          <code className="rounded bg-slate-800 px-1 text-xs">npm run sync-dashboard-data</code>.
+          klasörlerinden derlenen metrikler. Güncel dosya için repo kökünde{" "}
+          <code className="rounded bg-slate-800 px-1 text-xs">python3 build_scenario_dashboard_data.py</code> çalıştırın;
+          panel{" "}
+          <span className="font-medium text-slate-300">scenario_dashboard_data.json</span> dosyasını doğrudan
+          okur (aynı klasör yapısında). İsterseniz dağıtım için{" "}
+          <code className="rounded bg-slate-800 px-1 text-xs">npm run sync-dashboard-data</code> ile{" "}
+          <code className="rounded bg-slate-800 px-1 text-xs">public/dashboard-data.json</code> kopyalanır.
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={onReloadData}
+            disabled={isReloading}
+            className="rounded-lg border border-sky-700/50 bg-sky-900/30 px-4 py-2 text-sm font-medium text-sky-100 hover:bg-sky-900/50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isReloading ? "Yükleniyor…" : "Veriyi yenile"}
+          </button>
           <button
             type="button"
             onClick={onExportAllTables}

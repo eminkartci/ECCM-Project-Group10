@@ -4,11 +4,14 @@ import CollapsibleCard from "@/components/dashboard/CollapsibleCard";
 import { escapeHtml } from "@/lib/escapeHtml";
 import {
   costPivotTopTechs,
+  formatMwhFromGwh,
   formatNumber,
   formatPercent,
+  fuelShareUsesSankey,
   getCostRow,
-  orderedFuelsForShare,
+  orderedFuelShareForTable,
   scenarioFuelTotalFromList,
+  scenarioSankeyElecSupplyTotalGwh,
   sumObjectValues,
 } from "@/lib/dashboardUtils";
 import type { ExpectedScenarioRow, Scenario } from "@/lib/types";
@@ -41,7 +44,8 @@ type Props = {
 
 export default function DashboardTables({ active, expectedScenarios, fuelResources }: Props) {
   const topCostTechs = costPivotTopTechs(active, 15);
-  const fuelsOrdered = orderedFuelsForShare(active, fuelResources);
+  const useSankey = fuelShareUsesSankey(active);
+  const fuelsOrdered = orderedFuelShareForTable(active, fuelResources);
 
   return (
     <div className="space-y-6">
@@ -140,20 +144,35 @@ export default function DashboardTables({ active, expectedScenarios, fuelResourc
           Talep: End_Uses.txt. Elektrik: TECHNOLOGIES_OF_END_USES_TYPE[ELECTRICITY] toplamı.
         </p>
 
-        <h4 className="mb-2 mt-6 text-xs font-semibold uppercase tracking-wide text-slate-400">Yakıt payları tablosu</h4>
+        <h4 className="mb-2 mt-6 text-xs font-semibold uppercase tracking-wide text-slate-400">
+          {useSankey
+            ? "Elektrik kaynakları (MWh) — Sankey → Elec (input2sankey.csv)"
+            : "Yakıt üretimi (MWh) — RESOURCES / total_output"}
+        </h4>
         <div id="fuel-share-table" className="overflow-x-auto rounded-lg border border-slate-700/60">
-          {!fuelResources.length ? (
+          {!useSankey && !fuelResources.length ? (
             <p className="p-4 text-sm text-slate-500">sets.txt / RESOURCES yok.</p>
           ) : !fuelsOrdered.length ? (
-            <p className="p-4 text-sm text-slate-500">Pozitif yakıt çıktısı yok.</p>
+            <p className="p-4 text-sm text-slate-500">
+              {useSankey ? "Sankey dosyasında Elec hedefine akış yok." : "Pozitif yakıt çıktısı yok."}
+            </p>
           ) : (
             <table className="min-w-full border-collapse text-left text-xs text-slate-200">
               <thead className="bg-slate-900/95 text-slate-400">
                 <tr>
-                  <th className="border-b border-slate-700 px-3 py-2 font-medium">Yakıt</th>
+                  <th className="border-b border-slate-700 px-3 py-2 font-medium">
+                    {useSankey ? (
+                      <>
+                        Kaynak <span className="mt-0.5 block text-[10px] font-normal text-slate-500">Sankey → Elec</span>
+                      </>
+                    ) : (
+                      "Yakıt (RESOURCES)"
+                    )}
+                  </th>
                   {active.map((s) => (
                     <th key={s.folderName} className="border-b border-slate-700 px-3 py-2 font-medium">
-                      {escapeHtml(s.label || s.folderName)}
+                      <span className="block">{escapeHtml(s.label || s.folderName)}</span>
+                      <span className="mt-0.5 block text-[10px] font-normal text-slate-500">MWh · toplam içinde %</span>
                     </th>
                   ))}
                 </tr>
@@ -163,18 +182,60 @@ export default function DashboardTables({ active, expectedScenarios, fuelResourc
                   <tr key={f} className="border-b border-slate-800">
                     <td className="px-3 py-2 font-mono text-[11px]">{escapeHtml(f)}</td>
                     {active.map((s) => {
-                      const tot = scenarioFuelTotalFromList(s, fuelResources);
-                      const v = Number(s.totalOutput?.[f]) || 0;
+                      const tot = useSankey
+                        ? scenarioSankeyElecSupplyTotalGwh(s.electricitySankeySupplyGwh)
+                        : scenarioFuelTotalFromList(s, fuelResources);
+                      const v = useSankey
+                        ? Number(s.electricitySankeySupplyGwh?.[f]) || 0
+                        : Number(s.totalOutput?.[f]) || 0;
                       const pct = tot > 0 ? (100 * v) / tot : 0;
                       return (
-                        <td key={s.folderName} className="px-3 py-2" title={`${formatNumber(v)} GWh`}>
-                          {formatPercent(pct)}
+                        <td
+                          key={s.folderName}
+                          className="whitespace-nowrap px-3 py-2 align-top"
+                          title={`${formatNumber(v)} GWh`}
+                        >
+                          {tot > 0 ? (
+                            <>
+                              <span className="block tabular-nums">{formatMwhFromGwh(v)}</span>
+                              <span className="mt-0.5 block text-[11px] text-slate-500">{formatPercent(pct)}</span>
+                            </>
+                          ) : (
+                            "—"
+                          )}
                         </td>
                       );
                     })}
                   </tr>
                 ))}
               </tbody>
+              <tfoot className="bg-slate-900/40 text-slate-300">
+                <tr>
+                  <td className="border-t border-slate-700 px-3 py-2 font-medium">
+                    Toplam{" "}
+                    <span className="text-[10px] font-normal text-slate-500">
+                      {useSankey ? "(Sankey → Elec)" : "(liste içi RESOURCES)"}
+                    </span>
+                  </td>
+                  {active.map((s) => {
+                    const tot = useSankey
+                      ? scenarioSankeyElecSupplyTotalGwh(s.electricitySankeySupplyGwh)
+                      : scenarioFuelTotalFromList(s, fuelResources);
+                    return (
+                      <td key={s.folderName} className="border-t border-slate-700 px-3 py-2 align-top">
+                        {tot > 0 ? (
+                          <>
+                            <span className="block tabular-nums font-semibold">{formatMwhFromGwh(tot)}</span>
+                            <span className="mt-0.5 block text-[11px] text-slate-500">%100</span>
+                          </>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              </tfoot>
             </table>
           )}
         </div>

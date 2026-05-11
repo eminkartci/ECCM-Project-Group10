@@ -80,18 +80,17 @@ let f_max["NEW_HYDRO_RIVER"] := 0;
 # where chf_per_eur is CHF per EUR (set to 1.0 if you treat MCHF numerically like MEUR
 # for these coefficients, or replace with a spot rate, e.g. SNB).
 #
-# v3 adjustment (same numeric outcome as before, now read from EUR/MWh):
-# - Coal price increased from 0.019 to 0.026 MCHF/GWh (19 -> 26 EUR/MWh).
-# - NG reduced from 0.045 to 0.040 MCHF/GWh (45 -> 40 EUR/MWh).
-# - This should move the mix closer to:
-#   Coal ~35%, NG ~19%, Hydro ~22%, Wind ~11%, Solar ~7%.
+# v4 TEİAŞ 2024 generation-mix calibration (EUR/MWh LHV):
+# - Coal raised to reduce coal dispatch (~35% target).
+# - NG lowered slightly so CCGT share moves toward ~19%.
+# - Biomass grid share is not represented (IND_COGEN_WOOD is heat-sector only).
 
 param chf_per_eur := 1.0;  # CHF per EUR; multiplies all turkey_fuel_* EUR/MWh inputs
 
-param turkey_fuel_EUR_per_MWh__NG       := 40;
-param turkey_fuel_EUR_per_MWh__NG_CCS   := 55;
-param turkey_fuel_EUR_per_MWh__COAL     := 26;
-param turkey_fuel_EUR_per_MWh__COAL_CCS  := 35;
+param turkey_fuel_EUR_per_MWh__NG       := 42.0;
+param turkey_fuel_EUR_per_MWh__NG_CCS   := 57.0;
+param turkey_fuel_EUR_per_MWh__COAL     := 29.0;
+param turkey_fuel_EUR_per_MWh__COAL_CCS  := 38.0;
 param turkey_fuel_EUR_per_MWh__DIESEL   := 78;
 param turkey_fuel_EUR_per_MWh__LFO      := 78;
 param turkey_fuel_EUR_per_MWh__WOOD     := 18;
@@ -171,12 +170,7 @@ let avail["ELEC_EXPORT"] := 3500;
 # Solar           ≈ 7%
 # Biomass + Geo   ≈ 5–6%
 #
-# If coal is still too high:
-#   increase turkey_fuel_EUR_per_MWh__COAL to ~28–30 EUR/MWh
-#
-# If NG becomes too high:
-#   increase turkey_fuel_EUR_per_MWh__NG to ~43–45 EUR/MWh
-#
-# If wind/solar remain too low:
-#   inherited availability / capacity-factor parameters must be adjusted.
+# If coal is still too high: increase turkey_fuel_EUR_per_MWh__COAL (e.g. 32–38).
+# If NG too low: decrease turkey_fuel_EUR_per_MWh__NG slightly (e.g. 34–38).
+# Hydro dam/river split vs TEİAŞ is controlled by f_min/f_max in year .dat files.
 # ================================================================

@@ -124,11 +124,15 @@
             </div>
           </div>
           <div class="chart-block">
-            <h3 class="chart-title">Yakıt üretimi payları (toplam yakıt çıktısı içinde %)</h3>
+            <h3 class="chart-title">Elektrik kaynakları (MWh) ve paylar — Sankey ile aynı veri</h3>
             <p class="card__desc card__desc--tight">
-              <code>sets.txt</code> içindeki <code>RESOURCES</code> kümesinden elektrik ve <code>ELEC_EXPORT</code>
-              çıkarıldı; her senaryoda bu yakıtların <code>total_output.txt</code> yıllık değerlerinin toplamına göre
-              yüzde. Tablo tam liste; grafikte ince dilimler &quot;Diğer&quot; altında birleştirilir.
+              <strong>Kaynak:</strong> <code>sankey/input2sankey.csv</code> içinde hedefi <code>Elec</code> olan
+              akışlar (export_sankey.run ile üretilir). Sankey diyagramı ile aynı sayıları kullanır; TWh değerleri
+              GWh’ye çevrilir (×1000), tabloda MWh (GWh×1000) ve her senaryoda bu kaynakların toplamına göre yüzde
+              gösterilir. Sankey dosyası yoksa veya Elec akışı yoksa, yedek olarak
+              <code>sets.txt</code> içindeki <code>RESOURCES</code> ve <code>total_output.txt</code> kullanılır.
+              Grafikte ince dilimler &quot;Diğer&quot;
+              altında birleştirilir.
             </p>
             <div id="fuel-share-table" class="table-scroll table-scroll--card"></div>
             <div class="chart-canvas-wrap">

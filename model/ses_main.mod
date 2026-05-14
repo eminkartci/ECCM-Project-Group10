@@ -108,6 +108,8 @@ var GWP_op {RESOURCES} >= 0; # Total yearly emissions of the resources [ktCO2-eq
 var TotalGWP >= 0; # Total GWP emissions in the system [ktCO2-eq./y]
 var TotalCost >= 0; # Total GWP emissions in the system [ktCO2-eq./y]
 
+param gwp_limit >= 0 default 1e10; # Emission cap [ktCO2-eq./y]; default very high = no cap
+
 ### CONSTRAINTS ###
 
 ## End-uses demand calculation constraints
@@ -204,6 +206,9 @@ subject to gwp_op_calc {i in RESOURCES}:
 
 subject to totalGWP_calc:
 	TotalGWP = sum {i in TECHNOLOGIES} (GWP_constr [i] / lifetime [i]) + sum {j in RESOURCES} GWP_op [j];
+
+subject to gwp_cap:
+	TotalGWP <= gwp_limit;
 
 ## Storage
 

@@ -1,35 +1,32 @@
 # ----------------------------------------------------------------
-# IEA WEO 2025 — STEPS (Stated Policies) fossil fuel prices, year 2030
+# IEA WEO 2025 — STEPS fossil fuel prices, year 2030
+# 5-Tier Thermal Dispatch
 # ----------------------------------------------------------------
 #
-# Kaynak: kullanıcı infografiği — “Turkey Fuel Price Forecast to 2035”, IEA WEO 2025
-# Table 2.3 benzeri referans; senaryo mantığı: Reference = STEPS (CPS/NZE ayrı duyarlılık).
-# 2030 sütunu (USD/MWh_th, sabit 2024 USD): Doğal gaz 28.1, buhar kömürü 13.4, ham petrol 46.8.
+# Base coal price: WEO 2025, 2030 STEPS → 13.4 USD/MWh_th → 12.328 EUR/MWh_th
+# Tiered pricing uses ratios from ses_main_turkey_reference_case.dat:
+#   tier_ratio_ng, tier_ratio_coal_ccs, tier_ratio_ng_ccs
 #
-# Türkiye vektörü: AB ithalat proxysi (boru+LNG gaz, 6 000 kcal/kg buhar kömürü, IEA ham petrol sepeti).
-# Birim dönüşüm infografideki sabitle aynı mantık: modelde sıvı yakıt DIESEL/LFO için “oil” tek değeri.
-#
-# EUR/MWh_th:  USD/MWh_th × USD_to_EUR   (USD_to_EUR = 0.920, sabit 2024 USD / kur notasyonu)
-#
-# SES c_op [MCHF/GWh] = EUR/MWh_th × chf_per_eur × 0.001   (chf_per_eur ses_main_turkey_reference_case.dat)
-#
-# NG_CCS / COAL_CCS: Türkiye referans kalibrasyonu ile aynı mutlak prim (+15 / +9 EUR/MWh).
+# Marginal cost order (EUR/MWh_e):
+#   COAL_IGCC  (1.8519 × 12.328) = 22.83
+#   CCGT       (1.5873 × 15.163) = 24.06
+#   COAL_US    (2.0408 × 12.328) = 25.16
+#   COAL_IGCC_CCS (2.0833 × 13.807) = 28.76
+#   CCGT_CCS   (1.7544 × 17.506) = 30.73
 
-param weo25_steps2030_eur_mwh__NG   := 25.852;   # 28.1 * 0.920
-param weo25_steps2030_eur_mwh__COAL := 12.328;   # 13.4 * 0.920
-param weo25_steps2030_eur_mwh__OIL  := 43.056;   # 46.8 * 0.920
-
-let {t in PERIODS} c_op["NG", t] :=
-	weo25_steps2030_eur_mwh__NG * chf_per_eur * 0.001;
-let {t in PERIODS} c_op["NG_CCS", t] :=
-	(weo25_steps2030_eur_mwh__NG + 15) * chf_per_eur * 0.001;
+param weo25_steps2030_coal_base := 12.328;   # 13.4 * 0.920 EUR/MWh_th
+param weo25_steps2030_oil       := 43.056;   # 46.8 * 0.920
 
 let {t in PERIODS} c_op["COAL", t] :=
-	weo25_steps2030_eur_mwh__COAL * chf_per_eur * 0.001;
+	weo25_steps2030_coal_base * chf_per_eur * 0.001;
+let {t in PERIODS} c_op["NG", t] :=
+	(weo25_steps2030_coal_base * tier_ratio_ng) * chf_per_eur * 0.001;
 let {t in PERIODS} c_op["COAL_CCS", t] :=
-	(weo25_steps2030_eur_mwh__COAL + 9) * chf_per_eur * 0.001;
+	(weo25_steps2030_coal_base * tier_ratio_coal_ccs) * chf_per_eur * 0.001;
+let {t in PERIODS} c_op["NG_CCS", t] :=
+	(weo25_steps2030_coal_base * tier_ratio_ng_ccs) * chf_per_eur * 0.001;
 
 let {t in PERIODS} c_op["DIESEL", t] :=
-	weo25_steps2030_eur_mwh__OIL * chf_per_eur * 0.001;
+	weo25_steps2030_oil * chf_per_eur * 0.001;
 let {t in PERIODS} c_op["LFO", t] :=
-	weo25_steps2030_eur_mwh__OIL * chf_per_eur * 0.001;
+	weo25_steps2030_oil * chf_per_eur * 0.001;

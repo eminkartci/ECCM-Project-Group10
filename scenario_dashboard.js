@@ -15,6 +15,8 @@ const scenariosNoneBtn = document.getElementById("scenarios-none");
 const costChart = document.getElementById("cost-chart");
 const gwpChart = document.getElementById("gwp-chart");
 const intensityChart = document.getElementById("intensity-chart");
+const energyPriceChart = document.getElementById("energy-price-chart");
+const totalEmissionsChart = document.getElementById("total-emissions-chart");
 const techChart = document.getElementById("tech-chart");
 const enduseChart = document.getElementById("enduse-chart");
 const productionChart = document.getElementById("production-chart");
@@ -177,15 +179,16 @@ function getActiveScenarios() {
 function buildScenarioToggles() {
   scenarioTogglesEl.innerHTML = "";
   scenarios.forEach((s) => {
+    const displayName = s.label || s.folderName;
     const label = document.createElement("label");
     label.className = "scenario-toggle";
     const cb = document.createElement("input");
     cb.type = "checkbox";
-    cb.checked = true;
+    cb.checked = !displayName.startsWith("output");
     cb.dataset.folder = s.folderName;
     cb.addEventListener("change", refreshDashboard);
     label.appendChild(cb);
-    const text = document.createTextNode(` ${s.label || s.folderName}`);
+    const text = document.createTextNode(` ${displayName}`);
     label.appendChild(text);
     scenarioTogglesEl.appendChild(label);
   });
@@ -198,6 +201,8 @@ function refreshDashboard() {
     clearCanvas(costChart);
     clearCanvas(gwpChart);
     clearCanvas(intensityChart);
+    if (energyPriceChart) clearCanvas(energyPriceChart);
+    if (totalEmissionsChart) clearCanvas(totalEmissionsChart);
     clearCanvas(techChart);
     clearCanvas(enduseChart);
     clearCanvas(productionChart);
@@ -218,9 +223,11 @@ function refreshDashboard() {
   renderInstalledCapacitySection(active);
   renderProductionChart(active);
   renderMetricsTable(active);
-  renderBarChart(costChart, active, "totalCost", "TotalCost");
-  renderBarChart(gwpChart, active, "totalGwp", "TotalGWP");
+  renderBarChart(costChart, active, "totalCost", "TotalCost (MEUR)");
+  renderBarChart(gwpChart, active, "totalGwp", "TotalGWP (ktCO₂eq)");
   renderIntensityChart(active);
+  renderEnergyPriceChart(active);
+  renderTotalEmissionsChart(active);
   setupTechSelector(active);
   renderTechChart(active);
   renderCostPivot(active);
@@ -247,6 +254,8 @@ async function loadDashboard() {
       clearCanvas(costChart);
       clearCanvas(gwpChart);
       clearCanvas(intensityChart);
+      if (energyPriceChart) clearCanvas(energyPriceChart);
+      if (totalEmissionsChart) clearCanvas(totalEmissionsChart);
       clearCanvas(techChart);
       clearCanvas(enduseChart);
       clearCanvas(productionChart);
@@ -676,20 +685,43 @@ async function scanScenarios(rootHandle) {
     }
     scenario.installedCapacityByFuelGw = installedByFuel;
 
+    const lossesFile = await getOptionalFile(handle, "losses.txt");
+    let elecLossesGwh = 0;
+    if (lossesFile) {
+      const lossMap = parseTwoColumnNumericTable(await readText(lossesFile), "");
+      elecLossesGwh = Number(lossMap.ELECTRICITY) || 0;
+    }
+
     const elecRow = scenario.totalOutput.ELECTRICITY;
     const elecSupply = sumElectricitySupplyGwh(scenario.totalOutput, elecSupplyTechs);
     let denom = null;
     if (Number.isFinite(elecRow) && elecRow > 0) denom = elecRow;
     else if (elecSupply != null && elecSupply > 0) denom = elecSupply;
+
+    let elecDemandGwh = null;
+    if (denom != null && denom > 0) {
+      elecDemandGwh = denom - elecLossesGwh;
+      if (elecDemandGwh <= 0) elecDemandGwh = denom;
+    }
+
+    let energyPriceEurPerMwh = null;
+    if (scenario.solved && scenario.totalCost != null && elecDemandGwh && elecDemandGwh > 0) {
+      energyPriceEurPerMwh = scenario.totalCost / elecDemandGwh * 1000.0;
+    }
+
     const endSum = sumObjectValues(scenario.endUsesAnnual);
     scenario.kpi = {
       electricityOutputGWh: Number.isFinite(elecRow) ? elecRow : null,
       electricitySupplyGWh: elecSupply == null ? null : elecSupply,
+      electricityDemandGWh: elecDemandGwh,
+      electricityLossesGWh: elecLossesGwh,
       endUseDemandGWh: endSum > 0 ? endSum : null,
       costPerGWh:
         scenario.solved && denom && denom > 0 && scenario.totalCost != null ? scenario.totalCost / denom : null,
       gwpPerGWh:
-        scenario.solved && denom && denom > 0 && scenario.totalGwp != null ? scenario.totalGwp / denom : null
+        scenario.solved && denom && denom > 0 && scenario.totalGwp != null ? scenario.totalGwp / denom : null,
+      energyPriceEurPerMwh: energyPriceEurPerMwh,
+      totalEmissionsKtCO2: scenario.solved ? scenario.totalGwp : null
     };
 
     found.push(scenario);
@@ -1306,14 +1338,22 @@ function renderGroupedBarChart(canvas, activeScenarios, categories, getValue, ti
 function renderMetricsTable(active) {
   const rows = active
     .map(
-      (s) => `
+      (s) => {
+        const price = s.kpi?.energyPriceEurPerMwh;
+        const emissions = s.kpi?.totalEmissionsKtCO2;
+        const demandGWh = s.kpi?.electricityDemandGWh;
+        return `
         <tr>
           <td>${s.label || s.folderName}</td>
           <td>${s.solved === false ? "Çözüm yok" : "Çözüldü"}</td>
           <td>${formatNumber(s.totalCost)}</td>
           <td>${formatNumber(s.totalGwp)}</td>
+          <td>${demandGWh != null ? formatNumber(demandGWh) : "—"}</td>
+          <td style="font-weight:600">${price != null ? formatNumber(price, 2) : "—"}</td>
+          <td style="font-weight:600">${emissions != null ? formatNumber(emissions, 1) : "—"}</td>
         </tr>
-      `
+      `;
+      }
     )
     .join("");
 
@@ -1323,8 +1363,11 @@ function renderMetricsTable(active) {
         <tr>
           <th>Senaryo</th>
           <th>Durum</th>
-          <th>TotalCost</th>
-          <th>TotalGWP</th>
+          <th>TotalCost (MEUR)</th>
+          <th>TotalGWP (ktCO₂eq)</th>
+          <th>Elektrik talebi (GWh)</th>
+          <th>Enerji fiyatı (EUR/MWh)</th>
+          <th>Toplam emisyon (ktCO₂eq)</th>
         </tr>
       </thead>
       <tbody>${rows}</tbody>
@@ -1493,6 +1536,24 @@ function renderIntensityChart(active) {
   renderBarChart(intensityChart, data, "intensity", "GWP / GWh elektrik");
 }
 
+function renderEnergyPriceChart(active) {
+  if (!energyPriceChart) return;
+  const data = active.map((s) => ({
+    folderName: s.label || s.folderName,
+    price: s.kpi?.energyPriceEurPerMwh ?? null
+  }));
+  renderBarChart(energyPriceChart, data, "price", "Enerji fiyatı (EUR/MWh)");
+}
+
+function renderTotalEmissionsChart(active) {
+  if (!totalEmissionsChart) return;
+  const data = active.map((s) => ({
+    folderName: s.label || s.folderName,
+    emissions: s.kpi?.totalEmissionsKtCO2 ?? null
+  }));
+  renderBarChart(totalEmissionsChart, data, "emissions", "Toplam emisyon (ktCO₂eq)");
+}
+
 function renderBarChart(canvas, data, valueKey, title) {
   const ctx = canvas.getContext("2d");
   clearCanvas(canvas);
@@ -1546,9 +1607,10 @@ function clearCanvas(canvas) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-function formatNumber(value) {
+function formatNumber(value, maxDecimals) {
   if (value === null || value === undefined || !Number.isFinite(value)) return "—";
-  return value.toLocaleString("tr-TR", { maximumFractionDigits: 3 });
+  const digits = maxDecimals !== undefined ? maxDecimals : 3;
+  return value.toLocaleString("tr-TR", { maximumFractionDigits: digits });
 }
 
 /** Same Plotly Sankey trace shape as `output_turkey_reference_case/dashboard.html`. */

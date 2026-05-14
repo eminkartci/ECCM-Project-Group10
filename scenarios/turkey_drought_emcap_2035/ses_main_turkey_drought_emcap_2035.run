@@ -1,0 +1,11 @@
+shell 'mkdir -p output_turkey_drought_emcap_2035';
+model model/ses_main.mod;
+data scenarios/turkey_drought_emcap_2035/ses_main_turkey_drought_emcap_2035.dat;
+option solver gurobi;
+option gurobi_options 'outlev=1';
+option show_stats 1;
+
+solve;
+
+param OUTPUT_DIR symbolic := "output_turkey_drought_emcap_2035";
+include scenarios/common/export_standard_outputs.run;

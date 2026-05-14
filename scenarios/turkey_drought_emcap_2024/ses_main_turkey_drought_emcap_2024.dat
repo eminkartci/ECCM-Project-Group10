@@ -1,0 +1,19 @@
+# ================================================================
+# TURKEY DROUGHT + EMISSION CAP SCENARIO - 2024
+# ================================================================
+#
+# Same as Drought 2024 (identical demand, installed capacity, and
+# drought-reduced hydro availability) PLUS a binding GWP emission cap.
+#
+# Emission cap: 112 000 ktCO2-eq/y  (~25 % below Drought-2024 baseline
+# of 148 725 ktCO2-eq/y).  The cap forces the optimizer to curtail
+# fossil-fuel generation (primarily coal, secondarily gas) and shift
+# towards available renewables + nuclear where possible.
+# ================================================================
+
+include scenarios/turkey_drought_2024/ses_main_turkey_drought_2024.dat;
+
+# ----------------------------------------------------------------
+# EMISSION CAP — 25 % reduction from Drought-2024 baseline
+# ----------------------------------------------------------------
+let gwp_limit := 112000;

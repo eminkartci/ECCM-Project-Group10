@@ -52,6 +52,9 @@ RUN_FILES=(
   "scenarios/turkey_drought_2024/ses_main_turkey_drought_2024.run"
   "scenarios/turkey_drought_2030/ses_main_turkey_drought_2030.run"
   "scenarios/turkey_drought_2035/ses_main_turkey_drought_2035.run"
+  "scenarios/turkey_drought_emcap_2024/ses_main_turkey_drought_emcap_2024.run"
+  "scenarios/turkey_drought_emcap_2030/ses_main_turkey_drought_emcap_2030.run"
+  "scenarios/turkey_drought_emcap_2035/ses_main_turkey_drought_emcap_2035.run"
 )
 
 # Match OUTPUT_DIR in each ses_main_turkey_*.run (fresh outputs, no stale files).
@@ -62,6 +65,9 @@ OUTPUT_DIRS=(
   "output_turkey_drought_2024"
   "output_turkey_drought_2030"
   "output_turkey_drought_2035"
+  "output_turkey_drought_emcap_2024"
+  "output_turkey_drought_emcap_2030"
+  "output_turkey_drought_emcap_2035"
 )
 
 echo "Removing prior scenario output directories..."

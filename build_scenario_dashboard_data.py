@@ -41,6 +41,9 @@ EXPECTED_SCENARIOS = [
     {"folderName": "output_turkey_drought_2024", "label": "Drought 2024"},
     {"folderName": "output_turkey_drought_2030", "label": "Drought 2030"},
     {"folderName": "output_turkey_drought_2035", "label": "Drought 2035"},
+    {"folderName": "output_turkey_drought_emcap_2024", "label": "Drought+EmCap 2024"},
+    {"folderName": "output_turkey_drought_emcap_2030", "label": "Drought+EmCap 2030"},
+    {"folderName": "output_turkey_drought_emcap_2035", "label": "Drought+EmCap 2035"},
 ]
 
 
@@ -122,7 +125,9 @@ def parse_turkey_scenario_year_track(folder_name: str) -> tuple[int | None, str 
         return None, None
     m = re.search(r"(20\d{2})", folder_name)
     year = int(m.group(1)) if m else None
-    if "drought" in low:
+    if "drought_emcap" in low or "drought-emcap" in low:
+        track = "drought_emcap"
+    elif "drought" in low:
         track = "drought"
     elif "reference" in low:
         track = "reference"
@@ -300,6 +305,24 @@ def merge_sankey_elec_row_order(keys: set[str]) -> list[str]:
     return [k for k in SANKEY_ELEC_SOURCE_ORDER if k in keys] + rest
 
 
+def parse_losses(path: Path) -> dict[str, float]:
+    result = {}
+    if not path.exists():
+        return result
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        parts = line.split("\t")
+        if len(parts) < 2:
+            continue
+        try:
+            result[parts[0]] = float(parts[1])
+        except ValueError:
+            continue
+    return result
+
+
 def parse_cost_breakdown(path: Path):
     result = {}
     if not path.exists():
@@ -341,6 +364,9 @@ def scenario_sort_key(folder_name: str):
         "output_turkey_drought_2024",
         "output_turkey_drought_2030",
         "output_turkey_drought_2035",
+        "output_turkey_drought_emcap_2024",
+        "output_turkey_drought_emcap_2030",
+        "output_turkey_drought_emcap_2035",
     ]
     if folder_name in preferred:
         return (0, preferred.index(folder_name))
@@ -388,6 +414,20 @@ def build():
         scenario_year, scenario_track = parse_turkey_scenario_year_track(d.name)
         installed_by_fuel = load_installed_capacity_by_fuel(d, d / "f_mult.txt", d / "sets.txt")
 
+        losses = parse_losses(d / "losses.txt")
+        elec_losses_gwh = losses.get("ELECTRICITY", 0.0)
+        elec_demand_gwh = None
+        if denom is not None and denom > 0:
+            elec_demand_gwh = denom - elec_losses_gwh
+            if elec_demand_gwh <= 0:
+                elec_demand_gwh = denom
+
+        energy_price_eur_per_mwh = None
+        if solved and total_cost is not None and elec_demand_gwh and elec_demand_gwh > 0:
+            energy_price_eur_per_mwh = total_cost / elec_demand_gwh * 1000.0
+
+        total_emissions_kt_co2 = total_gwp if solved else None
+
         scenario_map[d.name] = {
             "folderName": d.name,
             "totalCost": total_cost,
@@ -408,9 +448,13 @@ def build():
             "kpi": {
                 "electricityOutputGWh": elec_row,
                 "electricitySupplyGWh": elec_supply,
+                "electricityDemandGWh": elec_demand_gwh,
+                "electricityLossesGWh": elec_losses_gwh,
                 "costPerGWh": cost_intensity,
                 "gwpPerGWh": gwp_intensity,
                 "endUseDemandGWh": sum(end_uses_annual.values()) if end_uses_annual else None,
+                "energyPriceEurPerMwh": energy_price_eur_per_mwh,
+                "totalEmissionsKtCO2": total_emissions_kt_co2,
             },
         }
 
@@ -441,9 +485,13 @@ def build():
                 "kpi": {
                     "electricityOutputGWh": None,
                     "electricitySupplyGWh": None,
+                    "electricityDemandGWh": None,
+                    "electricityLossesGWh": None,
                     "costPerGWh": None,
                     "gwpPerGWh": None,
                     "endUseDemandGWh": None,
+                    "energyPriceEurPerMwh": None,
+                    "totalEmissionsKtCO2": None,
                 },
             }
             scenario_map[folder_name] = scenario

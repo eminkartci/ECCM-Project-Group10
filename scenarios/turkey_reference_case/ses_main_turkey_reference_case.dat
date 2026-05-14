@@ -1,51 +1,99 @@
 # ================================================================
 # TURKEY 2024 EnergyScope Reference Case
-# Calibrated historical baseline version - v3
+# 5-Tier Thermal Dispatch — v4
+# ================================================================
+#
+# Methodology: 5-Tier Thermal Dispatch
+# ═══════════════════════════════════════════════════════════════════
+# Coal and gas are modelled with multiple fuel-price tiers to produce
+# a realistic merit order that matches observed Turkish dispatch
+# patterns (TEİAŞ 2024: coal ~35%, gas ~19% of total generation).
+#
+# Available technologies and their layers_in_out efficiencies:
+#   COAL_IGCC     — COAL resource,     heat rate 1.8519 (η ≈ 54%)
+#   COAL_US       — COAL resource,     heat rate 2.0408 (η ≈ 49%)
+#   COAL_IGCC_CCS — COAL_CCS resource, heat rate 2.0833 (η ≈ 48%)
+#   CCGT          — NG resource,       heat rate 1.5873 (η ≈ 63%)
+#   CCGT_CCS      — NG_CCS resource,   heat rate 1.7544 (η ≈ 57%)
+#
+# Fuel price ratios (relative to WEO base coal price P):
+#   COAL     = P        → cheap coal tiers   (COAL_IGCC, COAL_US)
+#   NG       = P × 1.23 → baseload gas tier  (CCGT)
+#   COAL_CCS = P × 1.12 → expensive coal     (COAL_IGCC_CCS)
+#   NG_CCS   = P × 1.42 → peaker gas         (CCGT_CCS)
+#
+# Resulting marginal cost per MWh_e (heat_rate × fuel_price):
+#   Tier 1  COAL_IGCC:      1.852 × P   (baseload coal)
+#   Tier 2  CCGT:           1.952 × P   (baseload gas)
+#   Tier 3  COAL_US:        2.041 × P   (mid-merit coal)
+#   Tier 4  COAL_IGCC_CCS:  2.333 × P   (peak coal)
+#   Tier 5  CCGT_CCS:       2.491 × P   (peaker gas)
+#
+# Capacity split (applied to yearly Kömür/Gaz table totals):
+#   Coal: COAL_IGCC 40%,  COAL_US 35%,  COAL_IGCC_CCS 25%
+#   Gas:  CCGT 65%,  CCGT_CCS 35%
+#
+# CCS technology variants are repurposed purely as fuel-price tiers;
+# their c_inv, c_maint and resource gwp_op are equalized with
+# non-CCS counterparts so that only fuel cost drives dispatch.
 # ================================================================
 
 include scenarios/baseline/ses_main.dat;
 
 
 # ----------------------------------------------------------------
-# 1) INSTALLED CAPACITY ALIGNMENT — 2024 TURKEY
-# Units: GW
+# 1) CCS TECHNOLOGY COST EQUALIZATION
 # ----------------------------------------------------------------
-#
-# Historical 2024 reference case.
-# f_min = calibrated 2024 installed capacity.
-# f_max = small technical tolerance because SES uses integer units.
 
-# Nuclear
+let c_inv["COAL_IGCC_CCS"]   := 3466.20;   # = COAL_IGCC
+let c_maint["COAL_IGCC_CCS"] := 52.27;
+let c_inv["COAL_US_CCS"]     := 2687.59;   # = COAL_US
+let c_maint["COAL_US_CCS"]   := 31.72;
+let c_inv["CCGT_CCS"]        := 824.41;    # = CCGT
+let c_maint["CCGT_CCS"]      := 21.07;
+
+let gwp_op["COAL_CCS"] := 0.4014;    # = COAL (no CCS capture)
+let gwp_op["NG_CCS"]   := 0.2666;    # = NG   (no CCS capture)
+
+
+# ----------------------------------------------------------------
+# 2) INSTALLED CAPACITY — 2024 TURKEY (5-tier split)
+# ----------------------------------------------------------------
+# Total Kömür: ~21.9 GW → COAL_IGCC 40% + COAL_US 35% + COAL_IGCC_CCS 25%
+# Total Gaz:   ~25.4 GW → CCGT 65% + CCGT_CCS 35%
+
+# Nuclear (2024: 0 GW)
 let f_min["NUCLEAR"] := 0;
 let f_max["NUCLEAR"] := 0;
 
-# Natural gas
-let f_min["CCGT"] := 25.384;
-let f_max["CCGT"] := 27.000;
+# Tier 1 — COAL_IGCC (baseload imported coal)
+let f_min["COAL_IGCC"] := 9.0;
+let f_max["COAL_IGCC"] := 9.5;
 
-# Coal
-# COAL_US = domestic coal proxy: lignite + hard coal + asphaltite
-# COAL_IGCC = imported coal proxy, not literal IGCC
-let f_min["COAL_US"] := 11.453;
-let f_min["COAL_IGCC"] := 10.404;
+# Tier 3 — COAL_US (mid-merit domestic coal)
+let f_min["COAL_US"] := 7.5;
+let f_max["COAL_US"] := 8.0;
 
-let f_max["COAL_US"] := 12.000;
-let f_max["COAL_IGCC"] := 11.000;
+# Tier 4 — COAL_IGCC_CCS (peak coal tier)
+let f_min["COAL_IGCC_CCS"] := 5.0;
+let f_max["COAL_IGCC_CCS"] := 6.0;
 
-# Kömür — yıllık elektrik üretimi üst sınırı (model/ses_main.mod: f_max_perc)
-# Her kömür teknolojisi, ELECTRICITY teknoloji kümesinin yıllık toplam çıktısının en fazla %20’si;
-# COAL_US + COAL_IGCC birlikte en fazla ~%40 (ikisi de doluysa).
-let fmax_perc["COAL_US"] := 0.20;
-let fmax_perc["COAL_IGCC"] := 0.20;
-let fmax_perc["COAL_US_CCS"] := 0.20;
-let fmax_perc["COAL_IGCC_CCS"] := 0.20;
+# COAL_US_CCS — unused
+let f_min["COAL_US_CCS"] := 0;
+let f_max["COAL_US_CCS"] := 0;
+
+# Tier 2 — CCGT (baseload gas)
+let f_min["CCGT"] := 16.0;
+let f_max["CCGT"] := 17.5;
+
+# Tier 5 — CCGT_CCS (peaker gas)
+let f_min["CCGT_CCS"] := 8.5;
+let f_max["CCGT_CCS"] := 9.5;
 
 # Hydro
-# f_max has larger tolerance due to SES integer unit structure.
 let f_min["HYDRO_DAM"] := 21.886;
-let f_min["HYDRO_RIVER"] := 10.421;
-
 let f_max["HYDRO_DAM"] := 30.000;
+let f_min["HYDRO_RIVER"] := 10.421;
 let f_max["HYDRO_RIVER"] := 15.000;
 
 # Solar PV
@@ -66,52 +114,53 @@ let f_max["GEOTHERMAL"] := 1.300;
 
 
 # ----------------------------------------------------------------
-# 2) LOCK NEW-BUILD HYDRO TECHNOLOGIES
+# 3) LOCK UNUSED TECHNOLOGIES
 # ----------------------------------------------------------------
 
 let f_min["NEW_HYDRO_DAM"] := 0;
 let f_min["NEW_HYDRO_RIVER"] := 0;
-
 let f_max["NEW_HYDRO_DAM"] := 0;
 let f_max["NEW_HYDRO_RIVER"] := 0;
 
+let fmax_perc["COAL_US"] := 0.25;
+let fmax_perc["COAL_IGCC"] := 0.25;
+let fmax_perc["COAL_US_CCS"] := 0.25;
+let fmax_perc["COAL_IGCC_CCS"] := 0.25;
+
 
 # ----------------------------------------------------------------
-# 3) FUEL PRICES — IEA WEO 2025 STEPS (2024 anchor) + EUR dönüşümü
+# 4) TIERED FUEL PRICES — 2024 IEA WEO STEPS
 # ----------------------------------------------------------------
-#
-# Birim: EUR/MWh_th (LHV, termal); c_op [MCHF/GWh] = EUR/MWh × chf_per_eur × 0.001
-#
-# Metod (özet): Uzun dönem WEO 2025 Table 2.3; Türkiye için şeffaf proxy olarak AB ithalat
-# benchmark’ları (boru+LNG gaz, 6 000 kcal/kg buhar kömürü, IEA ham petrol sepeti → DIESEL/LFO).
-# Referans senaryo: STEPS (Stated Policies). Duyarlılık: CPS (yüksek fosil) / NZE (düşük) —
-# ayrı dosyalarda tutulabilir (ör. turkey_weo2025_cps_fuel_operations_*.dat).
-#
-# 2024 STEPS anchor (sabit 2024 USD/MWh_th infografi): NG 35.1, buhar kömürü 16.1, petrol 46.5
-# EUR/MWh_th = USD/MWh_th × USD_to_EUR ,  USD_to_EUR = 0.920
-#
-# Kömür elektrik payı üst sınırı %40 için bkz. fmax_perc (yukarıda).
+# Base coal price: 14.812 EUR/MWh_th (WEO 2025, 2024 anchor)
+# These are dispatch-equivalent prices: the ratios are calibrated
+# to produce a realistic coal/gas mix (not market fuel prices).
 
 param chf_per_eur := 1.0;
 
-param turkey_fuel_EUR_per_MWh__NG       := 32.292;   # 35.1 * 0.920
-param turkey_fuel_EUR_per_MWh__NG_CCS   := 47.292;   # NG + 15
-param turkey_fuel_EUR_per_MWh__COAL     := 14.812;   # 16.1 * 0.920
-param turkey_fuel_EUR_per_MWh__COAL_CCS  := 23.812;   # COAL + 9
-param turkey_fuel_EUR_per_MWh__DIESEL   := 42.780;   # 46.5 * 0.920 (petrol proxy)
+param turkey_coal_base_2024  := 14.812;   # WEO STEPS coal 2024
+
+param tier_ratio_ng          := 1.23;     # NG dispatch price / coal base
+param tier_ratio_coal_ccs    := 1.12;     # COAL_CCS price / coal base
+param tier_ratio_ng_ccs      := 1.42;     # NG_CCS price / coal base
+
+param turkey_fuel_EUR_per_MWh__COAL     := turkey_coal_base_2024;
+param turkey_fuel_EUR_per_MWh__NG       := turkey_coal_base_2024 * tier_ratio_ng;
+param turkey_fuel_EUR_per_MWh__COAL_CCS := turkey_coal_base_2024 * tier_ratio_coal_ccs;
+param turkey_fuel_EUR_per_MWh__NG_CCS   := turkey_coal_base_2024 * tier_ratio_ng_ccs;
+param turkey_fuel_EUR_per_MWh__DIESEL   := 42.780;
 param turkey_fuel_EUR_per_MWh__LFO      := 42.780;
 param turkey_fuel_EUR_per_MWh__WOOD     := 18;
 param turkey_fuel_EUR_per_MWh__URANIUM  := 7;
-
-let {t in PERIODS} c_op["NG", t] :=
-	turkey_fuel_EUR_per_MWh__NG * chf_per_eur * 0.001;
-let {t in PERIODS} c_op["NG_CCS", t] :=
-	turkey_fuel_EUR_per_MWh__NG_CCS * chf_per_eur * 0.001;
 
 let {t in PERIODS} c_op["COAL", t] :=
 	turkey_fuel_EUR_per_MWh__COAL * chf_per_eur * 0.001;
 let {t in PERIODS} c_op["COAL_CCS", t] :=
 	turkey_fuel_EUR_per_MWh__COAL_CCS * chf_per_eur * 0.001;
+
+let {t in PERIODS} c_op["NG", t] :=
+	turkey_fuel_EUR_per_MWh__NG * chf_per_eur * 0.001;
+let {t in PERIODS} c_op["NG_CCS", t] :=
+	turkey_fuel_EUR_per_MWh__NG_CCS * chf_per_eur * 0.001;
 
 let {t in PERIODS} c_op["DIESEL", t] :=
 	turkey_fuel_EUR_per_MWh__DIESEL * chf_per_eur * 0.001;
@@ -125,11 +174,8 @@ let {t in PERIODS} c_op["URANIUM", t] :=
 
 
 # ----------------------------------------------------------------
-# 3b) DEMAND SIDE — only sectoral electricity below; zero CH baseline
+# 5) DEMAND SIDE — zero non-electricity end uses
 # ----------------------------------------------------------------
-# scenarios/baseline/ses_main.dat defines LIGHTING, heat, and mobility
-# (Mpkm/Mtkm) demands. Without these lets, Turkey runs still optimize
-# those end uses. Set every non-ELECTRICITY END_USES_INPUT row to zero.
 
 let {s in SECTORS} end_uses_demand_year["LIGHTING", s] := 0;
 let {s in SECTORS} end_uses_demand_year["HEAT_HIGH_T", s] := 0;
@@ -140,12 +186,10 @@ let {s in SECTORS} end_uses_demand_year["MOBILITY_FREIGHT", s] := 0;
 
 
 # ----------------------------------------------------------------
-# 4) ELECTRICITY DEMAND — varsayılan (2030/2035 ve genel referans)
-# Units: GWh/year
-# 2024 referans / 2024 kuraklık: scenarios/turkey_reference_2024 ve turkey_drought_2024
-# dosyalarında TEİAŞ 2024 üretim sırasına (~341,85 TWh) ölçeklenmiş talep ile override edilir.
-# Aşağıdaki 348 TWh tabanını 2030–2035 senaryoları kullanır (orijinal sektör oranları).
+# 6) ELECTRICITY DEMAND — default (GWh/year)
 # ----------------------------------------------------------------
+# 2024 reference/drought override these in their own .dat files.
+# 2030–2035 scenarios use their own values.
 
 let end_uses_demand_year["ELECTRICITY", "HOUSEHOLDS"] := 87000;
 let end_uses_demand_year["ELECTRICITY", "SERVICES"] := 96000;
@@ -154,17 +198,40 @@ let end_uses_demand_year["ELECTRICITY", "TRANSPORTATION"] := 12000;
 
 
 # ----------------------------------------------------------------
-# 5) ELECTRICITY TRADE
-# Units: GWh/year
+# 7) HYDRO MONTHLY AVAILABILITY — 2024 base profile
+# ----------------------------------------------------------------
+# Default c_p_t for HYDRO_DAM and HYDRO_RIVER.
+# Year-specific scenarios (2030, 2035) override with their own profiles.
+
+let c_p_t["HYDRO_DAM",  1] := 0.35718769;
+let c_p_t["HYDRO_DAM",  2] := 0.3662197555;
+let c_p_t["HYDRO_DAM",  3] := 0.2748204469;
+let c_p_t["HYDRO_DAM",  4] := 0.3076882552;
+let c_p_t["HYDRO_DAM",  5] := 0.3032432771;
+let c_p_t["HYDRO_DAM",  6] := 0.2882865145;
+let c_p_t["HYDRO_DAM",  7] := 0.2806312661;
+let c_p_t["HYDRO_DAM",  8] := 0.2501025769;
+let c_p_t["HYDRO_DAM",  9] := 0.2362943147;
+let c_p_t["HYDRO_DAM", 10] := 0.1845089126;
+let c_p_t["HYDRO_DAM", 11] := 0.2022294291;
+let c_p_t["HYDRO_DAM", 12] := 0.179368648;
+
+let c_p_t["HYDRO_RIVER",  1] := 0.35718769;
+let c_p_t["HYDRO_RIVER",  2] := 0.3662197555;
+let c_p_t["HYDRO_RIVER",  3] := 0.2748204469;
+let c_p_t["HYDRO_RIVER",  4] := 0.3076882552;
+let c_p_t["HYDRO_RIVER",  5] := 0.3032432771;
+let c_p_t["HYDRO_RIVER",  6] := 0.2882865145;
+let c_p_t["HYDRO_RIVER",  7] := 0.2806312661;
+let c_p_t["HYDRO_RIVER",  8] := 0.2501025769;
+let c_p_t["HYDRO_RIVER",  9] := 0.2362943147;
+let c_p_t["HYDRO_RIVER", 10] := 0.1845089126;
+let c_p_t["HYDRO_RIVER", 11] := 0.2022294291;
+let c_p_t["HYDRO_RIVER", 12] := 0.179368648;
+
+
+# ----------------------------------------------------------------
+# 8) ELECTRICITY TRADE (GWh/year)
 # ----------------------------------------------------------------
 
 let avail["ELEC_EXPORT"] := 3500;
-
-
-# ----------------------------------------------------------------
-# 6) POLİCY NOTLARI
-# ----------------------------------------------------------------
-#
-# TEİAŞ 2024 karışımı ile kıyas için bkz. yıllık .dat hidro oranları ve talep.
-# Kömür elektrik payı: fmax_perc ile yıllık üst sınır %40 (iki kömür hattı × %20).
-# ================================================================

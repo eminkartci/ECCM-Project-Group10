@@ -1,0 +1,23 @@
+# ================================================================
+# TURKEY DROUGHT + EMISSION CAP SCENARIO - 2030
+# ================================================================
+#
+# Same as Drought 2030 (identical demand, installed capacity, and
+# drought-reduced hydro availability) PLUS a binding GWP emission cap.
+#
+# Emission cap: 124 000 ktCO2-eq/y  (~20 % below Drought-2030 baseline
+# of 155 140 ktCO2-eq/y).  The cap forces the optimizer to curtail
+# fossil-fuel generation (primarily coal, secondarily gas) and shift
+# towards available renewables + nuclear where possible.
+#
+# Note: 25 % reduction (118 000) is infeasible for 2030 — demand is
+# much higher than 2024 but clean capacity (PV/wind/nuclear) is not
+# yet at 2035 levels.  20 % is the tightest achievable cap.
+# ================================================================
+
+include scenarios/turkey_drought_2030/ses_main_turkey_drought_2030.dat;
+
+# ----------------------------------------------------------------
+# EMISSION CAP — 20 % reduction from Drought-2030 baseline
+# ----------------------------------------------------------------
+let gwp_limit := 124000;

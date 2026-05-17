@@ -26,29 +26,30 @@ for {t in PERIODS} {
 printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
   "Name", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" > (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
 
+# End_Uses.txt ile aynı: 12 dönem için 12 ayrı %.3f (tek %.3f yalnızca 1. ayı yazar)
 if sum{t in PERIODS}(F_Mult_t["NUCLEAR", t] * period_duration[t]) > 10 then
-  printf "%s\t%.3f\n", "Nuclear", {t in PERIODS}(layers_in_out["NUCLEAR", "ELECTRICITY"] * F_Mult_t["NUCLEAR", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
+  printf "%s\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n", "Nuclear", {t in PERIODS}(layers_in_out["NUCLEAR", "ELECTRICITY"] * F_Mult_t["NUCLEAR", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
 if sum{t in PERIODS}(F_Mult_t["CCGT_CCS", t] * period_duration[t]) > 10 then
-  printf "%s\t%.3f\n", "NG CCS", {t in PERIODS}(layers_in_out["CCGT_CCS", "ELECTRICITY"] * F_Mult_t["CCGT_CCS", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
+  printf "%s\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n", "NG CCS", {t in PERIODS}(layers_in_out["CCGT_CCS", "ELECTRICITY"] * F_Mult_t["CCGT_CCS", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
 if sum{t in PERIODS}(F_Mult_t["CCGT", t] * period_duration[t]) > 10 then
-  printf "%s\t%.3f\n", "NG", {t in PERIODS}(layers_in_out["CCGT", "ELECTRICITY"] * F_Mult_t["CCGT", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
+  printf "%s\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n", "NG", {t in PERIODS}(layers_in_out["CCGT", "ELECTRICITY"] * F_Mult_t["CCGT", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
 if sum{t in PERIODS}((F_Mult_t["COAL_US_CCS", t] + F_Mult_t["COAL_IGCC_CCS", t]) * period_duration[t]) > 10 then
-  printf "%s\t%.3f\n", "Coal CCS", {t in PERIODS}(layers_in_out["COAL_US_CCS", "ELECTRICITY"] * F_Mult_t["COAL_US_CCS", t] * period_duration[t] + layers_in_out["COAL_IGCC_CCS", "ELECTRICITY"] * F_Mult_t["COAL_IGCC_CCS", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
+  printf "%s\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n", "Coal CCS", {t in PERIODS}(layers_in_out["COAL_US_CCS", "ELECTRICITY"] * F_Mult_t["COAL_US_CCS", t] * period_duration[t] + layers_in_out["COAL_IGCC_CCS", "ELECTRICITY"] * F_Mult_t["COAL_IGCC_CCS", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
 if sum{t in PERIODS}((F_Mult_t["COAL_US", t] + F_Mult_t["COAL_IGCC", t]) * period_duration[t]) > 10 then
-  printf "%s\t%.3f\n", "Coal", {t in PERIODS}(layers_in_out["COAL_US", "ELECTRICITY"] * F_Mult_t["COAL_US", t] * period_duration[t] + layers_in_out["COAL_IGCC", "ELECTRICITY"] * F_Mult_t["COAL_IGCC", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
+  printf "%s\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n", "Coal", {t in PERIODS}(layers_in_out["COAL_US", "ELECTRICITY"] * F_Mult_t["COAL_US", t] * period_duration[t] + layers_in_out["COAL_IGCC", "ELECTRICITY"] * F_Mult_t["COAL_IGCC", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
 if sum{t in PERIODS}((F_Mult_t["HYDRO_DAM", t] + F_Mult_t["NEW_HYDRO_DAM", t]) * period_duration[t]) > 10 then
-  printf "%s\t%.3f\n", "Hydro Dams", {t in PERIODS}(layers_in_out["HYDRO_DAM", "ELECTRICITY"] * F_Mult_t["HYDRO_DAM", t] * period_duration[t] + layers_in_out["NEW_HYDRO_DAM", "ELECTRICITY"] * F_Mult_t["NEW_HYDRO_DAM", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
+  printf "%s\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n", "Hydro Dams", {t in PERIODS}(layers_in_out["HYDRO_DAM", "ELECTRICITY"] * F_Mult_t["HYDRO_DAM", t] * period_duration[t] + layers_in_out["NEW_HYDRO_DAM", "ELECTRICITY"] * F_Mult_t["NEW_HYDRO_DAM", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
 if sum{t in PERIODS}((F_Mult_t["HYDRO_RIVER", t] + F_Mult_t["NEW_HYDRO_RIVER", t]) * period_duration[t]) > 10 then
-  printf "%s\t%.3f\n", "Hydro River", {t in PERIODS}(layers_in_out["HYDRO_RIVER", "ELECTRICITY"] * F_Mult_t["HYDRO_RIVER", t] * period_duration[t] + layers_in_out["NEW_HYDRO_RIVER", "ELECTRICITY"] * F_Mult_t["NEW_HYDRO_RIVER", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
+  printf "%s\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n", "Hydro River", {t in PERIODS}(layers_in_out["HYDRO_RIVER", "ELECTRICITY"] * F_Mult_t["HYDRO_RIVER", t] * period_duration[t] + layers_in_out["NEW_HYDRO_RIVER", "ELECTRICITY"] * F_Mult_t["NEW_HYDRO_RIVER", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
 if sum{t in PERIODS}(F_Mult_t["WIND", t] * period_duration[t]) > 10 then
-  printf "%s\t%.3f\n", "Wind", {t in PERIODS}(layers_in_out["WIND", "ELECTRICITY"] * F_Mult_t["WIND", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
+  printf "%s\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n", "Wind", {t in PERIODS}(layers_in_out["WIND", "ELECTRICITY"] * F_Mult_t["WIND", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
 if sum{t in PERIODS}(F_Mult_t["PV", t] * period_duration[t]) > 10 then
-  printf "%s\t%.3f\n", "Solar", {t in PERIODS}(layers_in_out["PV", "ELECTRICITY"] * F_Mult_t["PV", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
+  printf "%s\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n", "Solar", {t in PERIODS}(layers_in_out["PV", "ELECTRICITY"] * F_Mult_t["PV", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
 if sum{t in PERIODS}(F_Mult_t["GEOTHERMAL", t] * period_duration[t]) > 10 then
-  printf "%s\t%.3f\n", "Geothermal", {t in PERIODS}(layers_in_out["GEOTHERMAL", "ELECTRICITY"] * F_Mult_t["GEOTHERMAL", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
+  printf "%s\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n", "Geothermal", {t in PERIODS}(layers_in_out["GEOTHERMAL", "ELECTRICITY"] * F_Mult_t["GEOTHERMAL", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
 if sum{t in PERIODS}(F_Mult_t["ELECTRICITY", t] * period_duration[t]) > 10 then
-  printf "%s\t%.3f\n", "Electricity", {t in PERIODS}(layers_in_out["ELECTRICITY", "ELECTRICITY"] * F_Mult_t["ELECTRICITY", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
+  printf "%s\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n", "Electricity", {t in PERIODS}(layers_in_out["ELECTRICITY", "ELECTRICITY"] * F_Mult_t["ELECTRICITY", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
 if sum{i in COGEN, t in PERIODS}(F_Mult_t[i, t] * period_duration[t]) > 10 then
-  printf "%s\t%.3f\n", "CHP", {t in PERIODS}(sum{i in COGEN}(layers_in_out[i, "ELECTRICITY"] * F_Mult_t[i, t] * period_duration[t])) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
+  printf "%s\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n", "CHP", {t in PERIODS}(sum{i in COGEN}(layers_in_out[i, "ELECTRICITY"] * F_Mult_t[i, t] * period_duration[t])) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
 if sum{t in PERIODS}((F_Mult_t["GASIFICATION_SNG", t] + F_Mult_t["PYROLYSIS", t]) * period_duration[t]) > 10 then
-  printf "%s\t%.3f\n", "Biofuels", {t in PERIODS}(layers_in_out["GASIFICATION_SNG", "ELECTRICITY"] * F_Mult_t["GASIFICATION_SNG", t] * period_duration[t] + layers_in_out["PYROLYSIS", "ELECTRICITY"] * F_Mult_t["PYROLYSIS", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");
+  printf "%s\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n", "Biofuels", {t in PERIODS}(layers_in_out["GASIFICATION_SNG", "ELECTRICITY"] * F_Mult_t["GASIFICATION_SNG", t] * period_duration[t] + layers_in_out["PYROLYSIS", "ELECTRICITY"] * F_Mult_t["PYROLYSIS", t] * period_duration[t]) >> (OUTPUT_DIR & "/monthly_electricity_supply_gwh.txt");

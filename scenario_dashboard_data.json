@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-17T00:40:23.189662+00:00",
+  "generatedAt": "2026-05-17T00:46:03.351088+00:00",
   "scenarios": [
     {
       "folderName": "output_turkey_reference_2024",
@@ -863,127 +863,127 @@
         "NG": [
           3155.535,
           0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
+          6696.0,
+          6480.0,
+          4458.465,
+          6480.0,
+          6696.0,
+          6696.0,
+          6480.0,
+          6696.0,
+          6480.0,
+          6696.0
         ],
         "Coal CCS": [
           0.0,
+          974.046,
+          0.0,
+          0.0,
+          897.813,
+          3600.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
+          3600.0,
+          1282.762
         ],
         "Coal": [
           12276.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
+          11088.0,
+          9266.87,
+          8235.615,
+          11720.419,
+          6480.0,
+          11202.646,
+          12276.0,
+          10770.478,
+          11593.43,
+          7329.181,
+          12276.0
         ],
         "Hydro Dams": [
           6441.723,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
+          5965.456,
+          4956.266,
+          5370.022,
+          5468.859,
+          5031.407,
+          5061.061,
+          4510.49,
+          4123.997,
+          3327.537,
+          3529.47,
+          3234.835
         ],
         "Hydro River": [
           3029.523,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
+          2805.536,
+          2330.917,
+          2525.505,
+          2571.988,
+          2366.256,
+          2380.202,
+          2121.27,
+          1939.504,
+          1564.931,
+          1659.899,
+          1521.333
         ],
         "Wind": [
           4504.593,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
+          3497.175,
+          3909.647,
+          2440.102,
+          2436.447,
+          1882.626,
+          2068.147,
+          1879.275,
+          2175.072,
+          3871.873,
+          4203.922,
+          4702.909
         ],
         "Solar": [
           948.581,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
+          1529.029,
+          2159.847,
+          2655.087,
+          2801.964,
+          2725.701,
+          2947.899,
+          2801.964,
+          2217.28,
+          1576.105,
+          903.859,
+          642.117
         ],
         "Geothermal": [
           863.04,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
+          779.52,
+          863.04,
+          835.2,
+          863.04,
+          22.272,
+          863.04,
+          863.04,
+          835.2,
+          863.04,
+          835.2,
+          863.04
         ],
         "CHP": [
           0.0,
+          1559.04,
+          1036.408,
+          1670.4,
           0.0,
+          1623.67,
           0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
+          70.957,
+          1670.4,
+          1726.08,
+          1670.4,
           0.0
         ]
       },
@@ -1003,11 +1003,11 @@
     },
     {
       "folderName": "output_turkey_reference_2030",
-      "totalCost": 33559.1730404,
-      "totalGwp": 132223.501993,
+      "totalCost": 36062.9649538,
+      "totalGwp": 129585.773332,
       "totalOutput": {
         "NUCLEAR": 37186.2,
-        "CCGT": 59584.902,
+        "CCGT": 21514.083,
         "CCGT_CCS": 0.0,
         "COAL_US": 60829.44,
         "COAL_IGCC": 67487.04,
@@ -1020,8 +1020,8 @@
         "HYDRO_RIVER": 26816.865,
         "NEW_HYDRO_RIVER": 0.0,
         "GEOTHERMAL": 13732.877,
+        "IND_COGEN_WOOD": 11699.173,
         "IND_COGEN_GAS": 0.0,
-        "IND_COGEN_WOOD": 0.0,
         "IND_COGEN_WASTE": 0.0,
         "IND_BOILER_GAS": 0.0,
         "IND_BOILER_WOOD": 0.0,
@@ -1074,17 +1074,17 @@
         "H2_BIOMASS": 0.0,
         "GASIFICATION_SNG": 0.0,
         "PYROLYSIS": 0.0,
-        "ELECTRICITY": 0.0,
+        "ELECTRICITY": 26371.646,
         "GASOLINE": 0.0,
         "DIESEL": 0.0,
         "BIOETHANOL": 0.0,
         "BIODIESEL": 0.0,
         "LFO": 0.0,
         "LNG": 0.0,
-        "NG": 94579.116,
+        "NG": 34149.304,
         "NG_CCS": 0.0,
         "SNG": 0.0,
-        "WOOD": 0.0,
+        "WOOD": 65000.0,
         "COAL": 249119.971,
         "COAL_CCS": 0.0,
         "URANIUM": 100503.143,
@@ -1177,17 +1177,17 @@
           "cOp": 0.0,
           "sum": 1816.980274
         },
-        "IND_COGEN_GAS": {
-          "cInv": 0.0,
-          "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
-        },
         "IND_COGEN_WOOD": {
           "cInv": 232.149591,
           "cMaint": 147.8808,
           "cOp": 0.0,
           "sum": 380.030391
+        },
+        "IND_COGEN_GAS": {
+          "cInv": 0.0,
+          "cMaint": 0.0,
+          "cOp": 0.0,
+          "sum": 0.0
         },
         "IND_COGEN_WASTE": {
           "cInv": 0.0,
@@ -1516,8 +1516,8 @@
         "ELECTRICITY": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
+          "cOp": 2376.085297,
+          "sum": 2376.085297
         },
         "GASOLINE": {
           "cInv": 0.0,
@@ -1558,8 +1558,8 @@
         "NG": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 1631.300585,
-          "sum": 1631.300585
+          "cOp": 589.007202,
+          "sum": 589.007202
         },
         "NG_CCS": {
           "cInv": 0.0,
@@ -1576,8 +1576,8 @@
         "WOOD": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
+          "cOp": 1170.0,
+          "sum": 1170.0
         },
         "COAL": {
           "cInv": 0.0,
@@ -1642,8 +1642,15 @@
         {
           "source": "NG",
           "target": "Elec",
-          "value": 59.58,
+          "value": 21.51,
           "color": "#FFD700",
+          "unit": "TWh"
+        },
+        {
+          "source": "Electricity",
+          "target": "Elec",
+          "value": 26.37,
+          "color": "#00BFFF",
           "unit": "TWh"
         },
         {
@@ -1696,6 +1703,13 @@
           "unit": "TWh"
         },
         {
+          "source": "Biomass",
+          "target": "Elec",
+          "value": 11.7,
+          "color": "#CD853F",
+          "unit": "TWh"
+        },
+        {
           "source": "Elec",
           "target": "Exp & Loss",
           "value": 29.14,
@@ -1729,17 +1743,27 @@
           "value": 8.5,
           "color": "#00BFFF",
           "unit": "TWh"
+        },
+        {
+          "source": "CHP",
+          "target": "Elec",
+          "value": 11.7,
+          "color": "#00BFFF",
+          "unit": "TWh"
         }
       ],
       "electricitySankeySupplyGwh": {
-        "NG": 59580.0,
+        "NG": 21510.0,
+        "Electricity": 26370.0,
         "Nuclear": 37190.0,
         "Wind": 53580.0,
         "Hydro Dams": 57020.0,
         "Hydro River": 26820.0,
         "Coal": 128320.0,
         "Solar": 40100.0,
-        "Geothermal": 13730.0
+        "Geothermal": 13730.0,
+        "Biomass": 11700.0,
+        "CHP": 11700.0
       },
       "solved": true,
       "statusReason": "ok",
@@ -1755,33 +1779,259 @@
         "wind": 18.102,
         "geothermal": 1.704,
         "biomass": 3.42,
-        "other_electric": 0.0
+        "other_electric": 3.42
       },
-      "monthlyEnergyPrice": [],
-      "monthlyElectricitySupplyGwh": {},
+      "monthlyEnergyPrice": [
+        {
+          "period": 1,
+          "monthLabel": "Oca",
+          "demandGwh": 25500.834221,
+          "costMeur": 3275.367067,
+          "priceEurPerMwh": 128.441565
+        },
+        {
+          "period": 2,
+          "monthLabel": "\u015eub",
+          "demandGwh": 26266.693651,
+          "costMeur": 2894.060877,
+          "priceEurPerMwh": 110.179869
+        },
+        {
+          "period": 3,
+          "monthLabel": "Mar",
+          "demandGwh": 27926.098342,
+          "costMeur": 3165.278278,
+          "priceEurPerMwh": 113.344809
+        },
+        {
+          "period": 4,
+          "monthLabel": "Nis",
+          "demandGwh": 30488.1241,
+          "costMeur": 2975.100623,
+          "priceEurPerMwh": 97.582279
+        },
+        {
+          "period": 5,
+          "monthLabel": "May",
+          "demandGwh": 31375.78656,
+          "costMeur": 2895.68295,
+          "priceEurPerMwh": 92.29037
+        },
+        {
+          "period": 6,
+          "monthLabel": "Haz",
+          "demandGwh": 31824.657534,
+          "costMeur": 2917.893568,
+          "priceEurPerMwh": 91.686566
+        },
+        {
+          "period": 7,
+          "monthLabel": "Tem",
+          "demandGwh": 31747.59185,
+          "costMeur": 2896.456421,
+          "priceEurPerMwh": 91.233894
+        },
+        {
+          "period": 8,
+          "monthLabel": "A\u011fu",
+          "demandGwh": 26278.293859,
+          "costMeur": 3322.900642,
+          "priceEurPerMwh": 126.450395
+        },
+        {
+          "period": 9,
+          "monthLabel": "Eyl",
+          "demandGwh": 31824.657534,
+          "costMeur": 2966.348336,
+          "priceEurPerMwh": 93.20912
+        },
+        {
+          "period": 10,
+          "monthLabel": "Eki",
+          "demandGwh": 32885.479452,
+          "costMeur": 2887.433547,
+          "priceEurPerMwh": 87.80269
+        },
+        {
+          "period": 11,
+          "monthLabel": "Kas",
+          "demandGwh": 31824.657534,
+          "costMeur": 2792.534997,
+          "priceEurPerMwh": 87.747527
+        },
+        {
+          "period": 12,
+          "monthLabel": "Ara",
+          "demandGwh": 32885.479452,
+          "costMeur": 3073.907648,
+          "priceEurPerMwh": 93.473098
+        }
+      ],
+      "monthlyElectricitySupplyGwh": {
+        "Nuclear": [
+          3720.0,
+          3360.0,
+          0.0,
+          3600.0,
+          3720.0,
+          3600.0,
+          3720.0,
+          826.2,
+          3600.0,
+          3720.0,
+          3600.0,
+          3720.0
+        ],
+        "NG": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          36.446,
+          1251.861,
+          0.0,
+          1806.306,
+          4667.072,
+          4452.398,
+          9300.0
+        ],
+        "Coal": [
+          6696.0,
+          5376.0,
+          12648.0,
+          9765.449,
+          12648.0,
+          12240.0,
+          12648.0,
+          12648.0,
+          12240.0,
+          12648.0,
+          12240.0,
+          6519.031
+        ],
+        "Hydro Dams": [
+          6441.723,
+          5965.456,
+          4956.266,
+          5370.022,
+          5468.859,
+          5031.407,
+          5061.061,
+          4510.49,
+          4123.997,
+          3327.537,
+          3529.47,
+          3234.835
+        ],
+        "Hydro River": [
+          3029.523,
+          2805.536,
+          2330.917,
+          2525.505,
+          2571.988,
+          2366.256,
+          2380.202,
+          2121.27,
+          1939.504,
+          1564.931,
+          1659.899,
+          1521.333
+        ],
+        "Wind": [
+          6424.183,
+          4987.463,
+          5575.706,
+          3479.928,
+          3474.715,
+          2684.889,
+          2949.467,
+          2680.11,
+          3101.959,
+          5521.834,
+          5995.382,
+          6707.008
+        ],
+        "Solar": [
+          1591.044,
+          2564.621,
+          3622.685,
+          4453.344,
+          4699.699,
+          4571.784,
+          4944.475,
+          4699.699,
+          3719.016,
+          2643.581,
+          1516.032,
+          1077.014
+        ],
+        "Geothermal": [
+          73.613,
+          1145.088,
+          1267.776,
+          1226.88,
+          1267.776,
+          1226.88,
+          1267.776,
+          1267.776,
+          1226.88,
+          1267.776,
+          1226.88,
+          1267.776
+        ],
+        "Electricity": [
+          7384.645,
+          3436.32,
+          4959.381,
+          1336.533,
+          1509.693,
+          0.0,
+          1137.888,
+          6607.186,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "CHP": [
+          0.0,
+          2298.24,
+          0.0,
+          2462.4,
+          0.0,
+          2462.4,
+          0.0,
+          0.0,
+          2462.4,
+          0.0,
+          0.0,
+          2013.733
+        ]
+      },
       "expected": true,
       "label": "Reference 2030",
       "kpi": {
-        "electricityOutputGWh": 0.0,
-        "electricitySupplyGWh": 416344.087,
-        "electricityDemandGWh": 387200.001,
+        "electricityOutputGWh": 26371.646,
+        "electricitySupplyGWh": 389972.441,
+        "electricityDemandGWh": 26371.646,
         "electricityLossesGWh": 29144.086,
-        "costPerGWh": 0.08060441852846585,
-        "gwpPerGWh": 0.31758227418515017,
+        "costPerGWh": 1.3674901048573154,
+        "gwpPerGWh": 4.913829547537533,
         "endUseDemandGWh": 570.3343680000002,
-        "energyPriceEurPerMwh": 86.6714177523982,
-        "totalEmissionsKtCO2": 132223.501993
+        "energyPriceEurPerMwh": 1367.4901048573154,
+        "totalEmissionsKtCO2": 129585.773332
       }
     },
     {
       "folderName": "output_turkey_reference_2035",
-      "totalCost": 36427.8220893,
-      "totalGwp": 125458.776831,
+      "totalCost": 42281.1234647,
+      "totalGwp": 101999.922615,
       "totalOutput": {
         "NUCLEAR": 52060.68,
-        "CCGT": 24334.479,
+        "CCGT": 0.0,
         "CCGT_CCS": 0.0,
-        "COAL_US": 64631.28,
+        "COAL_US": 5303.542,
         "COAL_IGCC": 71236.32,
         "COAL_US_CCS": 0.0,
         "COAL_IGCC_CCS": 0.0,
@@ -1792,8 +2042,8 @@
         "HYDRO_RIVER": 26816.865,
         "NEW_HYDRO_RIVER": 0.0,
         "GEOTHERMAL": 13732.877,
+        "IND_COGEN_WOOD": 11699.173,
         "IND_COGEN_GAS": 0.0,
-        "IND_COGEN_WOOD": 0.0,
         "IND_COGEN_WASTE": 0.0,
         "IND_BOILER_GAS": 0.0,
         "IND_BOILER_WOOD": 0.0,
@@ -1846,18 +2096,18 @@
         "H2_BIOMASS": 0.0,
         "GASIFICATION_SNG": 0.0,
         "PYROLYSIS": 0.0,
-        "ELECTRICITY": 0.0,
+        "ELECTRICITY": 71963.044,
         "GASOLINE": 0.0,
         "DIESEL": 0.0,
         "BIOETHANOL": 0.0,
         "BIODIESEL": 0.0,
         "LFO": 0.0,
         "LNG": 0.0,
-        "NG": 38626.119,
+        "NG": 0.0,
         "NG_CCS": 0.0,
         "SNG": 0.0,
-        "WOOD": 0.0,
-        "COAL": 263822.057,
+        "WOOD": 65000.0,
+        "COAL": 142746.01,
         "COAL_CCS": 0.0,
         "URANIUM": 140704.4,
         "WASTE": 0.0,
@@ -1949,17 +2199,17 @@
           "cOp": 0.0,
           "sum": 1816.980274
         },
-        "IND_COGEN_GAS": {
-          "cInv": 0.0,
-          "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
-        },
         "IND_COGEN_WOOD": {
           "cInv": 232.149591,
           "cMaint": 147.8808,
           "cOp": 0.0,
           "sum": 380.030391
+        },
+        "IND_COGEN_GAS": {
+          "cInv": 0.0,
+          "cMaint": 0.0,
+          "cOp": 0.0,
+          "sum": 0.0
         },
         "IND_COGEN_WASTE": {
           "cInv": 0.0,
@@ -2288,8 +2538,8 @@
         "ELECTRICITY": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
+          "cOp": 6483.870243,
+          "sum": 6483.870243
         },
         "GASOLINE": {
           "cInv": 0.0,
@@ -2330,8 +2580,8 @@
         "NG": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 555.907099,
-          "sum": 555.907099
+          "cOp": 0.0,
+          "sum": 0.0
         },
         "NG_CCS": {
           "cInv": 0.0,
@@ -2348,14 +2598,14 @@
         "WOOD": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
+          "cOp": 1170.0,
+          "sum": 1170.0
         },
         "COAL": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 2712.090748,
-          "sum": 2712.090748
+          "cOp": 1467.42898,
+          "sum": 1467.42898
         },
         "COAL_CCS": {
           "cInv": 0.0,
@@ -2412,10 +2662,10 @@
       },
       "sankeyLinks": [
         {
-          "source": "NG",
+          "source": "Electricity",
           "target": "Elec",
-          "value": 24.33,
-          "color": "#FFD700",
+          "value": 71.96,
+          "color": "#00BFFF",
           "unit": "TWh"
         },
         {
@@ -2449,7 +2699,7 @@
         {
           "source": "Coal",
           "target": "Elec",
-          "value": 135.87,
+          "value": 76.54,
           "color": "#A0522D",
           "unit": "TWh"
         },
@@ -2465,6 +2715,13 @@
           "target": "Elec",
           "value": 13.73,
           "color": "#FF0000",
+          "unit": "TWh"
+        },
+        {
+          "source": "Biomass",
+          "target": "Elec",
+          "value": 11.7,
+          "color": "#CD853F",
           "unit": "TWh"
         },
         {
@@ -2501,17 +2758,26 @@
           "value": 24.5,
           "color": "#00BFFF",
           "unit": "TWh"
+        },
+        {
+          "source": "CHP",
+          "target": "Elec",
+          "value": 11.7,
+          "color": "#00BFFF",
+          "unit": "TWh"
         }
       ],
       "electricitySankeySupplyGwh": {
-        "NG": 24330.0,
+        "Electricity": 71960.0,
         "Nuclear": 52060.0,
         "Wind": 87620.0,
         "Hydro Dams": 57020.0,
         "Hydro River": 26820.0,
-        "Coal": 135870.0,
+        "Coal": 76540.0,
         "Solar": 64480.00000000001,
-        "Geothermal": 13730.0
+        "Geothermal": 13730.0,
+        "Biomass": 11700.0,
+        "CHP": 11700.0
       },
       "solved": true,
       "statusReason": "ok",
@@ -2527,28 +2793,240 @@
         "wind": 29.601,
         "geothermal": 1.704,
         "biomass": 3.42,
-        "other_electric": 0.0
+        "other_electric": 3.42
       },
-      "monthlyEnergyPrice": [],
-      "monthlyElectricitySupplyGwh": {},
+      "monthlyEnergyPrice": [
+        {
+          "period": 1,
+          "monthLabel": "Oca",
+          "demandGwh": 30101.737556,
+          "costMeur": 3609.830059,
+          "priceEurPerMwh": 119.920986
+        },
+        {
+          "period": 2,
+          "monthLabel": "\u015eub",
+          "demandGwh": 24953.790648,
+          "costMeur": 3342.013022,
+          "priceEurPerMwh": 133.92807
+        },
+        {
+          "period": 3,
+          "monthLabel": "Mar",
+          "demandGwh": 25959.164208,
+          "costMeur": 3773.547825,
+          "priceEurPerMwh": 145.364766
+        },
+        {
+          "period": 4,
+          "monthLabel": "Nis",
+          "demandGwh": 31195.736287,
+          "costMeur": 3234.772996,
+          "priceEurPerMwh": 103.692792
+        },
+        {
+          "period": 5,
+          "monthLabel": "May",
+          "demandGwh": 32076.952522,
+          "costMeur": 3356.892374,
+          "priceEurPerMwh": 104.651225
+        },
+        {
+          "period": 6,
+          "monthLabel": "Haz",
+          "demandGwh": 29609.502961,
+          "costMeur": 3378.138783,
+          "priceEurPerMwh": 114.089682
+        },
+        {
+          "period": 7,
+          "monthLabel": "Tem",
+          "demandGwh": 31012.04222,
+          "costMeur": 3452.840792,
+          "priceEurPerMwh": 111.338711
+        },
+        {
+          "period": 8,
+          "monthLabel": "A\u011fu",
+          "demandGwh": 31912.979717,
+          "costMeur": 3626.132306,
+          "priceEurPerMwh": 113.625626
+        },
+        {
+          "period": 9,
+          "monthLabel": "Eyl",
+          "demandGwh": 35309.589041,
+          "costMeur": 3221.191358,
+          "priceEurPerMwh": 91.227099
+        },
+        {
+          "period": 10,
+          "monthLabel": "Eki",
+          "demandGwh": 31514.532479,
+          "costMeur": 3662.032402,
+          "priceEurPerMwh": 116.201388
+        },
+        {
+          "period": 11,
+          "monthLabel": "Kas",
+          "demandGwh": 30342.421223,
+          "costMeur": 3557.914085,
+          "priceEurPerMwh": 117.25874
+        },
+        {
+          "period": 12,
+          "monthLabel": "Ara",
+          "demandGwh": 23648.507377,
+          "costMeur": 4065.817462,
+          "priceEurPerMwh": 171.927023
+        }
+      ],
+      "monthlyElectricitySupplyGwh": {
+        "Nuclear": [
+          5208.0,
+          0.0,
+          5208.0,
+          5040.0,
+          5208.0,
+          5040.0,
+          5208.0,
+          5208.0,
+          5040.0,
+          5208.0,
+          5040.0,
+          652.68
+        ],
+        "Coal": [
+          2152.32,
+          6384.0,
+          0.0,
+          6840.0,
+          7068.0,
+          6861.267,
+          7068.0,
+          7068.0,
+          12122.275,
+          7068.0,
+          6840.0,
+          7068.0
+        ],
+        "Hydro Dams": [
+          6441.723,
+          5965.456,
+          4956.266,
+          5370.022,
+          5468.859,
+          5031.407,
+          5061.061,
+          4510.49,
+          4123.997,
+          3327.537,
+          3529.47,
+          3234.835
+        ],
+        "Hydro River": [
+          3029.523,
+          2805.536,
+          2330.917,
+          2525.505,
+          2571.988,
+          2366.256,
+          2380.202,
+          2121.27,
+          1939.504,
+          1564.931,
+          1659.899,
+          1521.333
+        ],
+        "Wind": [
+          10505.04,
+          8155.668,
+          9117.582,
+          5690.496,
+          5681.971,
+          4390.42,
+          4823.069,
+          4382.606,
+          5072.427,
+          9029.489,
+          9803.851,
+          10967.526
+        ],
+        "Solar": [
+          2558.244,
+          4123.661,
+          5824.925,
+          7160.544,
+          7556.659,
+          7350.984,
+          7950.236,
+          7556.659,
+          5979.816,
+          4250.621,
+          2437.632,
+          1731.734
+        ],
+        "Geothermal": [
+          1267.776,
+          0.0,
+          1267.776,
+          1226.88,
+          1267.776,
+          1226.88,
+          1267.776,
+          1267.776,
+          1226.88,
+          1267.776,
+          1226.88,
+          1218.701
+        ],
+        "Electricity": [
+          6384.838,
+          8001.826,
+          10527.411,
+          4113.853,
+          4409.623,
+          5700.086,
+          5474.533,
+          4573.596,
+          0.0,
+          4972.043,
+          4967.168,
+          12838.068
+        ],
+        "CHP": [
+          1685.413,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2544.48,
+          2462.4,
+          2544.48,
+          2462.4,
+          0.0
+        ]
+      },
       "expected": true,
       "label": "Reference 2035",
       "kpi": {
-        "electricityOutputGWh": 0.0,
-        "electricitySupplyGWh": 461935.485,
-        "electricityDemandGWh": 429600.001,
+        "electricityOutputGWh": 71963.044,
+        "electricitySupplyGWh": 389972.441,
+        "electricityDemandGWh": 39627.56,
         "electricityLossesGWh": 32335.484,
-        "costPerGWh": 0.07885911187208319,
-        "gwpPerGWh": 0.27159372012955446,
+        "costPerGWh": 0.587539396814565,
+        "gwpPerGWh": 1.4173931082598452,
         "endUseDemandGWh": 632.7883319999997,
-        "energyPriceEurPerMwh": 84.79474395834558,
-        "totalEmissionsKtCO2": 125458.776831
+        "energyPriceEurPerMwh": 1066.9625751547662,
+        "totalEmissionsKtCO2": 101999.922615
       }
     },
     {
       "folderName": "output_turkey_drought_2024",
-      "totalCost": 30486.5494991,
-      "totalGwp": 147898.611055,
+      "totalCost": 31209.3295898,
+      "totalGwp": 139400.088578,
       "totalOutput": {
         "NUCLEAR": 0.0,
         "CCGT": 67014.0,
@@ -2556,7 +3034,7 @@
         "COAL_US": 57027.6,
         "COAL_IGCC": 67487.04,
         "COAL_US_CCS": 0.0,
-        "COAL_IGCC_CCS": 21381.976,
+        "COAL_IGCC_CCS": 10354.621,
         "PV": 23909.432,
         "WIND": 37571.788,
         "HYDRO_DAM": 57021.123,
@@ -2564,8 +3042,8 @@
         "HYDRO_RIVER": 26816.865,
         "NEW_HYDRO_RIVER": 0.0,
         "GEOTHERMAL": 9348.672,
+        "IND_COGEN_WOOD": 11027.355,
         "IND_COGEN_GAS": 0.0,
-        "IND_COGEN_WOOD": 0.0,
         "IND_COGEN_WASTE": 0.0,
         "IND_BOILER_GAS": 0.0,
         "IND_BOILER_WOOD": 0.0,
@@ -2628,9 +3106,9 @@
         "NG": 106371.322,
         "NG_CCS": 0.0,
         "SNG": 0.0,
-        "WOOD": 0.0,
+        "WOOD": 61267.412,
         "COAL": 241361.175,
-        "COAL_CCS": 44545.07,
+        "COAL_CCS": 21571.782,
         "URANIUM": 0.0,
         "WASTE": 0.0,
         "H2": 0.0,
@@ -2721,17 +3199,17 @@
           "cOp": 0.0,
           "sum": 1236.911454
         },
-        "IND_COGEN_GAS": {
-          "cInv": 0.0,
-          "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
-        },
         "IND_COGEN_WOOD": {
           "cInv": 157.481594,
           "cMaint": 100.3168,
           "cOp": 0.0,
           "sum": 257.79839400000003
+        },
+        "IND_COGEN_GAS": {
+          "cInv": 0.0,
+          "cMaint": 0.0,
+          "cOp": 0.0,
+          "sum": 0.0
         },
         "IND_COGEN_WASTE": {
           "cInv": 0.0,
@@ -3120,8 +3598,8 @@
         "WOOD": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
+          "cOp": 1102.813416,
+          "sum": 1102.813416
         },
         "COAL": {
           "cInv": 0.0,
@@ -3132,8 +3610,8 @@
         "COAL_CCS": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 736.882365,
-          "sum": 736.882365
+          "cOp": 356.84904,
+          "sum": 356.84904
         },
         "URANIUM": {
           "cInv": 0.0,
@@ -3221,7 +3699,7 @@
         {
           "source": "Coal CCS",
           "target": "Elec",
-          "value": 21.38,
+          "value": 10.35,
           "color": "#A0522D",
           "unit": "TWh"
         },
@@ -3237,6 +3715,13 @@
           "target": "Elec",
           "value": 9.35,
           "color": "#FF0000",
+          "unit": "TWh"
+        },
+        {
+          "source": "Biomass",
+          "target": "Elec",
+          "value": 11.03,
+          "color": "#CD853F",
           "unit": "TWh"
         },
         {
@@ -3273,6 +3758,13 @@
           "value": 11.79,
           "color": "#00BFFF",
           "unit": "TWh"
+        },
+        {
+          "source": "CHP",
+          "target": "Elec",
+          "value": 11.03,
+          "color": "#00BFFF",
+          "unit": "TWh"
         }
       ],
       "electricitySankeySupplyGwh": {
@@ -3281,9 +3773,11 @@
         "Hydro Dams": 57020.0,
         "Hydro River": 26820.0,
         "Coal": 124510.0,
-        "Coal CCS": 21380.0,
+        "Coal CCS": 10350.0,
         "Solar": 23910.0,
-        "Geothermal": 9350.0
+        "Geothermal": 9350.0,
+        "Biomass": 11030.0,
+        "CHP": 11030.0
       },
       "solved": true,
       "statusReason": "ok",
@@ -3299,10 +3793,222 @@
         "wind": 12.693,
         "geothermal": 1.16,
         "biomass": 2.32,
-        "other_electric": 0.0
+        "other_electric": 2.32
       },
-      "monthlyEnergyPrice": [],
-      "monthlyElectricitySupplyGwh": {},
+      "monthlyEnergyPrice": [
+        {
+          "period": 1,
+          "monthLabel": "Oca",
+          "demandGwh": 29033.665753,
+          "costMeur": 2492.020683,
+          "priceEurPerMwh": 85.832106
+        },
+        {
+          "period": 2,
+          "monthLabel": "\u015eub",
+          "demandGwh": 26223.956164,
+          "costMeur": 2346.792239,
+          "priceEurPerMwh": 89.490397
+        },
+        {
+          "period": 3,
+          "monthLabel": "Mar",
+          "demandGwh": 29033.665753,
+          "costMeur": 2626.987179,
+          "priceEurPerMwh": 90.480727
+        },
+        {
+          "period": 4,
+          "monthLabel": "Nis",
+          "demandGwh": 28097.09589,
+          "costMeur": 2591.458712,
+          "priceEurPerMwh": 92.232262
+        },
+        {
+          "period": 5,
+          "monthLabel": "May",
+          "demandGwh": 29033.665753,
+          "costMeur": 2548.980199,
+          "priceEurPerMwh": 87.79395
+        },
+        {
+          "period": 6,
+          "monthLabel": "Haz",
+          "demandGwh": 28097.09589,
+          "costMeur": 2647.764536,
+          "priceEurPerMwh": 94.236235
+        },
+        {
+          "period": 7,
+          "monthLabel": "Tem",
+          "demandGwh": 29033.665753,
+          "costMeur": 2578.86752,
+          "priceEurPerMwh": 88.823352
+        },
+        {
+          "period": 8,
+          "monthLabel": "A\u011fu",
+          "demandGwh": 29033.665753,
+          "costMeur": 2615.322697,
+          "priceEurPerMwh": 90.07897
+        },
+        {
+          "period": 9,
+          "monthLabel": "Eyl",
+          "demandGwh": 28097.09589,
+          "costMeur": 2657.698067,
+          "priceEurPerMwh": 94.589778
+        },
+        {
+          "period": 10,
+          "monthLabel": "Eki",
+          "demandGwh": 29033.665753,
+          "costMeur": 2760.272268,
+          "priceEurPerMwh": 95.071435
+        },
+        {
+          "period": 11,
+          "monthLabel": "Kas",
+          "demandGwh": 28097.09589,
+          "costMeur": 2690.731432,
+          "priceEurPerMwh": 95.765464
+        },
+        {
+          "period": 12,
+          "monthLabel": "Ara",
+          "demandGwh": 29033.665753,
+          "costMeur": 2652.43406,
+          "priceEurPerMwh": 91.357188
+        }
+      ],
+      "monthlyElectricitySupplyGwh": {
+        "NG": [
+          3155.535,
+          0.0,
+          6696.0,
+          6480.0,
+          4458.465,
+          6480.0,
+          6696.0,
+          6696.0,
+          6480.0,
+          6696.0,
+          6480.0,
+          6696.0
+        ],
+        "Coal CCS": [
+          0.0,
+          974.046,
+          0.0,
+          0.0,
+          897.813,
+          3600.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          3600.0,
+          1282.762
+        ],
+        "Coal": [
+          12276.0,
+          11088.0,
+          9266.87,
+          8235.615,
+          11720.419,
+          6480.0,
+          11202.646,
+          12276.0,
+          10770.478,
+          11593.43,
+          7329.181,
+          12276.0
+        ],
+        "Hydro Dams": [
+          6441.723,
+          5965.456,
+          4956.266,
+          5370.022,
+          5468.859,
+          5031.407,
+          5061.061,
+          4510.49,
+          4123.997,
+          3327.537,
+          3529.47,
+          3234.835
+        ],
+        "Hydro River": [
+          3029.523,
+          2805.536,
+          2330.917,
+          2525.505,
+          2571.988,
+          2366.256,
+          2380.202,
+          2121.27,
+          1939.504,
+          1564.931,
+          1659.899,
+          1521.333
+        ],
+        "Wind": [
+          4504.593,
+          3497.175,
+          3909.647,
+          2440.102,
+          2436.447,
+          1882.626,
+          2068.147,
+          1879.275,
+          2175.072,
+          3871.873,
+          4203.922,
+          4702.909
+        ],
+        "Solar": [
+          948.581,
+          1529.029,
+          2159.847,
+          2655.087,
+          2801.964,
+          2725.701,
+          2947.899,
+          2801.964,
+          2217.28,
+          1576.105,
+          903.859,
+          642.117
+        ],
+        "Geothermal": [
+          863.04,
+          779.52,
+          863.04,
+          835.2,
+          863.04,
+          22.272,
+          863.04,
+          863.04,
+          835.2,
+          863.04,
+          835.2,
+          863.04
+        ],
+        "CHP": [
+          0.0,
+          1559.04,
+          1036.408,
+          1670.4,
+          0.0,
+          1623.67,
+          0.0,
+          70.957,
+          1670.4,
+          1726.08,
+          1670.4,
+          0.0
+        ]
+      },
       "expected": true,
       "label": "Drought 2024",
       "kpi": {
@@ -3310,20 +4016,20 @@
         "electricitySupplyGWh": 367578.496,
         "electricityDemandGWh": 341848.001,
         "electricityLossesGWh": 25730.495,
-        "costPerGWh": 0.08293888198263917,
-        "gwpPerGWh": 0.4023592584017755,
+        "costPerGWh": 0.08490521053168464,
+        "gwpPerGWh": 0.37923896554057396,
         "endUseDemandGWh": 503.5321799999999,
-        "energyPriceEurPerMwh": 89.18159360276617,
-        "totalEmissionsKtCO2": 147898.611055
+        "energyPriceEurPerMwh": 91.29592537766514,
+        "totalEmissionsKtCO2": 139400.088578
       }
     },
     {
       "folderName": "output_turkey_drought_2030",
-      "totalCost": 34760.0055509,
-      "totalGwp": 150784.607471,
+      "totalCost": 37263.7974642,
+      "totalGwp": 148146.878811,
       "totalOutput": {
         "NUCLEAR": 37186.2,
-        "CCGT": 103446.523,
+        "CCGT": 65375.704,
         "CCGT_CCS": 0.0,
         "COAL_US": 60829.44,
         "COAL_IGCC": 67487.04,
@@ -3336,8 +4042,8 @@
         "HYDRO_RIVER": 12787.053,
         "NEW_HYDRO_RIVER": 0.0,
         "GEOTHERMAL": 13732.877,
+        "IND_COGEN_WOOD": 11699.173,
         "IND_COGEN_GAS": 0.0,
-        "IND_COGEN_WOOD": 0.0,
         "IND_COGEN_WASTE": 0.0,
         "IND_BOILER_GAS": 0.0,
         "IND_BOILER_WOOD": 0.0,
@@ -3390,17 +4096,17 @@
         "H2_BIOMASS": 0.0,
         "GASIFICATION_SNG": 0.0,
         "PYROLYSIS": 0.0,
-        "ELECTRICITY": 0.0,
+        "ELECTRICITY": 26371.646,
         "GASOLINE": 0.0,
         "DIESEL": 0.0,
         "BIOETHANOL": 0.0,
         "BIODIESEL": 0.0,
         "LFO": 0.0,
         "LNG": 0.0,
-        "NG": 164200.666,
+        "NG": 103770.855,
         "NG_CCS": 0.0,
         "SNG": 0.0,
-        "WOOD": 0.0,
+        "WOOD": 65000.0,
         "COAL": 249119.971,
         "COAL_CCS": 0.0,
         "URANIUM": 100503.143,
@@ -3493,17 +4199,17 @@
           "cOp": 0.0,
           "sum": 1816.980274
         },
-        "IND_COGEN_GAS": {
-          "cInv": 0.0,
-          "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
-        },
         "IND_COGEN_WOOD": {
           "cInv": 232.149591,
           "cMaint": 147.8808,
           "cOp": 0.0,
           "sum": 380.030391
+        },
+        "IND_COGEN_GAS": {
+          "cInv": 0.0,
+          "cMaint": 0.0,
+          "cOp": 0.0,
+          "sum": 0.0
         },
         "IND_COGEN_WASTE": {
           "cInv": 0.0,
@@ -3832,8 +4538,8 @@
         "ELECTRICITY": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
+          "cOp": 2376.085297,
+          "sum": 2376.085297
         },
         "GASOLINE": {
           "cInv": 0.0,
@@ -3874,8 +4580,8 @@
         "NG": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 2832.133095,
-          "sum": 2832.133095
+          "cOp": 1789.839712,
+          "sum": 1789.839712
         },
         "NG_CCS": {
           "cInv": 0.0,
@@ -3892,8 +4598,8 @@
         "WOOD": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
+          "cOp": 1170.0,
+          "sum": 1170.0
         },
         "COAL": {
           "cInv": 0.0,
@@ -3958,8 +4664,15 @@
         {
           "source": "NG",
           "target": "Elec",
-          "value": 103.45,
+          "value": 65.38,
           "color": "#FFD700",
+          "unit": "TWh"
+        },
+        {
+          "source": "Electricity",
+          "target": "Elec",
+          "value": 26.37,
+          "color": "#00BFFF",
           "unit": "TWh"
         },
         {
@@ -4012,6 +4725,13 @@
           "unit": "TWh"
         },
         {
+          "source": "Biomass",
+          "target": "Elec",
+          "value": 11.7,
+          "color": "#CD853F",
+          "unit": "TWh"
+        },
+        {
           "source": "Elec",
           "target": "Exp & Loss",
           "value": 29.14,
@@ -4045,17 +4765,27 @@
           "value": 8.5,
           "color": "#00BFFF",
           "unit": "TWh"
+        },
+        {
+          "source": "CHP",
+          "target": "Elec",
+          "value": 11.7,
+          "color": "#00BFFF",
+          "unit": "TWh"
         }
       ],
       "electricitySankeySupplyGwh": {
-        "NG": 103450.0,
+        "NG": 65379.99999999999,
+        "Electricity": 26370.0,
         "Nuclear": 37190.0,
         "Wind": 53580.0,
         "Hydro Dams": 27190.0,
         "Hydro River": 12790.0,
         "Coal": 128320.0,
         "Solar": 40100.0,
-        "Geothermal": 13730.0
+        "Geothermal": 13730.0,
+        "Biomass": 11700.0,
+        "CHP": 11700.0
       },
       "solved": true,
       "statusReason": "ok",
@@ -4071,33 +4801,259 @@
         "wind": 18.102,
         "geothermal": 1.704,
         "biomass": 3.42,
-        "other_electric": 0.0
+        "other_electric": 3.42
       },
-      "monthlyEnergyPrice": [],
-      "monthlyElectricitySupplyGwh": {},
+      "monthlyEnergyPrice": [
+        {
+          "period": 1,
+          "monthLabel": "Oca",
+          "demandGwh": 32527.914249,
+          "costMeur": 2998.201979,
+          "priceEurPerMwh": 92.173201
+        },
+        {
+          "period": 2,
+          "monthLabel": "\u015eub",
+          "demandGwh": 29703.013699,
+          "costMeur": 2776.56323,
+          "priceEurPerMwh": 93.477492
+        },
+        {
+          "period": 3,
+          "monthLabel": "Mar",
+          "demandGwh": 27833.654045,
+          "costMeur": 3214.82909,
+          "priceEurPerMwh": 115.501511
+        },
+        {
+          "period": 4,
+          "monthLabel": "Nis",
+          "demandGwh": 31824.657534,
+          "costMeur": 2998.828994,
+          "priceEurPerMwh": 94.229733
+        },
+        {
+          "period": 5,
+          "monthLabel": "May",
+          "demandGwh": 25974.883594,
+          "costMeur": 3382.304307,
+          "priceEurPerMwh": 130.214416
+        },
+        {
+          "period": 6,
+          "monthLabel": "Haz",
+          "demandGwh": 31824.657534,
+          "costMeur": 2991.265781,
+          "priceEurPerMwh": 93.992081
+        },
+        {
+          "period": 7,
+          "monthLabel": "Tem",
+          "demandGwh": 29400.674211,
+          "costMeur": 3157.616051,
+          "priceEurPerMwh": 107.399444
+        },
+        {
+          "period": 8,
+          "monthLabel": "A\u011fu",
+          "demandGwh": 32885.479452,
+          "costMeur": 2977.558771,
+          "priceEurPerMwh": 90.543268
+        },
+        {
+          "period": 9,
+          "monthLabel": "Eyl",
+          "demandGwh": 31824.657534,
+          "costMeur": 3053.197383,
+          "priceEurPerMwh": 95.938106
+        },
+        {
+          "period": 10,
+          "monthLabel": "Eki",
+          "demandGwh": 32885.479452,
+          "costMeur": 2988.059035,
+          "priceEurPerMwh": 90.862566
+        },
+        {
+          "period": 11,
+          "monthLabel": "Kas",
+          "demandGwh": 31824.657534,
+          "costMeur": 3045.706059,
+          "priceEurPerMwh": 95.702713
+        },
+        {
+          "period": 12,
+          "monthLabel": "Ara",
+          "demandGwh": 22318.625251,
+          "costMeur": 3679.666784,
+          "priceEurPerMwh": 164.869778
+        }
+      ],
+      "monthlyElectricitySupplyGwh": {
+        "Nuclear": [
+          0.0,
+          3360.0,
+          3720.0,
+          3600.0,
+          3720.0,
+          3600.0,
+          3720.0,
+          3720.0,
+          3600.0,
+          3720.0,
+          3600.0,
+          826.2
+        ],
+        "NG": [
+          14508.0,
+          1977.051,
+          0.0,
+          2992.695,
+          0.0,
+          4355.357,
+          6096.558,
+          11839.891,
+          4978.555,
+          13922.67,
+          4704.927,
+          0.0
+        ],
+        "Coal": [
+          6696.0,
+          11424.0,
+          12648.0,
+          12240.0,
+          12648.0,
+          12240.0,
+          9349.44,
+          7991.04,
+          12240.0,
+          5952.0,
+          12240.0,
+          12648.0
+        ],
+        "Hydro Dams": [
+          3071.599,
+          2844.501,
+          2363.29,
+          2560.581,
+          2607.709,
+          2399.12,
+          2413.26,
+          2150.731,
+          1966.441,
+          1586.665,
+          1682.953,
+          1542.462
+        ],
+        "Hydro River": [
+          1444.564,
+          1337.76,
+          1111.448,
+          1204.234,
+          1226.398,
+          1128.299,
+          1134.949,
+          1011.483,
+          924.811,
+          746.204,
+          791.488,
+          725.415
+        ],
+        "Wind": [
+          6424.183,
+          4987.463,
+          5575.706,
+          3479.928,
+          3474.715,
+          2684.889,
+          2949.467,
+          2680.11,
+          3101.959,
+          5521.834,
+          5995.382,
+          6707.008
+        ],
+        "Solar": [
+          1591.044,
+          2564.621,
+          3622.685,
+          4453.344,
+          4699.699,
+          4571.784,
+          4944.475,
+          4699.699,
+          3719.016,
+          2643.581,
+          1516.032,
+          1077.014
+        ],
+        "Geothermal": [
+          1267.776,
+          1145.088,
+          1267.776,
+          1226.88,
+          73.613,
+          1226.88,
+          1267.776,
+          1267.776,
+          1226.88,
+          1267.776,
+          1226.88,
+          1267.776
+        ],
+        "Electricity": [
+          357.565,
+          0.0,
+          5051.825,
+          0.0,
+          6910.596,
+          0.0,
+          3484.805,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          10566.854
+        ],
+        "CHP": [
+          0.0,
+          2298.24,
+          0.0,
+          2462.4,
+          0.0,
+          2013.733,
+          0.0,
+          0.0,
+          2462.4,
+          0.0,
+          2462.4,
+          0.0
+        ]
+      },
       "expected": true,
       "label": "Drought 2030",
       "kpi": {
-        "electricityOutputGWh": 0.0,
-        "electricitySupplyGWh": 416344.086,
-        "electricityDemandGWh": 387200.0,
+        "electricityOutputGWh": 26371.646,
+        "electricitySupplyGWh": 389972.44,
+        "electricityDemandGWh": 26371.646,
         "electricityLossesGWh": 29144.086,
-        "costPerGWh": 0.08348864970043071,
-        "gwpPerGWh": 0.362163442549776,
+        "costPerGWh": 1.4130250900607415,
+        "gwpPerGWh": 5.617657646815068,
         "endUseDemandGWh": 570.3343680000002,
-        "energyPriceEurPerMwh": 89.77274160872935,
-        "totalEmissionsKtCO2": 150784.607471
+        "energyPriceEurPerMwh": 1413.0250900607416,
+        "totalEmissionsKtCO2": 148146.878811
       }
     },
     {
       "folderName": "output_turkey_drought_2035",
-      "totalCost": 37805.4891299,
-      "totalGwp": 150338.376071,
+      "totalCost": 43549.1582552,
+      "totalGwp": 150158.207756,
       "totalOutput": {
         "NUCLEAR": 52060.68,
-        "CCGT": 83118.603,
+        "CCGT": 0.0,
         "CCGT_CCS": 0.0,
-        "COAL_US": 64631.28,
+        "COAL_US": 64087.666,
         "COAL_IGCC": 71236.32,
         "COAL_US_CCS": 0.0,
         "COAL_IGCC_CCS": 0.0,
@@ -4108,8 +5064,8 @@
         "HYDRO_RIVER": 8013.862,
         "NEW_HYDRO_RIVER": 0.0,
         "GEOTHERMAL": 13732.877,
+        "IND_COGEN_WOOD": 11699.173,
         "IND_COGEN_GAS": 0.0,
-        "IND_COGEN_WOOD": 0.0,
         "IND_COGEN_WASTE": 0.0,
         "IND_BOILER_GAS": 0.0,
         "IND_BOILER_WOOD": 0.0,
@@ -4162,18 +5118,18 @@
         "H2_BIOMASS": 0.0,
         "GASIFICATION_SNG": 0.0,
         "PYROLYSIS": 0.0,
-        "ELECTRICITY": 0.0,
+        "ELECTRICITY": 71963.044,
         "GASOLINE": 0.0,
         "DIESEL": 0.0,
         "BIOETHANOL": 0.0,
         "BIODIESEL": 0.0,
         "LFO": 0.0,
         "LNG": 0.0,
-        "NG": 131934.159,
+        "NG": 0.0,
         "NG_CCS": 0.0,
         "SNG": 0.0,
-        "WOOD": 0.0,
-        "COAL": 263822.057,
+        "WOOD": 65000.0,
+        "COAL": 262712.65,
         "COAL_CCS": 0.0,
         "URANIUM": 140704.4,
         "WASTE": 0.0,
@@ -4265,17 +5221,17 @@
           "cOp": 0.0,
           "sum": 1816.980274
         },
-        "IND_COGEN_GAS": {
-          "cInv": 0.0,
-          "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
-        },
         "IND_COGEN_WOOD": {
           "cInv": 232.149591,
           "cMaint": 147.8808,
           "cOp": 0.0,
           "sum": 380.030391
+        },
+        "IND_COGEN_GAS": {
+          "cInv": 0.0,
+          "cMaint": 0.0,
+          "cOp": 0.0,
+          "sum": 0.0
         },
         "IND_COGEN_WASTE": {
           "cInv": 0.0,
@@ -4604,8 +5560,8 @@
         "ELECTRICITY": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
+          "cOp": 6483.870243,
+          "sum": 6483.870243
         },
         "GASOLINE": {
           "cInv": 0.0,
@@ -4646,8 +5602,8 @@
         "NG": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 1898.796409,
-          "sum": 1898.796409
+          "cOp": 0.0,
+          "sum": 0.0
         },
         "NG_CCS": {
           "cInv": 0.0,
@@ -4664,14 +5620,14 @@
         "WOOD": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
+          "cOp": 1170.0,
+          "sum": 1170.0
         },
         "COAL": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 2712.090748,
-          "sum": 2712.090748
+          "cOp": 2700.68604,
+          "sum": 2700.68604
         },
         "COAL_CCS": {
           "cInv": 0.0,
@@ -4728,10 +5684,10 @@
       },
       "sankeyLinks": [
         {
-          "source": "NG",
+          "source": "Electricity",
           "target": "Elec",
-          "value": 83.12,
-          "color": "#FFD700",
+          "value": 71.96,
+          "color": "#00BFFF",
           "unit": "TWh"
         },
         {
@@ -4765,7 +5721,7 @@
         {
           "source": "Coal",
           "target": "Elec",
-          "value": 135.87,
+          "value": 135.32,
           "color": "#A0522D",
           "unit": "TWh"
         },
@@ -4781,6 +5737,13 @@
           "target": "Elec",
           "value": 13.73,
           "color": "#FF0000",
+          "unit": "TWh"
+        },
+        {
+          "source": "Biomass",
+          "target": "Elec",
+          "value": 11.7,
+          "color": "#CD853F",
           "unit": "TWh"
         },
         {
@@ -4817,17 +5780,26 @@
           "value": 24.5,
           "color": "#00BFFF",
           "unit": "TWh"
+        },
+        {
+          "source": "CHP",
+          "target": "Elec",
+          "value": 11.7,
+          "color": "#00BFFF",
+          "unit": "TWh"
         }
       ],
       "electricitySankeySupplyGwh": {
-        "NG": 83120.0,
+        "Electricity": 71960.0,
         "Nuclear": 52060.0,
         "Wind": 87620.0,
         "Hydro Dams": 17040.0,
         "Hydro River": 8010.0,
-        "Coal": 135870.0,
+        "Coal": 135320.0,
         "Solar": 64480.00000000001,
-        "Geothermal": 13730.0
+        "Geothermal": 13730.0,
+        "Biomass": 11700.0,
+        "CHP": 11700.0
       },
       "solved": true,
       "statusReason": "ok",
@@ -4843,34 +5815,246 @@
         "wind": 29.601,
         "geothermal": 1.704,
         "biomass": 3.42,
-        "other_electric": 0.0
+        "other_electric": 3.42
       },
-      "monthlyEnergyPrice": [],
-      "monthlyElectricitySupplyGwh": {},
+      "monthlyEnergyPrice": [
+        {
+          "period": 1,
+          "monthLabel": "Oca",
+          "demandGwh": 26691.113822,
+          "costMeur": 3845.110166,
+          "priceEurPerMwh": 144.059562
+        },
+        {
+          "period": 2,
+          "monthLabel": "\u015eub",
+          "demandGwh": 30364.980205,
+          "costMeur": 3029.092547,
+          "priceEurPerMwh": 99.756118
+        },
+        {
+          "period": 3,
+          "monthLabel": "Mar",
+          "demandGwh": 34241.658604,
+          "costMeur": 3297.479959,
+          "priceEurPerMwh": 96.30024
+        },
+        {
+          "period": 4,
+          "monthLabel": "Nis",
+          "demandGwh": 34242.08228,
+          "costMeur": 3337.807142,
+          "priceEurPerMwh": 97.476757
+        },
+        {
+          "period": 5,
+          "monthLabel": "May",
+          "demandGwh": 32763.005124,
+          "costMeur": 3430.706637,
+          "priceEurPerMwh": 104.712819
+        },
+        {
+          "period": 6,
+          "monthLabel": "Haz",
+          "demandGwh": 32983.666301,
+          "costMeur": 3451.190422,
+          "priceEurPerMwh": 104.633317
+        },
+        {
+          "period": 7,
+          "monthLabel": "Tem",
+          "demandGwh": 32118.500938,
+          "costMeur": 3488.776464,
+          "priceEurPerMwh": 108.62202
+        },
+        {
+          "period": 8,
+          "monthLabel": "A\u011fu",
+          "demandGwh": 16833.055508,
+          "costMeur": 4642.588006,
+          "priceEurPerMwh": 275.801859
+        },
+        {
+          "period": 9,
+          "monthLabel": "Eyl",
+          "demandGwh": 29433.408954,
+          "costMeur": 3524.811207,
+          "priceEurPerMwh": 119.755452
+        },
+        {
+          "period": 10,
+          "monthLabel": "Eki",
+          "demandGwh": 34408.113333,
+          "costMeur": 3536.94837,
+          "priceEurPerMwh": 102.794022
+        },
+        {
+          "period": 11,
+          "monthLabel": "Kas",
+          "demandGwh": 32823.825917,
+          "costMeur": 3465.592041,
+          "priceEurPerMwh": 105.581599
+        },
+        {
+          "period": 12,
+          "monthLabel": "Ara",
+          "demandGwh": 20733.545254,
+          "costMeur": 4499.055294,
+          "priceEurPerMwh": 216.994018
+        }
+      ],
+      "monthlyElectricitySupplyGwh": {
+        "Nuclear": [
+          5208.0,
+          4704.0,
+          5208.0,
+          5040.0,
+          5208.0,
+          5040.0,
+          5208.0,
+          1156.68,
+          5040.0,
+          5208.0,
+          5040.0,
+          0.0
+        ],
+        "Coal": [
+          7068.0,
+          12096.0,
+          13392.0,
+          12960.0,
+          13392.0,
+          12960.0,
+          13392.0,
+          4427.986,
+          12960.0,
+          13392.0,
+          12960.0,
+          6324.0
+        ],
+        "Hydro Dams": [
+          1925.023,
+          1782.697,
+          1481.114,
+          1604.759,
+          1634.296,
+          1503.569,
+          1512.431,
+          1347.9,
+          1232.402,
+          994.39,
+          1054.735,
+          966.687
+        ],
+        "Hydro River": [
+          905.333,
+          838.397,
+          696.563,
+          754.714,
+          768.604,
+          707.124,
+          711.292,
+          633.913,
+          579.595,
+          467.659,
+          496.039,
+          454.63
+        ],
+        "Wind": [
+          10505.04,
+          8155.668,
+          9117.582,
+          5690.496,
+          5681.971,
+          4390.42,
+          4823.069,
+          4382.606,
+          5072.427,
+          9029.489,
+          9803.851,
+          10967.526
+        ],
+        "Solar": [
+          2558.244,
+          4123.661,
+          5824.925,
+          7160.544,
+          7556.659,
+          7350.984,
+          7950.236,
+          7556.659,
+          5979.816,
+          4250.621,
+          2437.632,
+          1731.734
+        ],
+        "Geothermal": [
+          1267.776,
+          1145.088,
+          1267.776,
+          1226.88,
+          1267.776,
+          1226.88,
+          1267.776,
+          73.613,
+          1226.88,
+          1267.776,
+          1226.88,
+          1267.776
+        ],
+        "Electricity": [
+          9795.462,
+          2590.636,
+          2244.917,
+          1067.507,
+          3723.57,
+          2325.923,
+          4368.074,
+          19653.52,
+          5876.18,
+          2078.462,
+          2485.763,
+          15753.03
+        ],
+        "CHP": [
+          0.0,
+          0.0,
+          0.0,
+          2462.4,
+          0.0,
+          2462.4,
+          0.0,
+          0.0,
+          0.0,
+          2544.48,
+          2462.4,
+          1767.493
+        ]
+      },
       "expected": true,
       "label": "Drought 2035",
       "kpi": {
-        "electricityOutputGWh": 0.0,
-        "electricitySupplyGWh": 461935.484,
-        "electricityDemandGWh": 429600.0,
+        "electricityOutputGWh": 71963.044,
+        "electricitySupplyGWh": 389972.44,
+        "electricityDemandGWh": 39627.56,
         "electricityLossesGWh": 32335.484,
-        "costPerGWh": 0.08184149180862668,
-        "gwpPerGWh": 0.32545318833094883,
+        "costPerGWh": 0.605160035409286,
+        "gwpPerGWh": 2.08660166954583,
         "endUseDemandGWh": 632.7883319999997,
-        "energyPriceEurPerMwh": 88.00160411987896,
-        "totalEmissionsKtCO2": 150338.376071
+        "energyPriceEurPerMwh": 1098.9613858435898,
+        "totalEmissionsKtCO2": 150158.207756
       }
     },
     {
       "folderName": "output_turkey_drought_emcap_2024",
-      "totalCost": 31586.3451871,
+      "totalCost": 32019.0342376,
       "totalGwp": 112000.0,
       "totalOutput": {
         "NUCLEAR": 0.0,
         "CCGT": 70737.0,
-        "CCGT_CCS": 96686.196,
+        "CCGT_CCS": 69569.161,
         "COAL_US": 0.0,
-        "COAL_IGCC": 43098.667,
+        "COAL_IGCC": 59188.348,
         "COAL_US_CCS": 0.0,
         "COAL_IGCC_CCS": 0.0,
         "PV": 23909.432,
@@ -4880,8 +6064,8 @@
         "HYDRO_RIVER": 26816.865,
         "NEW_HYDRO_RIVER": 0.0,
         "GEOTHERMAL": 9348.672,
+        "IND_COGEN_WOOD": 11027.355,
         "IND_COGEN_GAS": 0.0,
-        "IND_COGEN_WOOD": 0.0,
         "IND_COGEN_WASTE": 0.0,
         "IND_BOILER_GAS": 0.0,
         "IND_BOILER_WOOD": 0.0,
@@ -4942,10 +6126,10 @@
         "LFO": 0.0,
         "LNG": 0.0,
         "NG": 112280.84,
-        "NG_CCS": 169626.262,
+        "NG_CCS": 122052.136,
         "SNG": 0.0,
-        "WOOD": 0.0,
-        "COAL": 79814.422,
+        "WOOD": 61267.412,
+        "COAL": 109610.901,
         "COAL_CCS": 0.0,
         "URANIUM": 0.0,
         "WASTE": 0.0,
@@ -5037,17 +6221,17 @@
           "cOp": 0.0,
           "sum": 1236.911454
         },
-        "IND_COGEN_GAS": {
-          "cInv": 0.0,
-          "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
-        },
         "IND_COGEN_WOOD": {
           "cInv": 157.481594,
           "cMaint": 100.3168,
           "cOp": 0.0,
           "sum": 257.79839400000003
+        },
+        "IND_COGEN_GAS": {
+          "cInv": 0.0,
+          "cMaint": 0.0,
+          "cOp": 0.0,
+          "sum": 0.0
         },
         "IND_COGEN_WASTE": {
           "cInv": 0.0,
@@ -5424,8 +6608,8 @@
         "NG_CCS": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 3958.500232,
-          "sum": 3958.500232
+          "cOp": 2848.281872,
+          "sum": 2848.281872
         },
         "SNG": {
           "cInv": 0.0,
@@ -5436,14 +6620,14 @@
         "WOOD": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
+          "cOp": 1102.813416,
+          "sum": 1102.813416
         },
         "COAL": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 1178.859015,
-          "sum": 1178.859015
+          "cOp": 1618.953009,
+          "sum": 1618.953009
         },
         "COAL_CCS": {
           "cInv": 0.0,
@@ -5509,7 +6693,7 @@
         {
           "source": "NG CCS",
           "target": "Elec",
-          "value": 96.69,
+          "value": 69.57,
           "color": "#FFD700",
           "unit": "TWh"
         },
@@ -5537,7 +6721,7 @@
         {
           "source": "Coal",
           "target": "Elec",
-          "value": 43.1,
+          "value": 59.19,
           "color": "#A0522D",
           "unit": "TWh"
         },
@@ -5553,6 +6737,13 @@
           "target": "Elec",
           "value": 9.35,
           "color": "#FF0000",
+          "unit": "TWh"
+        },
+        {
+          "source": "Biomass",
+          "target": "Elec",
+          "value": 11.03,
+          "color": "#CD853F",
           "unit": "TWh"
         },
         {
@@ -5589,17 +6780,26 @@
           "value": 11.79,
           "color": "#00BFFF",
           "unit": "TWh"
+        },
+        {
+          "source": "CHP",
+          "target": "Elec",
+          "value": 11.03,
+          "color": "#00BFFF",
+          "unit": "TWh"
         }
       ],
       "electricitySankeySupplyGwh": {
         "NG": 70740.0,
-        "NG CCS": 96690.0,
+        "NG CCS": 69570.0,
         "Wind": 39960.0,
         "Hydro Dams": 57020.0,
         "Hydro River": 26820.0,
-        "Coal": 43100.0,
+        "Coal": 59190.0,
         "Solar": 23910.0,
-        "Geothermal": 9350.0
+        "Geothermal": 9350.0,
+        "Biomass": 11030.0,
+        "CHP": 11030.0
       },
       "solved": true,
       "statusReason": "ok",
@@ -5615,45 +6815,257 @@
         "wind": 13.5,
         "geothermal": 1.16,
         "biomass": 2.32,
-        "other_electric": 0.0
+        "other_electric": 2.32
       },
-      "monthlyEnergyPrice": [],
-      "monthlyElectricitySupplyGwh": {},
+      "monthlyEnergyPrice": [
+        {
+          "period": 1,
+          "monthLabel": "Oca",
+          "demandGwh": 29033.665753,
+          "costMeur": 2568.15055,
+          "priceEurPerMwh": 88.45423
+        },
+        {
+          "period": 2,
+          "monthLabel": "\u015eub",
+          "demandGwh": 26223.956164,
+          "costMeur": 2375.94792,
+          "priceEurPerMwh": 90.602192
+        },
+        {
+          "period": 3,
+          "monthLabel": "Mar",
+          "demandGwh": 29033.665753,
+          "costMeur": 2688.535626,
+          "priceEurPerMwh": 92.600626
+        },
+        {
+          "period": 4,
+          "monthLabel": "Nis",
+          "demandGwh": 28097.09589,
+          "costMeur": 2606.40807,
+          "priceEurPerMwh": 92.764323
+        },
+        {
+          "period": 5,
+          "monthLabel": "May",
+          "demandGwh": 29033.665753,
+          "costMeur": 2752.928979,
+          "priceEurPerMwh": 94.818512
+        },
+        {
+          "period": 6,
+          "monthLabel": "Haz",
+          "demandGwh": 28097.09589,
+          "costMeur": 2633.81114,
+          "priceEurPerMwh": 93.739622
+        },
+        {
+          "period": 7,
+          "monthLabel": "Tem",
+          "demandGwh": 29033.665753,
+          "costMeur": 2730.150728,
+          "priceEurPerMwh": 94.033966
+        },
+        {
+          "period": 8,
+          "monthLabel": "A\u011fu",
+          "demandGwh": 29033.665753,
+          "costMeur": 2777.492439,
+          "priceEurPerMwh": 95.664546
+        },
+        {
+          "period": 9,
+          "monthLabel": "Eyl",
+          "demandGwh": 28097.09589,
+          "costMeur": 2742.73908,
+          "priceEurPerMwh": 97.616462
+        },
+        {
+          "period": 10,
+          "monthLabel": "Eki",
+          "demandGwh": 29033.665753,
+          "costMeur": 2716.728746,
+          "priceEurPerMwh": 93.571675
+        },
+        {
+          "period": 11,
+          "monthLabel": "Kas",
+          "demandGwh": 28097.09589,
+          "costMeur": 2708.336553,
+          "priceEurPerMwh": 96.392046
+        },
+        {
+          "period": 12,
+          "monthLabel": "Ara",
+          "demandGwh": 29033.665753,
+          "costMeur": 2717.804408,
+          "priceEurPerMwh": 93.608724
+        }
+      ],
+      "monthlyElectricitySupplyGwh": {
+        "NG CCS": [
+          5459.299,
+          0.0,
+          1260.629,
+          11160.0,
+          8499.712,
+          10411.048,
+          2277.076,
+          3433.396,
+          11160.0,
+          5894.338,
+          3821.903,
+          6191.759
+        ],
+        "NG": [
+          3422.122,
+          6384.0,
+          7068.0,
+          5070.878,
+          0.0,
+          6840.0,
+          7068.0,
+          7068.0,
+          6840.0,
+          7068.0,
+          6840.0,
+          7068.0
+        ],
+        "Coal": [
+          6696.0,
+          5836.348,
+          6696.0,
+          0.0,
+          6696.0,
+          0.0,
+          6696.0,
+          6696.0,
+          0.0,
+          6696.0,
+          6480.0,
+          6696.0
+        ],
+        "Hydro Dams": [
+          6441.723,
+          5965.456,
+          4956.266,
+          5370.022,
+          5468.859,
+          5031.407,
+          5061.061,
+          4510.49,
+          4123.997,
+          3327.537,
+          3529.47,
+          3234.835
+        ],
+        "Hydro River": [
+          3029.523,
+          2805.536,
+          2330.917,
+          2525.505,
+          2571.988,
+          2366.256,
+          2380.202,
+          2121.27,
+          1939.504,
+          1564.931,
+          1659.899,
+          1521.333
+        ],
+        "Wind": [
+          4790.988,
+          3719.52,
+          4158.216,
+          2595.24,
+          2591.352,
+          2002.32,
+          2199.636,
+          1998.756,
+          2313.36,
+          4118.04,
+          4471.2,
+          5001.912
+        ],
+        "Solar": [
+          948.581,
+          1529.029,
+          2159.847,
+          2655.087,
+          2801.964,
+          2725.701,
+          2947.899,
+          2801.964,
+          2217.28,
+          1576.105,
+          903.859,
+          642.117
+        ],
+        "Geothermal": [
+          430.758,
+          398.874,
+          863.04,
+          835.2,
+          863.04,
+          835.2,
+          863.04,
+          863.04,
+          835.2,
+          863.04,
+          835.2,
+          863.04
+        ],
+        "CHP": [
+          0.0,
+          1559.04,
+          1726.08,
+          0.0,
+          1726.08,
+          0.0,
+          1726.08,
+          1726.08,
+          782.59,
+          111.005,
+          1670.4,
+          0.0
+        ]
+      },
       "expected": true,
       "label": "Drought+EmCap 2024",
       "kpi": {
         "electricityOutputGWh": 0.0,
-        "electricitySupplyGWh": 367578.495,
-        "electricityDemandGWh": 341848.0,
+        "electricitySupplyGWh": 367578.496,
+        "electricityDemandGWh": 341848.001,
         "electricityLossesGWh": 25730.495,
-        "costPerGWh": 0.08593088446890779,
-        "gwpPerGWh": 0.3046968240076178,
+        "costPerGWh": 0.08710801797719962,
+        "gwpPerGWh": 0.3046968231786878,
         "endUseDemandGWh": 503.5321799999999,
-        "energyPriceEurPerMwh": 92.39880059880414,
+        "energyPriceEurPerMwh": 93.66453553607296,
         "totalEmissionsKtCO2": 112000.0
       }
     },
     {
       "folderName": "output_turkey_drought_emcap_2030",
-      "totalCost": 35138.2696919,
+      "totalCost": 37400.5869131,
       "totalGwp": 124000.0,
       "totalOutput": {
         "NUCLEAR": 37186.2,
-        "CCGT": 145197.0,
-        "CCGT_CCS": 22523.335,
+        "CCGT": 126387.048,
+        "CCGT_CCS": 0.0,
         "COAL_US": 0.0,
-        "COAL_IGCC": 60499.501,
+        "COAL_IGCC": 67305.136,
         "COAL_US_CCS": 0.0,
         "COAL_IGCC_CCS": 0.0,
         "PV": 40102.996,
-        "WIND": 57125.812,
+        "WIND": 53582.644,
         "HYDRO_DAM": 27189.313,
         "NEW_HYDRO_DAM": 0.0,
         "HYDRO_RIVER": 12787.053,
         "NEW_HYDRO_RIVER": 0.0,
         "GEOTHERMAL": 13732.877,
+        "IND_COGEN_WOOD": 11699.173,
         "IND_COGEN_GAS": 0.0,
-        "IND_COGEN_WOOD": 0.0,
         "IND_COGEN_WASTE": 0.0,
         "IND_BOILER_GAS": 0.0,
         "IND_BOILER_WOOD": 0.0,
@@ -5706,18 +7118,18 @@
         "H2_BIOMASS": 0.0,
         "GASIFICATION_SNG": 0.0,
         "PYROLYSIS": 0.0,
-        "ELECTRICITY": 0.0,
+        "ELECTRICITY": 26371.646,
         "GASOLINE": 0.0,
         "DIESEL": 0.0,
         "BIOETHANOL": 0.0,
         "BIODIESEL": 0.0,
         "LFO": 0.0,
         "LNG": 0.0,
-        "NG": 230471.198,
-        "NG_CCS": 39514.938,
+        "NG": 200614.162,
+        "NG_CCS": 0.0,
         "SNG": 0.0,
-        "WOOD": 0.0,
-        "COAL": 112039.025,
+        "WOOD": 65000.0,
+        "COAL": 124642.381,
         "COAL_CCS": 0.0,
         "URANIUM": 100503.143,
         "WASTE": 0.0,
@@ -5774,10 +7186,10 @@
           "sum": 2457.377227
         },
         "WIND": {
-          "cInv": 1939.188233,
-          "cMaint": 441.9471,
+          "cInv": 1818.912141,
+          "cMaint": 414.5358,
           "cOp": 0.0,
-          "sum": 2381.135333
+          "sum": 2233.447941
         },
         "HYDRO_DAM": {
           "cInv": 5240.907573,
@@ -5809,17 +7221,17 @@
           "cOp": 0.0,
           "sum": 1816.980274
         },
-        "IND_COGEN_GAS": {
-          "cInv": 0.0,
-          "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
-        },
         "IND_COGEN_WOOD": {
           "cInv": 232.149591,
           "cMaint": 147.8808,
           "cOp": 0.0,
           "sum": 380.030391
+        },
+        "IND_COGEN_GAS": {
+          "cInv": 0.0,
+          "cMaint": 0.0,
+          "cOp": 0.0,
+          "sum": 0.0
         },
         "IND_COGEN_WASTE": {
           "cInv": 0.0,
@@ -6092,10 +7504,10 @@
           "sum": 0.0
         },
         "GRID": {
-          "cInv": 2447.994058,
+          "cInv": 2440.79618,
           "cMaint": 0.0,
           "cOp": 0.0,
-          "sum": 2447.994058
+          "sum": 2440.79618
         },
         "POWER2GAS_1": {
           "cInv": 0.0,
@@ -6148,8 +7560,8 @@
         "ELECTRICITY": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
+          "cOp": 2376.085297,
+          "sum": 2376.085297
         },
         "GASOLINE": {
           "cInv": 0.0,
@@ -6190,14 +7602,14 @@
         "NG": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 3975.167225,
-          "sum": 3975.167225
+          "cOp": 3460.193058,
+          "sum": 3460.193058
         },
         "NG_CCS": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 769.181984,
-          "sum": 769.181984
+          "cOp": 0.0,
+          "sum": 0.0
         },
         "SNG": {
           "cInv": 0.0,
@@ -6208,14 +7620,14 @@
         "WOOD": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
+          "cOp": 1170.0,
+          "sum": 1170.0
         },
         "COAL": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 1380.320794,
-          "sum": 1380.320794
+          "cOp": 1535.594139,
+          "sum": 1535.594139
         },
         "COAL_CCS": {
           "cInv": 0.0,
@@ -6274,15 +7686,15 @@
         {
           "source": "NG",
           "target": "Elec",
-          "value": 145.2,
+          "value": 126.39,
           "color": "#FFD700",
           "unit": "TWh"
         },
         {
-          "source": "NG CCS",
+          "source": "Electricity",
           "target": "Elec",
-          "value": 22.52,
-          "color": "#FFD700",
+          "value": 26.37,
+          "color": "#00BFFF",
           "unit": "TWh"
         },
         {
@@ -6295,7 +7707,7 @@
         {
           "source": "Wind",
           "target": "Elec",
-          "value": 57.13,
+          "value": 53.58,
           "color": "#FFA500",
           "unit": "TWh"
         },
@@ -6316,7 +7728,7 @@
         {
           "source": "Coal",
           "target": "Elec",
-          "value": 60.5,
+          "value": 67.31,
           "color": "#A0522D",
           "unit": "TWh"
         },
@@ -6332,6 +7744,13 @@
           "target": "Elec",
           "value": 13.73,
           "color": "#FF0000",
+          "unit": "TWh"
+        },
+        {
+          "source": "Biomass",
+          "target": "Elec",
+          "value": 11.7,
+          "color": "#CD853F",
           "unit": "TWh"
         },
         {
@@ -6368,18 +7787,27 @@
           "value": 8.5,
           "color": "#00BFFF",
           "unit": "TWh"
+        },
+        {
+          "source": "CHP",
+          "target": "Elec",
+          "value": 11.7,
+          "color": "#00BFFF",
+          "unit": "TWh"
         }
       ],
       "electricitySankeySupplyGwh": {
-        "NG": 145200.0,
-        "NG CCS": 22520.0,
+        "NG": 126390.0,
+        "Electricity": 26370.0,
         "Nuclear": 37190.0,
-        "Wind": 57130.0,
+        "Wind": 53580.0,
         "Hydro Dams": 27190.0,
         "Hydro River": 12790.0,
-        "Coal": 60500.0,
+        "Coal": 67310.0,
         "Solar": 40100.0,
-        "Geothermal": 13730.0
+        "Geothermal": 13730.0,
+        "Biomass": 11700.0,
+        "CHP": 11700.0
       },
       "solved": true,
       "statusReason": "ok",
@@ -6392,36 +7820,262 @@
         "coal": 22.5,
         "hydro": 35.64,
         "solar_pv": 32.900001,
-        "wind": 19.299,
+        "wind": 18.102,
         "geothermal": 1.704,
         "biomass": 3.42,
-        "other_electric": 0.0
+        "other_electric": 3.42
       },
-      "monthlyEnergyPrice": [],
-      "monthlyElectricitySupplyGwh": {},
+      "monthlyEnergyPrice": [
+        {
+          "period": 1,
+          "monthLabel": "Oca",
+          "demandGwh": 32885.479452,
+          "costMeur": 2969.947559,
+          "priceEurPerMwh": 90.311822
+        },
+        {
+          "period": 2,
+          "monthLabel": "\u015eub",
+          "demandGwh": 22349.962947,
+          "costMeur": 3249.778982,
+          "priceEurPerMwh": 145.404222
+        },
+        {
+          "period": 3,
+          "monthLabel": "Mar",
+          "demandGwh": 32885.479452,
+          "costMeur": 2927.257762,
+          "priceEurPerMwh": 89.013687
+        },
+        {
+          "period": 4,
+          "monthLabel": "Nis",
+          "demandGwh": 23262.237554,
+          "costMeur": 3548.757381,
+          "priceEurPerMwh": 152.55443
+        },
+        {
+          "period": 5,
+          "monthLabel": "May",
+          "demandGwh": 32407.212236,
+          "costMeur": 2974.601062,
+          "priceEurPerMwh": 91.788243
+        },
+        {
+          "period": 6,
+          "monthLabel": "Haz",
+          "demandGwh": 22157.966972,
+          "costMeur": 3643.042866,
+          "priceEurPerMwh": 164.412325
+        },
+        {
+          "period": 7,
+          "monthLabel": "Tem",
+          "demandGwh": 32885.479452,
+          "costMeur": 2982.01748,
+          "priceEurPerMwh": 90.678851
+        },
+        {
+          "period": 8,
+          "monthLabel": "A\u011fu",
+          "demandGwh": 32885.479452,
+          "costMeur": 3109.910059,
+          "priceEurPerMwh": 94.56788
+        },
+        {
+          "period": 9,
+          "monthLabel": "Eyl",
+          "demandGwh": 31824.657534,
+          "costMeur": 2891.057108,
+          "priceEurPerMwh": 90.843306
+        },
+        {
+          "period": 10,
+          "monthLabel": "Eki",
+          "demandGwh": 32885.479452,
+          "costMeur": 3173.290363,
+          "priceEurPerMwh": 96.495183
+        },
+        {
+          "period": 11,
+          "monthLabel": "Kas",
+          "demandGwh": 31824.657534,
+          "costMeur": 2895.678668,
+          "priceEurPerMwh": 90.988526
+        },
+        {
+          "period": 12,
+          "monthLabel": "Ara",
+          "demandGwh": 32574.262051,
+          "costMeur": 3035.247623,
+          "priceEurPerMwh": 93.179321
+        }
+      ],
+      "monthlyElectricitySupplyGwh": {
+        "Nuclear": [
+          357.565,
+          3360.0,
+          3720.0,
+          3600.0,
+          3720.0,
+          3600.0,
+          1446.803,
+          3720.0,
+          3600.0,
+          3720.0,
+          2621.832,
+          3720.0
+        ],
+        "NG": [
+          14508.0,
+          0.0,
+          14508.0,
+          190.275,
+          14508.0,
+          0.0,
+          14508.0,
+          11203.278,
+          14040.0,
+          14508.0,
+          13905.495,
+          14508.0
+        ],
+        "Coal": [
+          6696.0,
+          6048.0,
+          3191.825,
+          6480.0,
+          3378.165,
+          6480.0,
+          6696.0,
+          6696.0,
+          5640.955,
+          2822.19,
+          6480.0,
+          6696.0
+        ],
+        "Hydro Dams": [
+          3071.599,
+          2844.501,
+          2363.29,
+          2560.581,
+          2607.709,
+          2399.12,
+          2413.26,
+          2150.731,
+          1966.441,
+          1586.665,
+          1682.953,
+          1542.462
+        ],
+        "Hydro River": [
+          1444.564,
+          1337.76,
+          1111.448,
+          1204.234,
+          1226.398,
+          1128.299,
+          1134.949,
+          1011.483,
+          924.811,
+          746.204,
+          791.488,
+          725.415
+        ],
+        "Wind": [
+          6424.183,
+          4987.463,
+          5575.706,
+          3479.928,
+          3474.715,
+          2684.889,
+          2949.467,
+          2680.11,
+          3101.959,
+          5521.834,
+          5995.382,
+          6707.008
+        ],
+        "Solar": [
+          1591.044,
+          2564.621,
+          3622.685,
+          4453.344,
+          4699.699,
+          4571.784,
+          4944.475,
+          4699.699,
+          3719.016,
+          2643.581,
+          1516.032,
+          1077.014
+        ],
+        "Geothermal": [
+          1267.776,
+          1145.088,
+          1267.776,
+          1226.88,
+          1267.776,
+          1226.88,
+          1267.776,
+          1267.776,
+          1226.88,
+          1267.776,
+          1226.88,
+          73.613
+        ],
+        "Electricity": [
+          0.0,
+          7353.051,
+          0.0,
+          8562.42,
+          478.267,
+          9666.691,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          311.217
+        ],
+        "CHP": [
+          0.0,
+          2298.24,
+          0.0,
+          2462.4,
+          0.0,
+          2462.4,
+          0.0,
+          1931.653,
+          0.0,
+          2544.48,
+          0.0,
+          0.0
+        ]
+      },
       "expected": true,
       "label": "Drought+EmCap 2030",
       "kpi": {
-        "electricityOutputGWh": 0.0,
-        "electricitySupplyGWh": 416344.087,
-        "electricityDemandGWh": 387200.001,
+        "electricityOutputGWh": 26371.646,
+        "electricitySupplyGWh": 389972.44,
+        "electricityDemandGWh": 26371.646,
         "electricityLossesGWh": 29144.086,
-        "costPerGWh": 0.08439718681990073,
-        "gwpPerGWh": 0.29783057781243333,
+        "costPerGWh": 1.4182120794849133,
+        "gwpPerGWh": 4.702019737410399,
         "endUseDemandGWh": 570.3343680000002,
-        "energyPriceEurPerMwh": 90.74966322611141,
+        "energyPriceEurPerMwh": 1418.2120794849134,
         "totalEmissionsKtCO2": 124000.0
       }
     },
     {
       "folderName": "output_turkey_drought_emcap_2035",
-      "totalCost": 37910.6929391,
+      "totalCost": 43653.5135519,
       "totalGwp": 128000.0,
       "totalOutput": {
         "NUCLEAR": 52060.68,
-        "CCGT": 139528.225,
+        "CCGT": 55954.655,
         "CCGT_CCS": 0.0,
-        "COAL_US": 8221.658,
+        "COAL_US": 8133.011,
         "COAL_IGCC": 71236.32,
         "COAL_US_CCS": 0.0,
         "COAL_IGCC_CCS": 0.0,
@@ -6432,8 +8086,8 @@
         "HYDRO_RIVER": 8013.862,
         "NEW_HYDRO_RIVER": 0.0,
         "GEOTHERMAL": 13732.877,
+        "IND_COGEN_WOOD": 11699.173,
         "IND_COGEN_GAS": 0.0,
-        "IND_COGEN_WOOD": 0.0,
         "IND_COGEN_WASTE": 0.0,
         "IND_BOILER_GAS": 0.0,
         "IND_BOILER_WOOD": 0.0,
@@ -6486,18 +8140,18 @@
         "H2_BIOMASS": 0.0,
         "GASIFICATION_SNG": 0.0,
         "PYROLYSIS": 0.0,
-        "ELECTRICITY": 0.0,
+        "ELECTRICITY": 71963.044,
         "GASOLINE": 0.0,
         "DIESEL": 0.0,
         "BIOETHANOL": 0.0,
         "BIODIESEL": 0.0,
         "LFO": 0.0,
         "LNG": 0.0,
-        "NG": 221473.151,
+        "NG": 88816.823,
         "NG_CCS": 0.0,
         "SNG": 0.0,
-        "WOOD": 0.0,
-        "COAL": 148701.301,
+        "WOOD": 65000.0,
+        "COAL": 148520.391,
         "COAL_CCS": 0.0,
         "URANIUM": 140704.4,
         "WASTE": 0.0,
@@ -6589,17 +8243,17 @@
           "cOp": 0.0,
           "sum": 1816.980274
         },
-        "IND_COGEN_GAS": {
-          "cInv": 0.0,
-          "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
-        },
         "IND_COGEN_WOOD": {
           "cInv": 232.149591,
           "cMaint": 147.8808,
           "cOp": 0.0,
           "sum": 380.030391
+        },
+        "IND_COGEN_GAS": {
+          "cInv": 0.0,
+          "cMaint": 0.0,
+          "cOp": 0.0,
+          "sum": 0.0
         },
         "IND_COGEN_WASTE": {
           "cInv": 0.0,
@@ -6928,8 +8582,8 @@
         "ELECTRICITY": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
+          "cOp": 6483.870243,
+          "sum": 6483.870243
         },
         "GASOLINE": {
           "cInv": 0.0,
@@ -6970,8 +8624,8 @@
         "NG": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 3187.441592,
-          "sum": 3187.441592
+          "cOp": 1278.251722,
+          "sum": 1278.251722
         },
         "NG_CCS": {
           "cInv": 0.0,
@@ -6988,14 +8642,14 @@
         "WOOD": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 0.0,
-          "sum": 0.0
+          "cOp": 1170.0,
+          "sum": 1170.0
         },
         "COAL": {
           "cInv": 0.0,
           "cMaint": 0.0,
-          "cOp": 1528.649375,
-          "sum": 1528.649375
+          "cOp": 1526.789615,
+          "sum": 1526.789615
         },
         "COAL_CCS": {
           "cInv": 0.0,
@@ -7054,8 +8708,15 @@
         {
           "source": "NG",
           "target": "Elec",
-          "value": 139.53,
+          "value": 55.95,
           "color": "#FFD700",
+          "unit": "TWh"
+        },
+        {
+          "source": "Electricity",
+          "target": "Elec",
+          "value": 71.96,
+          "color": "#00BFFF",
           "unit": "TWh"
         },
         {
@@ -7089,7 +8750,7 @@
         {
           "source": "Coal",
           "target": "Elec",
-          "value": 79.46,
+          "value": 79.37,
           "color": "#A0522D",
           "unit": "TWh"
         },
@@ -7105,6 +8766,13 @@
           "target": "Elec",
           "value": 13.73,
           "color": "#FF0000",
+          "unit": "TWh"
+        },
+        {
+          "source": "Biomass",
+          "target": "Elec",
+          "value": 11.7,
+          "color": "#CD853F",
           "unit": "TWh"
         },
         {
@@ -7141,17 +8809,27 @@
           "value": 24.5,
           "color": "#00BFFF",
           "unit": "TWh"
+        },
+        {
+          "source": "CHP",
+          "target": "Elec",
+          "value": 11.7,
+          "color": "#00BFFF",
+          "unit": "TWh"
         }
       ],
       "electricitySankeySupplyGwh": {
-        "NG": 139530.0,
+        "NG": 55950.0,
+        "Electricity": 71960.0,
         "Nuclear": 52060.0,
         "Wind": 87620.0,
         "Hydro Dams": 17040.0,
         "Hydro River": 8010.0,
-        "Coal": 79460.0,
+        "Coal": 79370.0,
         "Solar": 64480.00000000001,
-        "Geothermal": 13730.0
+        "Geothermal": 13730.0,
+        "Biomass": 11700.0,
+        "CHP": 11700.0
       },
       "solved": true,
       "statusReason": "ok",
@@ -7167,21 +8845,247 @@
         "wind": 29.601,
         "geothermal": 1.704,
         "biomass": 3.42,
-        "other_electric": 0.0
+        "other_electric": 3.42
       },
-      "monthlyEnergyPrice": [],
-      "monthlyElectricitySupplyGwh": {},
+      "monthlyEnergyPrice": [
+        {
+          "period": 1,
+          "monthLabel": "Oca",
+          "demandGwh": 29235.593822,
+          "costMeur": 3870.3185,
+          "priceEurPerMwh": 132.383783
+        },
+        {
+          "period": 2,
+          "monthLabel": "\u015eub",
+          "demandGwh": 32955.616438,
+          "costMeur": 2910.382999,
+          "priceEurPerMwh": 88.3122
+        },
+        {
+          "period": 3,
+          "monthLabel": "Mar",
+          "demandGwh": 35795.916608,
+          "costMeur": 3317.785964,
+          "priceEurPerMwh": 92.686157
+        },
+        {
+          "period": 4,
+          "monthLabel": "Nis",
+          "demandGwh": 28122.08228,
+          "costMeur": 3760.825067,
+          "priceEurPerMwh": 133.732098
+        },
+        {
+          "period": 5,
+          "monthLabel": "May",
+          "demandGwh": 28983.485124,
+          "costMeur": 3893.033494,
+          "priceEurPerMwh": 134.319026
+        },
+        {
+          "period": 6,
+          "monthLabel": "Haz",
+          "demandGwh": 26210.277641,
+          "costMeur": 3724.773279,
+          "priceEurPerMwh": 142.111172
+        },
+        {
+          "period": 7,
+          "monthLabel": "Tem",
+          "demandGwh": 25794.500938,
+          "costMeur": 3925.894987,
+          "priceEurPerMwh": 152.198912
+        },
+        {
+          "period": 8,
+          "monthLabel": "A\u011fu",
+          "demandGwh": 27263.032697,
+          "costMeur": 4048.046258,
+          "priceEurPerMwh": 148.481143
+        },
+        {
+          "period": 9,
+          "monthLabel": "Eyl",
+          "demandGwh": 23313.408954,
+          "costMeur": 3947.829132,
+          "priceEurPerMwh": 169.337275
+        },
+        {
+          "period": 10,
+          "monthLabel": "Eki",
+          "demandGwh": 36486.575342,
+          "costMeur": 3273.879177,
+          "priceEurPerMwh": 89.728322
+        },
+        {
+          "period": 11,
+          "monthLabel": "Kas",
+          "demandGwh": 28514.414344,
+          "costMeur": 3624.489597,
+          "priceEurPerMwh": 127.110785
+        },
+        {
+          "period": 12,
+          "monthLabel": "Ara",
+          "demandGwh": 34962.052051,
+          "costMeur": 3356.255098,
+          "priceEurPerMwh": 95.997085
+        }
+      ],
+      "monthlyElectricitySupplyGwh": {
+        "Nuclear": [
+          5208.0,
+          4704.0,
+          5208.0,
+          5040.0,
+          5208.0,
+          5040.0,
+          5208.0,
+          5208.0,
+          5040.0,
+          0.0,
+          988.68,
+          5208.0
+        ],
+        "NG": [
+          0.0,
+          14363.404,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          16154.942,
+          8324.308,
+          17112.0
+        ],
+        "Coal": [
+          7068.0,
+          1468.32,
+          13392.0,
+          6840.0,
+          7068.0,
+          8649.011,
+          7068.0,
+          7068.0,
+          6840.0,
+          7068.0,
+          6840.0,
+          0.0
+        ],
+        "Hydro Dams": [
+          1925.023,
+          1782.697,
+          1481.114,
+          1604.759,
+          1634.296,
+          1503.569,
+          1512.431,
+          1347.9,
+          1232.402,
+          994.39,
+          1054.735,
+          966.687
+        ],
+        "Hydro River": [
+          905.333,
+          838.397,
+          696.563,
+          754.714,
+          768.604,
+          707.124,
+          711.292,
+          633.913,
+          579.595,
+          467.659,
+          496.039,
+          454.63
+        ],
+        "Wind": [
+          10505.04,
+          8155.668,
+          9117.582,
+          5690.496,
+          5681.971,
+          4390.42,
+          4823.069,
+          4382.606,
+          5072.427,
+          9029.489,
+          9803.851,
+          10967.526
+        ],
+        "Solar": [
+          2558.244,
+          4123.661,
+          5824.925,
+          7160.544,
+          7556.659,
+          7350.984,
+          7950.236,
+          7556.659,
+          5979.816,
+          4250.621,
+          2437.632,
+          1731.734
+        ],
+        "Geothermal": [
+          1267.776,
+          0.0,
+          1218.701,
+          1226.88,
+          1267.776,
+          1226.88,
+          1267.776,
+          1267.776,
+          1226.88,
+          1267.776,
+          1226.88,
+          1267.776
+        ],
+        "Electricity": [
+          7250.982,
+          0.0,
+          690.659,
+          7187.507,
+          7503.09,
+          9099.311,
+          10692.074,
+          9223.543,
+          11996.18,
+          0.0,
+          6795.175,
+          1524.523
+        ],
+        "CHP": [
+          2544.48,
+          0.0,
+          1603.333,
+          2462.4,
+          2544.48,
+          0.0,
+          0.0,
+          2544.48,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
       "expected": true,
       "label": "Drought+EmCap 2035",
       "kpi": {
-        "electricityOutputGWh": 0.0,
-        "electricitySupplyGWh": 461935.484,
-        "electricityDemandGWh": 429600.0,
+        "electricityOutputGWh": 71963.044,
+        "electricitySupplyGWh": 389972.44,
+        "electricityDemandGWh": 39627.56,
         "electricityLossesGWh": 32335.484,
-        "costPerGWh": 0.08206923748490384,
-        "gwpPerGWh": 0.2770949719896383,
+        "costPerGWh": 0.6066101588462546,
+        "gwpPerGWh": 1.778690740208266,
         "endUseDemandGWh": 632.7883319999997,
-        "energyPriceEurPerMwh": 88.2464919439013,
+        "energyPriceEurPerMwh": 1101.5947878673328,
         "totalEmissionsKtCO2": 128000.0
       }
     },
@@ -9995,6 +11899,7 @@
     "Wind",
     "Solar",
     "Geothermal",
+    "Electricity",
     "Biofuels",
     "Biomass",
     "CHP"

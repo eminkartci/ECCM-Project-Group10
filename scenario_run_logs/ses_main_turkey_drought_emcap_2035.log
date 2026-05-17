@@ -36,7 +36,7 @@ Non-default parameters:
 InfUnbdInfo  1
 
 Optimize a model with 940 rows, 990 columns and 5032 nonzeros
-Model fingerprint: 0x2e668dd3
+Model fingerprint: 0xf80b4639
 Variable types: 817 continuous, 173 integer (0 binary)
 Coefficient statistics:
   Matrix range     [2e-03, 3e+05]
@@ -47,26 +47,27 @@ Coefficient statistics:
 User MIP start did not produce a new incumbent solution
 User MIP start violates constraint R499 by 49.041095890
 
-Presolve removed 678 rows and 732 columns
+Presolve removed 681 rows and 732 columns
 Presolve time: 0.00s
-Presolved: 262 rows, 258 columns, 1785 nonzeros
+Presolved: 259 rows, 258 columns, 1746 nonzeros
 Variable types: 233 continuous, 25 integer (12 binary)
-Found heuristic solution: objective 50188.683737
 
-Root relaxation: objective 4.365351e+04, 281 iterations, 0.00 seconds (0.00 work units)
+Root relaxation: infeasible, 67 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-*    0     0               0    43653.513552 43653.5136  0.00%     -    0s
+     0     0 infeasible    0               - infeasible      -     -    0s
 
-Explored 1 nodes (281 simplex iterations) in 0.01 seconds (0.01 work units)
+Explored 1 nodes (67 simplex iterations) in 0.00 seconds (0.01 work units)
 Thread count was 10 (of 10 available processors)
 
-Solution count 2: 43653.5 50188.7 
+Solution count 0
 
-Optimal solution found (tolerance 1.00e-04)
-Best objective 4.365351355186e+04, best bound 4.365351355186e+04, gap 0.0000%
-Gurobi 12.0.3: optimal solution; objective 43653.51355
-281 simplex iterations
+Model is infeasible
+Best objective -, best bound -, gap -
+Gurobi 12.0.3: infeasible problem
+67 simplex iterations
 1 branching node
+
+suffix dunbdd OUT;

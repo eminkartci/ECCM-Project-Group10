@@ -1,2 +1,2 @@
-TotalCost	43653.5135519
-TotalGWP	128000
+TotalCost	0
+TotalGWP	0

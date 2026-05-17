@@ -4,8 +4,8 @@ natural_gas	30.000000
 coal	22.500000
 hydro	35.640000
 solar_pv	32.900001
-wind	18.102000
+wind	19.299000
 geothermal	1.704000
 biomass	3.420000
 other_electric	3.420000
-electricity_techs_total_GW	149.266001
+electricity_techs_total_GW	150.463001

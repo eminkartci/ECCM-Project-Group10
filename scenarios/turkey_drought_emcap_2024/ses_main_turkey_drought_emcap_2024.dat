@@ -16,4 +16,4 @@ include scenarios/turkey_drought_2024/ses_main_turkey_drought_2024.dat;
 # ----------------------------------------------------------------
 # EMISSION CAP — 25 % reduction from Drought-2024 baseline
 # ----------------------------------------------------------------
-let gwp_limit := 112000;
+let gwp_limit := 150000;

@@ -1,11 +1,12 @@
 source,target,realValue,layerID,layerColor,layerUnit
-NG,Elec,126.39,NG,#FFD700,TWh
+NG,Elec,145.20,NG,#FFD700,TWh
+NG CCS,Elec,25.69,NG,#FFD700,TWh
 Electricity,Elec,26.37,Electricity,#00BFFF,TWh
 Nuclear,Elec,37.19,Nuclear,#FFC0CB,TWh
-Wind,Elec,53.58,Wind,#FFA500,TWh
+Wind,Elec,57.13,Wind,#FFA500,TWh
 Hydro Dams,Elec,27.19,Hydro Dam,#00CED1,TWh
 Hydro River,Elec,12.79,Hydro River,#0000FF,TWh
-Coal,Elec,67.31,Coal,#A0522D,TWh
+Coal,Elec,19.26,Coal,#A0522D,TWh
 Solar,Elec,40.10,Solar,#FFFF00,TWh
 Geothermal,Elec,13.73,Geothermal,#FF0000,TWh
 Biomass,Elec,11.70,Biomass,#CD853F,TWh

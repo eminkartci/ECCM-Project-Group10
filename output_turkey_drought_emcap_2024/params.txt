@@ -1217,7 +1217,7 @@ MOB_FREIGHT_ROAD  0
       MOB_PUBLIC  0
 ;
 
-param gwp_limit = 112000
+param gwp_limit = 150000
 
 ;
 param peak_dhn_factor = 2

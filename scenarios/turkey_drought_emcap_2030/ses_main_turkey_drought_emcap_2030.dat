@@ -20,4 +20,4 @@ include scenarios/turkey_drought_2030/ses_main_turkey_drought_2030.dat;
 # ----------------------------------------------------------------
 # EMISSION CAP — 20 % reduction from Drought-2030 baseline
 # ----------------------------------------------------------------
-let gwp_limit := 124000;
+let gwp_limit := 108300;

@@ -36,7 +36,7 @@ Non-default parameters:
 InfUnbdInfo  1
 
 Optimize a model with 877 rows, 949 columns and 4766 nonzeros
-Model fingerprint: 0xe43d1012
+Model fingerprint: 0x7ebe6658
 Variable types: 779 continuous, 170 integer (0 binary)
 Coefficient statistics:
   Matrix range     [2e-03, 3e+05]
@@ -51,22 +51,22 @@ Presolve removed 653 rows and 719 columns
 Presolve time: 0.00s
 Presolved: 224 rows, 230 columns, 1526 nonzeros
 Variable types: 208 continuous, 22 integer (12 binary)
-Found heuristic solution: objective 35015.285065
+Found heuristic solution: objective 34295.901444
 
-Root relaxation: objective 3.201903e+04, 172 iterations, 0.00 seconds (0.00 work units)
+Root relaxation: objective 3.120933e+04, 144 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-*    0     0               0    32019.034238 32019.0342  0.00%     -    0s
+*    0     0               0    31209.329590 31209.3296  0.00%     -    0s
 
-Explored 1 nodes (172 simplex iterations) in 0.00 seconds (0.01 work units)
+Explored 1 nodes (144 simplex iterations) in 0.00 seconds (0.01 work units)
 Thread count was 10 (of 10 available processors)
 
-Solution count 2: 32019 35015.3 
+Solution count 2: 31209.3 34295.9 
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective 3.201903423760e+04, best bound 3.201903423760e+04, gap 0.0000%
-Gurobi 12.0.3: optimal solution; objective 32019.03424
-172 simplex iterations
+Best objective 3.120932958984e+04, best bound 3.120932958984e+04, gap 0.0000%
+Gurobi 12.0.3: optimal solution; objective 31209.32959
+144 simplex iterations
 1 branching node

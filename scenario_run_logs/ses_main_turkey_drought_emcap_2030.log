@@ -1,0 +1,72 @@
+
+Presolve eliminates 2825 constraints and 1991 variables.
+Adjusted problem:
+985 variables:
+	118 binary variables
+	54 integer variables
+	813 linear variables
+924 constraints, all linear; 4996 nonzeros
+	420 equality constraints
+	504 inequality constraints
+1 linear objective; 1 nonzero.
+
+Setting $presolve_inteps < 3.73e-10 could change presolve results.
+
+Setting $presolve_fixeps >= 1.01e-13 could change presolve results.
+
+Gurobi 12.0.3: Set parameter LogToConsole to value 1
+  tech:outlev = 1
+
+AMPL MP initial flat model has 985 variables (54 integer, 118 binary);
+Objectives: 1 linear; 
+Constraints:  924 linear;
+
+AMPL MP final model has 985 variables (54 integer, 118 binary);
+Objectives: 1 linear; 
+Constraints:  924 linear;
+
+
+Set parameter InfUnbdInfo to value 1
+Gurobi Optimizer version 12.0.3 build v12.0.3rc0 (mac64[arm] - Darwin 24.6.0 24G84)
+
+CPU model: Apple M4
+Thread count: 10 physical cores, 10 logical processors, using up to 10 threads
+
+Non-default parameters:
+InfUnbdInfo  1
+
+Optimize a model with 924 rows, 985 columns and 4996 nonzeros
+Model fingerprint: 0x2918a465
+Variable types: 813 continuous, 172 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-03, 3e+05]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [9e-01, 1e+08]
+  RHS range        [1e+00, 6e+04]
+
+User MIP start did not produce a new incumbent solution
+User MIP start violates constraint R487 by 44.200913242
+
+Presolve removed 675 rows and 728 columns
+Presolve time: 0.00s
+Presolved: 249 rows, 257 columns, 1758 nonzeros
+Variable types: 233 continuous, 24 integer (12 binary)
+Found heuristic solution: objective 43267.904248
+
+Root relaxation: objective 3.740059e+04, 199 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    37400.586913 37400.5869  0.00%     -    0s
+
+Explored 1 nodes (199 simplex iterations) in 0.01 seconds (0.01 work units)
+Thread count was 10 (of 10 available processors)
+
+Solution count 2: 37400.6 43267.9 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 3.740058691307e+04, best bound 3.740058691307e+04, gap 0.0000%
+Gurobi 12.0.3: optimal solution; objective 37400.58691
+199 simplex iterations
+1 branching node

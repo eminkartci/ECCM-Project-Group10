@@ -1,0 +1,17 @@
+source,target,realValue,layerID,layerColor,layerUnit
+NG,Elec,70.74,NG,#FFD700,TWh
+NG CCS,Elec,69.57,NG,#FFD700,TWh
+Wind,Elec,39.96,Wind,#FFA500,TWh
+Hydro Dams,Elec,57.02,Hydro Dam,#00CED1,TWh
+Hydro River,Elec,26.82,Hydro River,#0000FF,TWh
+Coal,Elec,59.19,Coal,#A0522D,TWh
+Solar,Elec,23.91,Solar,#FFFF00,TWh
+Geothermal,Elec,9.35,Geothermal,#FF0000,TWh
+Biomass,Elec,11.03,Biomass,#CD853F,TWh
+Elec,Exp & Loss,25.73,Electricity,#00BFFF,TWh
+Elec,Elec: HOUSEHOLDS,85.46,Electricity,#00BFFF,TWh
+Elec,Elec: SERVICES,94.30,Electricity,#00BFFF,TWh
+Elec,Elec: INDUSTRY,150.30,Electricity,#00BFFF,TWh
+Elec,Elec: TRANSPORTATION,11.79,Electricity,#00BFFF,TWh
+CHP,Elec,11.03,Electricity,#00BFFF,TWh
+CHP,Heat HT,0.00,Heat HT,#DC143C,TWh

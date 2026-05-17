@@ -1,0 +1,75 @@
+
+Presolve eliminates 2809 constraints and 1986 variables.
+Adjusted problem:
+990 variables:
+	118 binary variables
+	55 integer variables
+	817 linear variables
+940 constraints, all linear; 5032 nonzeros
+	424 equality constraints
+	516 inequality constraints
+1 linear objective; 1 nonzero.
+
+Setting $presolve_inteps < 3.73e-10 could change presolve results.
+
+Setting $presolve_fixeps >= 1.01e-13 could change presolve results.
+
+Gurobi 12.0.3: Set parameter LogToConsole to value 1
+  tech:outlev = 1
+
+AMPL MP initial flat model has 990 variables (55 integer, 118 binary);
+Objectives: 1 linear; 
+Constraints:  940 linear;
+
+AMPL MP final model has 990 variables (55 integer, 118 binary);
+Objectives: 1 linear; 
+Constraints:  940 linear;
+
+
+Set parameter InfUnbdInfo to value 1
+Gurobi Optimizer version 12.0.3 build v12.0.3rc0 (mac64[arm] - Darwin 24.6.0 24G84)
+
+CPU model: Apple M4
+Thread count: 10 physical cores, 10 logical processors, using up to 10 threads
+
+Non-default parameters:
+InfUnbdInfo  1
+
+Optimize a model with 940 rows, 990 columns and 5032 nonzeros
+Model fingerprint: 0xf88ffb6c
+Variable types: 817 continuous, 173 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-03, 3e+05]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [9e-01, 1e+10]
+  RHS range        [1e+00, 6e+04]
+Warning: Model contains large bounds
+         Consider reformulating model or setting NumericFocus parameter
+         to avoid numerical issues.
+
+User MIP start did not produce a new incumbent solution
+User MIP start violates constraint R499 by 49.041095890
+
+Presolve removed 682 rows and 736 columns
+Presolve time: 0.00s
+Presolved: 258 rows, 254 columns, 1714 nonzeros
+Variable types: 229 continuous, 25 integer (12 binary)
+Found heuristic solution: objective 50188.683737
+
+Root relaxation: objective 4.354916e+04, 203 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    43549.158255 43549.1583  0.00%     -    0s
+
+Explored 1 nodes (203 simplex iterations) in 0.00 seconds (0.01 work units)
+Thread count was 10 (of 10 available processors)
+
+Solution count 2: 43549.2 50188.7 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 4.354915825519e+04, best bound 4.354915825519e+04, gap 0.0000%
+Gurobi 12.0.3: optimal solution; objective 43549.15826
+203 simplex iterations
+1 branching node

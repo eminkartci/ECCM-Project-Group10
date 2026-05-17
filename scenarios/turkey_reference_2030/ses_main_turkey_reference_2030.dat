@@ -109,10 +109,5 @@ let end_uses_demand_year["ELECTRICITY", "SERVICES"] := 114500;
 let end_uses_demand_year["ELECTRICITY", "INDUSTRY"] := 181100;
 let end_uses_demand_year["ELECTRICITY", "TRANSPORTATION"] := 8500;
 
-# MENR 2030 hidro ~87.9 TWh; brüt yerli üretim ~416 TWh (talep + kayıp)
-param turkey_menr_hydro_total_TWh := 87.9;
-param turkey_menr_elec_supply_TWh := 416.0;
-include scenarios/turkey_menr_hydro_targets.dat;
-
 # Fuel prices: STEPS 2030 (tiered)
 include scenarios/turkey_weo2025_steps_fuel_operations_2030.dat;

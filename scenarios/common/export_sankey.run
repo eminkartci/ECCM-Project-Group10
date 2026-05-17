@@ -43,13 +43,6 @@ if sum{t in PERIODS}((F_Mult_t ["HYDRO_DAM", t] + F_Mult_t ["NEW_HYDRO_DAM", t])
 	printf "%s,%s,%.2f,%s,%s,%s\n", "Hydro Dams" , "Elec", sum{t in PERIODS}(layers_in_out["HYDRO_DAM","ELECTRICITY"] * F_Mult_t ["HYDRO_DAM", t] * period_duration [t] + layers_in_out["NEW_HYDRO_DAM","ELECTRICITY"] * F_Mult_t ["NEW_HYDRO_DAM", t] * period_duration [t]) / 1000 , "Hydro Dam", "#00CED1", "TWh" > (OUTPUT_DIR & "/sankey/input2sankey.csv");
 if sum{t in PERIODS}((F_Mult_t ["HYDRO_RIVER", t] + F_Mult_t ["NEW_HYDRO_RIVER", t]) * period_duration [t]) > 10 then
 	printf "%s,%s,%.2f,%s,%s,%s\n", "Hydro River" , "Elec", sum{t in PERIODS}(layers_in_out["HYDRO_RIVER","ELECTRICITY"] * F_Mult_t ["HYDRO_RIVER", t] * period_duration [t] + layers_in_out["NEW_HYDRO_RIVER","ELECTRICITY"] * F_Mult_t ["NEW_HYDRO_RIVER", t] * period_duration [t]) / 1000 , "Hydro River", "#0000FF", "TWh" > (OUTPUT_DIR & "/sankey/input2sankey.csv");
-if sum{t in PERIODS}((F_Mult_t ["HYDRO_DAM", t] + F_Mult_t ["NEW_HYDRO_DAM", t] + F_Mult_t ["HYDRO_RIVER", t] + F_Mult_t ["NEW_HYDRO_RIVER", t]) * period_duration [t]) > 10 then
-	printf "%s,%s,%.2f,%s,%s,%s\n", "Hydro (total)" , "Elec",
-		(sum{t in PERIODS}(layers_in_out["HYDRO_DAM","ELECTRICITY"] * F_Mult_t ["HYDRO_DAM", t] * period_duration [t]
-		+ layers_in_out["NEW_HYDRO_DAM","ELECTRICITY"] * F_Mult_t ["NEW_HYDRO_DAM", t] * period_duration [t]
-		+ layers_in_out["HYDRO_RIVER","ELECTRICITY"] * F_Mult_t ["HYDRO_RIVER", t] * period_duration [t]
-		+ layers_in_out["NEW_HYDRO_RIVER","ELECTRICITY"] * F_Mult_t ["NEW_HYDRO_RIVER", t] * period_duration [t]) / 1000),
-		"Hydro", "#20B2AA", "TWh" > (OUTPUT_DIR & "/sankey/input2sankey.csv");
 # Coal → Elec: elektrik üretimi (GWh→TWh /1000); kömür tüketimi (COAL katmanı) değil — dashboard payları ile uyum
 if sum{t in PERIODS}((F_Mult_t ["COAL_US", t] + F_Mult_t ["COAL_IGCC", t]) * period_duration [t]) > 10 then
 	printf "%s,%s,%.2f,%s,%s,%s\n", "Coal" , "Elec", sum{t in PERIODS}(layers_in_out["COAL_US","ELECTRICITY"] * F_Mult_t ["COAL_US", t] * period_duration [t] + layers_in_out["COAL_IGCC","ELECTRICITY"] * F_Mult_t ["COAL_IGCC", t] * period_duration [t]) / 1000 , "Coal", "#A0522D", "TWh" > (OUTPUT_DIR & "/sankey/input2sankey.csv");

@@ -224,9 +224,8 @@ let end_uses_demand_year["ELECTRICITY", "TRANSPORTATION"] := 12000;
 # ----------------------------------------------------------------
 # 7) HYDRO MONTHLY AVAILABILITY — 2024 base profile
 # ----------------------------------------------------------------
-# Default c_p_t for HYDRO_DAM (baraj) and HYDRO_RIVER (akarsu).
-# Sankey "Hydro Dams" ≠ toplam hidro: toplam = Dams + River (MENR "Hidrolik" satırı).
-# Year-specific reference .dat files add MENR pay kısıtları (turkey_menr_hydro_targets.dat).
+# Default c_p_t for HYDRO_DAM and HYDRO_RIVER.
+# Year-specific scenarios (2030, 2035) override with their own profiles.
 
 let c_p_t["HYDRO_DAM",  1] := 0.35718769;
 let c_p_t["HYDRO_DAM",  2] := 0.3662197555;

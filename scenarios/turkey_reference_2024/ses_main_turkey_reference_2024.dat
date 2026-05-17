@@ -3,6 +3,7 @@
 # Talep: TEİAŞ 2024 yıllık brüt üretim sırası (~341,85 TWh); sektör payları
 # önceki 348 TWh tablosu ile aynı (Mesken %25, Hizmet %27.59, Sanayi %43.97, Ulaştırma %3.45).
 # Kapasite: 2024 hidro oranı (rezervuar tablosu).
+# Termik/yenilenebilir kalibrasyon: turkey_reference_case v5 (gaz stepwise + rüzgar/güneş c_p_t).
 # ================================================================
 
 include scenarios/turkey_reference_case/ses_main_turkey_reference_case.dat;
@@ -23,3 +24,8 @@ let f_min["HYDRO_DAM"] := 21.886 * 1.000000;
 let f_max["HYDRO_DAM"] := 30.000 * 1.000000;
 let f_min["HYDRO_RIVER"] := 10.421 * 1.000000;
 let f_max["HYDRO_RIVER"] := 15.000 * 1.000000;
+
+# MENR 2025 tablosu hidro ~81.9 TWh (2024 referans yılı); brüt yerli üretim ~368 TWh
+param turkey_menr_hydro_total_TWh := 81.9;
+param turkey_menr_elec_supply_TWh := 368.0;
+include scenarios/turkey_menr_hydro_targets.dat;

@@ -440,6 +440,36 @@ tbody tr:nth-child(even) td:first-child {
   min-height: 420px;
 }
 
+.plotly-chart-host {
+  width: 100%;
+  min-height: 360px;
+}
+
+.monthly-supply-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.monthly-supply-panel {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.75rem 0.85rem 0.5rem;
+}
+
+.monthly-supply-panel__title {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.monthly-supply-panel__chart {
+  width: 100%;
+  min-height: 340px;
+}
+
 .muted {
   color: #64748b;
   font-size: 0.9rem;

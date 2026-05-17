@@ -1,0 +1,41 @@
+# ----------------------------------------------------------------
+# Berkay_Turkiye_fuel_price_forecastV2 — IEA WEO 2025 STEPS
+# TURKISH PRICES ≈ EUROPE PRICES (EUR/MWh_th, LHV)
+# Same fossil path for all Turkey scenarios (reference, drought, emcap).
+# ----------------------------------------------------------------
+#
+# Year   Oil    Natural Gas   Steam Coal   Turkish Lignite
+# 2024   42.78  32.33         14.77        3.00
+# 2030   43.07  25.83         12.32        3.27
+# 2035   43.32  20.40         10.28        3.50
+#
+# Dispatch model uses Steam Coal as tier base P; NG/COAL_CCS/NG_CCS use
+# fixed tier_ratio_* from ses_main_turkey_reference_case.dat (not market NG).
+# Lignite is documented for calibration context; COAL resource = steam coal.
+
+param turkey_steps_oil_2024   := 42.78;
+param turkey_steps_coal_2024  := 14.77;
+param turkey_steps_ng_2024    := 32.33;
+param turkey_steps_lignite_2024 := 3.00;
+
+param turkey_steps_oil_2030   := 43.07;
+param turkey_steps_coal_2030  := 12.32;
+param turkey_steps_ng_2030    := 25.83;
+param turkey_steps_lignite_2030 := 3.27;
+
+param turkey_steps_oil_2035   := 43.32;
+param turkey_steps_coal_2035  := 10.28;
+param turkey_steps_ng_2035    := 20.40;
+param turkey_steps_lignite_2035 := 3.50;
+
+# Non-fossil: Swiss baseline ses_main.dat c_op [MCHF/GWh] → EUR/MWh_th
+#   CHF/MWh_th = swiss_c_op / 0.001
+#   EUR/MWh_th = CHF/MWh_th / chf_per_eur   (chf_per_eur = CHF per 1 EUR)
+param swiss_baseline_c_op__WOOD    := 0.0932;
+param swiss_baseline_c_op__URANIUM := 0.0041;
+
+# Domestic biomass (Turkey); not Swiss import wood (~93 CHF/MWh_th at par FX)
+param turkey_fuel_EUR_per_MWh__WOOD := 18;
+
+param turkey_fuel_EUR_per_MWh__URANIUM :=
+	(swiss_baseline_c_op__URANIUM / 0.001) / chf_per_eur;

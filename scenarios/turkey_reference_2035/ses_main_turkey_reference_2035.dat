@@ -7,7 +7,7 @@
 #
 # Coal and gas are split into 5-tier dispatch tiers (see reference case).
 # Coal 24.3 GW: COAL_IGCC 40% + COAL_US 35% + COAL_IGCC_CCS 25%
-# Gas  35.5 GW: CCGT 65% + CCGT_CCS 35%
+# Gas  35.5 GW: CCGT 42% + CCGT_CCS 58% (v5 merit-order split)
 #
 # Hydro capacity kept at real installed 35.1 GW.
 # Reservoir ratio (15.6418 / 25.709 = 0.608420) applied to c_p_t
@@ -40,13 +40,13 @@ let f_max["COAL_IGCC_CCS"] := 6.5;
 let f_min["COAL_US_CCS"] := 0;
 let f_max["COAL_US_CCS"] := 0;
 
-# Tier 2 — CCGT (baseload gas, 65% of 35.5 = 23.08 GW)
-let f_min["CCGT"] := 23.0;
-let f_max["CCGT"] := 24.0;
+# Tier 3 — CCGT (mid-merit gas, 42% of 35.5 ≈ 14.9 GW)
+let f_min["CCGT"] := 14.5;
+let f_max["CCGT"] := 15.5;
 
-# Tier 5 — CCGT_CCS (peaker gas, 35% of 35.5 = 12.43 GW)
-let f_min["CCGT_CCS"] := 12.0;
-let f_max["CCGT_CCS"] := 13.0;
+# Tier 5 — CCGT_CCS (peaker gas, 58% of 35.5 ≈ 20.6 GW)
+let f_min["CCGT_CCS"] := 20.0;
+let f_max["CCGT_CCS"] := 21.0;
 
 # Hydro: installed 35.1 GW (real capacity; reservoir effect via c_p_t)
 let f_min["HYDRO_DAM"] := 35.100 * (21.886 / 32.307);
@@ -73,31 +73,31 @@ let f_max["GEOTHERMAL"] := 1.920;
 # ----------------------------------------------------------------
 # Base 2024 c_p_t × reservoir ratio 0.608420 (= 15.6418 / 25.709)
 
-let c_p_t["HYDRO_DAM",  1] := 0.35718769 * 0.608420;
-let c_p_t["HYDRO_DAM",  2] := 0.3662197555 * 0.608420;
-let c_p_t["HYDRO_DAM",  3] := 0.2748204469 * 0.608420;
-let c_p_t["HYDRO_DAM",  4] := 0.3076882552 * 0.608420;
-let c_p_t["HYDRO_DAM",  5] := 0.3032432771 * 0.608420;
-let c_p_t["HYDRO_DAM",  6] := 0.2882865145 * 0.608420;
-let c_p_t["HYDRO_DAM",  7] := 0.2806312661 * 0.608420;
-let c_p_t["HYDRO_DAM",  8] := 0.2501025769 * 0.608420;
-let c_p_t["HYDRO_DAM",  9] := 0.2362943147 * 0.608420;
-let c_p_t["HYDRO_DAM", 10] := 0.1845089126 * 0.608420;
-let c_p_t["HYDRO_DAM", 11] := 0.2022294291 * 0.608420;
-let c_p_t["HYDRO_DAM", 12] := 0.179368648 * 0.608420;
+let c_p_t["HYDRO_DAM",  1] := 0.35718769;
+let c_p_t["HYDRO_DAM",  2] := 0.3662197555;
+let c_p_t["HYDRO_DAM",  3] := 0.2748204469;
+let c_p_t["HYDRO_DAM",  4] := 0.3076882552;
+let c_p_t["HYDRO_DAM",  5] := 0.3032432771;
+let c_p_t["HYDRO_DAM",  6] := 0.2882865145;
+let c_p_t["HYDRO_DAM",  7] := 0.2806312661;
+let c_p_t["HYDRO_DAM",  8] := 0.2501025769;
+let c_p_t["HYDRO_DAM",  9] := 0.2362943147;
+let c_p_t["HYDRO_DAM", 10] := 0.1845089126;
+let c_p_t["HYDRO_DAM", 11] := 0.2022294291;
+let c_p_t["HYDRO_DAM", 12] := 0.179368648;
 
-let c_p_t["HYDRO_RIVER",  1] := 0.35718769 * 0.608420;
-let c_p_t["HYDRO_RIVER",  2] := 0.3662197555 * 0.608420;
-let c_p_t["HYDRO_RIVER",  3] := 0.2748204469 * 0.608420;
-let c_p_t["HYDRO_RIVER",  4] := 0.3076882552 * 0.608420;
-let c_p_t["HYDRO_RIVER",  5] := 0.3032432771 * 0.608420;
-let c_p_t["HYDRO_RIVER",  6] := 0.2882865145 * 0.608420;
-let c_p_t["HYDRO_RIVER",  7] := 0.2806312661 * 0.608420;
-let c_p_t["HYDRO_RIVER",  8] := 0.2501025769 * 0.608420;
-let c_p_t["HYDRO_RIVER",  9] := 0.2362943147 * 0.608420;
-let c_p_t["HYDRO_RIVER", 10] := 0.1845089126 * 0.608420;
-let c_p_t["HYDRO_RIVER", 11] := 0.2022294291 * 0.608420;
-let c_p_t["HYDRO_RIVER", 12] := 0.179368648 * 0.608420;
+let c_p_t["HYDRO_RIVER",  1] := 0.35718769;
+let c_p_t["HYDRO_RIVER",  2] := 0.3662197555;
+let c_p_t["HYDRO_RIVER",  3] := 0.2748204469;
+let c_p_t["HYDRO_RIVER",  4] := 0.3076882552;
+let c_p_t["HYDRO_RIVER",  5] := 0.3032432771;
+let c_p_t["HYDRO_RIVER",  6] := 0.2882865145;
+let c_p_t["HYDRO_RIVER",  7] := 0.2806312661;
+let c_p_t["HYDRO_RIVER",  8] := 0.2501025769;
+let c_p_t["HYDRO_RIVER",  9] := 0.2362943147;
+let c_p_t["HYDRO_RIVER", 10] := 0.1845089126;
+let c_p_t["HYDRO_RIVER", 11] := 0.2022294291;
+let c_p_t["HYDRO_RIVER", 12] := 0.179368648;
 
 # ----------------------------------------------------------------
 # 3) ELECTRICITY DEMAND — 2035 (GWh/year)
@@ -108,6 +108,11 @@ let end_uses_demand_year["ELECTRICITY", "HOUSEHOLDS"] := 85600;
 let end_uses_demand_year["ELECTRICITY", "SERVICES"] := 111500;
 let end_uses_demand_year["ELECTRICITY", "INDUSTRY"] := 208000;
 let end_uses_demand_year["ELECTRICITY", "TRANSPORTATION"] := 24500;
+
+# MENR 2035 hidro ~87.9 TWh; brüt yerli üretim ~462 TWh
+param turkey_menr_hydro_total_TWh := 87.9;
+param turkey_menr_elec_supply_TWh := 462.0;
+include scenarios/turkey_menr_hydro_targets.dat;
 
 # Fuel prices: STEPS 2035 (tiered)
 include scenarios/turkey_weo2025_steps_fuel_operations_2035.dat;

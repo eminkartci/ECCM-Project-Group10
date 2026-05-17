@@ -1,21 +1,17 @@
 # ----------------------------------------------------------------
-# IEA WEO 2025 — STEPS fossil fuel prices, year 2035
-# 5-Tier Thermal Dispatch
+# Berkay STEPS fossil fuel prices — year 2035 (5-tier thermal dispatch)
 # ----------------------------------------------------------------
+# Base P = steam coal; tiers via tier_ratio_* in ses_main_turkey_reference_case.dat
 #
-# Base coal price: WEO 2025, 2035 STEPS → 11.2 USD/MWh_th → 10.304 EUR/MWh_th
-# Tiered pricing uses ratios from ses_main_turkey_reference_case.dat:
-#   tier_ratio_ng, tier_ratio_coal_ccs, tier_ratio_ng_ccs
-#
-# Marginal cost order (EUR/MWh_e):
-#   COAL_IGCC  (1.8519 × 10.304) = 19.08
-#   CCGT       (1.5873 × 12.674) = 20.11
-#   COAL_US    (2.0408 × 10.304) = 21.03
-#   COAL_IGCC_CCS (2.0833 × 11.540) = 24.04
-#   CCGT_CCS   (1.7544 × 14.632) = 25.67
+# Marginal cost order (EUR/MWh_e, illustrative):
+#   COAL_IGCC  (1.8519 × 10.28) = 19.04
+#   CCGT       (1.5873 × 12.64) = 20.07
+#   COAL_US    (2.0408 × 10.28) = 20.98
+#   COAL_IGCC_CCS (2.0833 × 11.51) = 23.98
+#   CCGT_CCS   (1.7544 × 14.60) = 25.61
 
-param weo25_steps2035_coal_base := 10.304;   # 11.2 * 0.920 EUR/MWh_th
-param weo25_steps2035_oil       := 43.332;   # 47.1 * 0.920
+param weo25_steps2035_coal_base := turkey_steps_coal_2035;
+param weo25_steps2035_oil       := turkey_steps_oil_2035;
 
 let {t in PERIODS} c_op["COAL", t] :=
 	weo25_steps2035_coal_base * chf_per_eur * 0.001;

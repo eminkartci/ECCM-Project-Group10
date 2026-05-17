@@ -207,6 +207,85 @@ def parse_two_col(path: Path):
     return result
 
 
+MONTH_LABELS_TR = [
+    "Oca",
+    "Şub",
+    "Mar",
+    "Nis",
+    "May",
+    "Haz",
+    "Tem",
+    "Ağu",
+    "Eyl",
+    "Eki",
+    "Kas",
+    "Ara",
+]
+
+
+def parse_period_matrix(path: Path, value_cols: int = 12):
+    """Tab file: Name + N period columns (1..12). Returns {name: [v1..vN]}."""
+    result: dict[str, list[float]] = {}
+    if not path.exists():
+        return result
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        parts = line.split("\t")
+        if len(parts) < 2:
+            continue
+        name = parts[0]
+        if name == "Name":
+            continue
+        vals: list[float] = []
+        for p in parts[1 : 1 + value_cols]:
+            try:
+                vals.append(float(p))
+            except ValueError:
+                vals.append(0.0)
+        while len(vals) < value_cols:
+            vals.append(0.0)
+        result[name] = vals[:value_cols]
+    return result
+
+
+def parse_monthly_energy_price(path: Path):
+    """monthly_energy_price.txt → list of {period, demandGwh, costMeur, priceEurPerMwh}."""
+    rows: list[dict] = []
+    if not path.exists():
+        return rows
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("period"):
+            continue
+        parts = line.split("\t")
+        if len(parts) < 4:
+            continue
+        try:
+            period = int(parts[0])
+        except ValueError:
+            continue
+        try:
+            demand = float(parts[1])
+            cost = float(parts[2])
+            price = float(parts[3])
+        except ValueError:
+            continue
+        label = MONTH_LABELS_TR[period - 1] if 1 <= period <= 12 else str(period)
+        rows.append(
+            {
+                "period": period,
+                "monthLabel": label,
+                "demandGwh": demand,
+                "costMeur": cost,
+                "priceEurPerMwh": price,
+            }
+        )
+    rows.sort(key=lambda r: r["period"])
+    return rows
+
+
 def parse_end_uses(path: Path):
     """Annual activity per carrier: sum of absolute period values (GWh per period in model output)."""
     result = {}
@@ -427,6 +506,10 @@ def build():
             energy_price_eur_per_mwh = total_cost / elec_demand_gwh * 1000.0
 
         total_emissions_kt_co2 = total_gwp if solved else None
+        monthly_energy_price = parse_monthly_energy_price(d / "monthly_energy_price.txt")
+        monthly_electricity_supply_gwh = parse_period_matrix(
+            d / "monthly_electricity_supply_gwh.txt"
+        )
 
         scenario_map[d.name] = {
             "folderName": d.name,
@@ -443,6 +526,8 @@ def build():
             "scenarioYear": scenario_year,
             "scenarioTrack": scenario_track,
             "installedCapacityByFuelGw": installed_by_fuel,
+            "monthlyEnergyPrice": monthly_energy_price,
+            "monthlyElectricitySupplyGwh": monthly_electricity_supply_gwh,
             "expected": False,
             "label": d.name,
             "kpi": {
@@ -480,6 +565,8 @@ def build():
                 "scenarioYear": _yr,
                 "scenarioTrack": _tr,
                 "installedCapacityByFuelGw": {},
+                "monthlyEnergyPrice": [],
+                "monthlyElectricitySupplyGwh": {},
                 "expected": True,
                 "label": label,
                 "kpi": {
@@ -550,6 +637,7 @@ def build():
         "electricitySankeySupplyRowOrder": electricity_sankey_supply_row_order,
         "installedCapacityFuelOrder": INSTALLED_CAPACITY_FUEL_ORDER,
         "installedCapacityFuelLabels": INSTALLED_CAPACITY_FUEL_LABELS_TR,
+        "monthLabels": MONTH_LABELS_TR,
     }
 
     OUT_JSON.write_text(json.dumps(payload, indent=2), encoding="utf-8")

@@ -57,3 +57,4 @@ printf "%s\t%.12g\n", "TotalCost", TotalCost > (OUTPUT_DIR & "/scenario_metrics.
 printf "%s\t%.12g\n", "TotalGWP", TotalGWP >> (OUTPUT_DIR & "/scenario_metrics.txt");
 
 include scenarios/common/export_sankey.run;
+include scenarios/common/export_monthly_dashboard.run;

@@ -223,6 +223,40 @@
         </div>
       </section>
 
+      <section class="card" data-collapsible data-card-id="monthly">
+        <div class="card__header">
+          <button
+            type="button"
+            class="card__toggle"
+            id="card-monthly-toggle"
+            aria-expanded="true"
+            aria-controls="card-monthly-body"
+          >
+            <span class="card__chevron" aria-hidden="true"></span>
+            <span class="card__title">Aylık analiz: enerji fiyatı ve üretim</span>
+          </button>
+        </div>
+        <div class="card__body" id="card-monthly-body">
+          <p class="card__desc">
+            <strong>Veri kaynağı:</strong> <code>monthly_energy_price.txt</code> ve
+            <code>monthly_electricity_supply_gwh.txt</code> — <code>export_monthly_dashboard.run</code> ile
+            <code>export_standard_outputs.run</code> sonunda üretilir. Eski <code>output_*</code> klasörleri için
+            <code>run_all_turkey_scenarios.sh</code> ile senaryoları yeniden koşturun.
+            <strong>Fiyat:</strong> dönem işletme + yıllık sabit maliyetin aya orantılanması, payda elektrik talebi
+            (üretim − şebeke kayıpları, GWh); birim EUR/MWh (yıllık KPI ile aynı tanım).
+            <strong>Üretim:</strong> Sankey’deki <code>→ Elec</code> kaynakları, aylık GWh (yığılmış sütun).
+          </p>
+          <div class="chart-block">
+            <h3 class="chart-title">Aylık ortalama enerji fiyatı (EUR/MWh)</h3>
+            <div id="monthly-energy-price-chart" class="plotly-chart-host"></div>
+          </div>
+          <div class="chart-block">
+            <h3 class="chart-title">Aylık elektrik üretimi — kaynak bazında (GWh, yığılmış)</h3>
+            <div id="monthly-supply-stack" class="monthly-supply-stack"></div>
+          </div>
+        </div>
+      </section>
+
       <section class="card" data-collapsible data-card-id="tech">
         <div class="card__header">
           <button

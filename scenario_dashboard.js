@@ -24,6 +24,8 @@ const fuelShareChart = document.getElementById("fuel-share-chart");
 const fuelShareTableEl = document.getElementById("fuel-share-table");
 const installedCapYearChart = document.getElementById("installed-capacity-year-chart");
 const installedCapTableEl = document.getElementById("installed-capacity-table");
+const monthlyEnergyPriceChartEl = document.getElementById("monthly-energy-price-chart");
+const monthlySupplyStackEl = document.getElementById("monthly-supply-stack");
 
 let projectDirHandle = null;
 let scenarios = [];
@@ -102,8 +104,27 @@ const SANKEY_ELEC_SOURCE_ORDER = [
   "Wind",
   "Solar",
   "Geothermal",
-  "Electricity"
+  "Electricity",
+  "CHP",
+  "Biofuels"
 ];
+
+const DEFAULT_MONTH_LABELS = [
+  "Oca",
+  "Şub",
+  "Mar",
+  "Nis",
+  "May",
+  "Haz",
+  "Tem",
+  "Ağu",
+  "Eyl",
+  "Eki",
+  "Kas",
+  "Ara"
+];
+
+let monthLabels = [...DEFAULT_MONTH_LABELS];
 
 pickFolderBtn.addEventListener("click", async () => {
   try {
@@ -214,6 +235,8 @@ function refreshDashboard() {
     metricsTableEl.innerHTML = "";
     costPivotEl.innerHTML = "";
     sankeyStackEl.innerHTML = "";
+    purgePlotlyHost(monthlyEnergyPriceChartEl);
+    if (monthlySupplyStackEl) monthlySupplyStackEl.innerHTML = "";
     return;
   }
 
@@ -228,6 +251,7 @@ function refreshDashboard() {
   renderIntensityChart(active);
   renderEnergyPriceChart(active);
   renderTotalEmissionsChart(active);
+  renderMonthlySection(active);
   setupTechSelector(active);
   renderTechChart(active);
   renderCostPivot(active);
@@ -296,6 +320,9 @@ function loadFromPrecomputedData() {
     payload.installedCapacityFuelLabels && typeof payload.installedCapacityFuelLabels === "object"
       ? payload.installedCapacityFuelLabels
       : {};
+  monthLabels = Array.isArray(payload.monthLabels) && payload.monthLabels.length === 12
+    ? payload.monthLabels
+    : [...DEFAULT_MONTH_LABELS];
   buildScenarioToggles();
     renderSolutionStatus();
     refreshDashboard();
@@ -614,6 +641,8 @@ async function scanScenarios(rootHandle) {
       scenarioYear: null,
       scenarioTrack: null,
       installedCapacityByFuelGw: null,
+      monthlyEnergyPrice: [],
+      monthlyElectricitySupplyGwh: {},
       label: name
     };
 
@@ -684,6 +713,20 @@ async function scanScenarios(rootHandle) {
       installedByFuel = aggregateInstalledFromFmultJs(fm, elecSupplyTechs);
     }
     scenario.installedCapacityByFuelGw = installedByFuel;
+
+    const monthlyPriceFile = await getOptionalFile(handle, "monthly_energy_price.txt");
+    if (monthlyPriceFile) {
+      scenario.monthlyEnergyPrice = parseMonthlyEnergyPrice(await readText(monthlyPriceFile));
+    } else {
+      scenario.monthlyEnergyPrice = [];
+    }
+
+    const monthlySupplyFile = await getOptionalFile(handle, "monthly_electricity_supply_gwh.txt");
+    if (monthlySupplyFile) {
+      scenario.monthlyElectricitySupplyGwh = parsePeriodMatrix(await readText(monthlySupplyFile));
+    } else {
+      scenario.monthlyElectricitySupplyGwh = {};
+    }
 
     const lossesFile = await getOptionalFile(handle, "losses.txt");
     let elecLossesGwh = 0;
@@ -874,6 +917,223 @@ function parseEndUses(content) {
     result[name] = total;
   }
   return result;
+}
+
+function parsePeriodMatrix(content, valueCols = 12) {
+  const result = {};
+  const lines = content.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  for (const line of lines) {
+    const parts = line.split(/\t+/);
+    if (parts.length < 2) continue;
+    const name = parts[0];
+    if (name === "Name") continue;
+    const vals = [];
+    for (let i = 1; i < parts.length && vals.length < valueCols; i++) {
+      const v = Number(parts[i]);
+      vals.push(Number.isFinite(v) ? v : 0);
+    }
+    while (vals.length < valueCols) vals.push(0);
+    result[name] = vals.slice(0, valueCols);
+  }
+  return result;
+}
+
+function parseMonthlyEnergyPrice(content) {
+  const rows = [];
+  const lines = content.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  for (const line of lines) {
+    if (line.startsWith("period")) continue;
+    const parts = line.split(/\t+/);
+    if (parts.length < 4) continue;
+    const period = Number(parts[0]);
+    const demandGwh = Number(parts[1]);
+    const costMeur = Number(parts[2]);
+    const priceEurPerMwh = Number(parts[3]);
+    if (!Number.isFinite(period) || period < 1 || period > 12) continue;
+    rows.push({
+      period,
+      monthLabel: (monthLabels[period - 1] || DEFAULT_MONTH_LABELS[period - 1] || String(period)),
+      demandGwh: Number.isFinite(demandGwh) ? demandGwh : 0,
+      costMeur: Number.isFinite(costMeur) ? costMeur : 0,
+      priceEurPerMwh: Number.isFinite(priceEurPerMwh) ? priceEurPerMwh : null
+    });
+  }
+  rows.sort((a, b) => a.period - b.period);
+  return rows;
+}
+
+function purgePlotlyHost(host) {
+  if (!host || typeof Plotly === "undefined") return;
+  try {
+    Plotly.purge(host);
+  } catch {
+    /* ignore */
+  }
+  host.innerHTML = "";
+}
+
+function monthlySupplyRowOrder(keySet) {
+  return mergeSankeyElecRowOrder(keySet);
+}
+
+function scenarioHasMonthlyData(s) {
+  const price = s.monthlyEnergyPrice;
+  const supply = s.monthlyElectricitySupplyGwh;
+  const hasPrice = Array.isArray(price) && price.some((r) => Number(r?.priceEurPerMwh) > 0);
+  const hasSupply =
+    supply &&
+    typeof supply === "object" &&
+    Object.values(supply).some((arr) => Array.isArray(arr) && arr.some((v) => Number(v) > 0));
+  return hasPrice || hasSupply;
+}
+
+function renderMonthlySection(active) {
+  if (!monthlyEnergyPriceChartEl && !monthlySupplyStackEl) return;
+
+  const withMonthly = active.filter(scenarioHasMonthlyData);
+  if (!withMonthly.length) {
+    purgePlotlyHost(monthlyEnergyPriceChartEl);
+    if (monthlyEnergyPriceChartEl) {
+      monthlyEnergyPriceChartEl.innerHTML =
+        "<p class=\"muted\">Aylık veri yok. Senaryoları <code>run_all_turkey_scenarios.sh</code> ile yeniden çalıştırın (export_monthly_dashboard.run).</p>";
+    }
+    if (monthlySupplyStackEl) {
+      monthlySupplyStackEl.innerHTML = "";
+    }
+    return;
+  }
+
+  renderMonthlyEnergyPriceChart(withMonthly);
+  renderMonthlySupplyStackCharts(withMonthly);
+}
+
+function renderMonthlyEnergyPriceChart(activeScenarios) {
+  if (!monthlyEnergyPriceChartEl) return;
+  purgePlotlyHost(monthlyEnergyPriceChartEl);
+
+  if (typeof Plotly === "undefined") {
+    monthlyEnergyPriceChartEl.innerHTML =
+      "<p class=\"muted\">Plotly yüklenemedi; aylık fiyat grafiği çizilemiyor.</p>";
+    return;
+  }
+
+  const xMonths = monthLabels;
+  const traces = activeScenarios
+    .map((s, i) => {
+      const rows = s.monthlyEnergyPrice || [];
+      if (!rows.length) return null;
+      const byPeriod = new Map(rows.map((r) => [r.period, r.priceEurPerMwh]));
+      const y = xMonths.map((_, idx) => {
+        const v = byPeriod.get(idx + 1);
+        return v != null && Number.isFinite(v) ? v : null;
+      });
+      if (!y.some((v) => v != null && v > 0)) return null;
+      return {
+        type: "scatter",
+        mode: "lines+markers",
+        name: s.label || s.folderName,
+        x: xMonths,
+        y,
+        line: { color: SCENARIO_COLORS[i % SCENARIO_COLORS.length], width: 2 },
+        marker: { size: 6 }
+      };
+    })
+    .filter(Boolean);
+
+  if (!traces.length) {
+    monthlyEnergyPriceChartEl.innerHTML =
+      "<p class=\"muted\">Seçili senaryolarda <code>monthly_energy_price.txt</code> verisi yok.</p>";
+    return;
+  }
+
+  Plotly.newPlot(
+    monthlyEnergyPriceChartEl,
+    traces,
+    {
+      margin: { l: 56, r: 24, t: 36, b: 48 },
+      paper_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor: "#f8fafc",
+      yaxis: { title: "EUR/MWh", gridcolor: "#e2e8f0" },
+      xaxis: { title: "Ay", gridcolor: "#e2e8f0" },
+      legend: { orientation: "h", y: 1.12, x: 0 },
+      hovermode: "x unified"
+    },
+    { responsive: true, displayModeBar: false }
+  );
+}
+
+function renderMonthlySupplyStackCharts(activeScenarios) {
+  if (!monthlySupplyStackEl) return;
+  monthlySupplyStackEl.innerHTML = "";
+
+  if (typeof Plotly === "undefined") {
+    monthlySupplyStackEl.innerHTML =
+      "<p class=\"muted\">Plotly yüklenemedi; aylık üretim grafikleri çizilemiyor.</p>";
+    return;
+  }
+
+  const withSupply = activeScenarios.filter((s) => {
+    const m = s.monthlyElectricitySupplyGwh;
+    return m && Object.keys(m).length > 0;
+  });
+
+  if (!withSupply.length) {
+    monthlySupplyStackEl.innerHTML =
+      "<p class=\"muted\">Seçili senaryolarda <code>monthly_electricity_supply_gwh.txt</code> yok.</p>";
+    return;
+  }
+
+  const unionKeys = new Set();
+  withSupply.forEach((s) => {
+    Object.entries(s.monthlyElectricitySupplyGwh || {}).forEach(([k, arr]) => {
+      if (Array.isArray(arr) && arr.some((v) => Number(v) > 0)) unionKeys.add(k);
+    });
+  });
+  const rowOrder = monthlySupplyRowOrder(unionKeys);
+
+  withSupply.forEach((s) => {
+    const matrix = s.monthlyElectricitySupplyGwh || {};
+    const sources = rowOrder.filter((src) => {
+      const arr = matrix[src];
+      return Array.isArray(arr) && arr.some((v) => Number(v) > 0);
+    });
+    if (!sources.length) return;
+
+    const panel = document.createElement("div");
+    panel.className = "monthly-supply-panel";
+    const title = document.createElement("h4");
+    title.className = "monthly-supply-panel__title";
+    title.textContent = s.label || s.folderName;
+    const host = document.createElement("div");
+    host.className = "monthly-supply-panel__chart";
+    host.id = `monthly-supply-${sanitizeId(s.folderName)}`;
+    panel.appendChild(title);
+    panel.appendChild(host);
+    monthlySupplyStackEl.appendChild(panel);
+
+    const traces = sources.map((src, fi) => ({
+      type: "bar",
+      name: src,
+      x: monthLabels,
+      y: (matrix[src] || []).map((v) => (Number(v) > 0 ? Number(v) : 0)),
+      marker: { color: FUEL_SHARE_COLORS[fi % FUEL_SHARE_COLORS.length] }
+    }));
+
+    Plotly.newPlot(
+      host,
+      traces,
+      {
+        barmode: "stack",
+        margin: { l: 56, r: 16, t: 24, b: 48 },
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "#ffffff",
+        yaxis: { title: "GWh", gridcolor: "#e2e8f0" },
+        xaxis: { title: "Ay" },
+        legend: { orientation: "h", y: 1.18, x: 0, font: { size: 10 } }
+      },
+      { responsive: true, displayModeBar: false }
+    );
+  });
 }
 
 function parseSankeyCsv(text) {

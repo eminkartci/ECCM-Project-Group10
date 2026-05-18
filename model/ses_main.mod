@@ -109,6 +109,7 @@ var TotalGWP >= 0; # Total GWP emissions in the system [ktCO2-eq./y]
 var TotalCost >= 0; # Total GWP emissions in the system [ktCO2-eq./y]
 
 param gwp_limit >= 0 default 1e10; # Emission cap [ktCO2-eq./y]; default very high = no cap
+param elec_import_max_frac >= 0, <= 1 default 1; # Max net ELECTRICITY resource imports as fraction of annual ELECTRICITY-layer demand
 
 ### CONSTRAINTS ###
 
@@ -178,6 +179,11 @@ subject to layer_balance {l in LAYERS, t in PERIODS}:
 # Resources availability equation
 subject to resource_availability {i in RESOURCES}:
 	sum {t in PERIODS} (F_Mult_t [i, t] * period_duration [t]) <= avail [i];
+
+# Net electricity imports (RESOURCES ELECTRICITY) capped vs total ELECTRICITY-layer demand [GWh/y]
+subject to electricity_import_cap:
+	sum {t in PERIODS} (F_Mult_t ["ELECTRICITY", t] * period_duration [t])
+	<= elec_import_max_frac * sum {t in PERIODS} (End_Uses ["ELECTRICITY", t] * period_duration [t]);
 
 ## Cost
 

@@ -5,8 +5,8 @@
 # Same as Drought 2035 (identical demand, installed capacity, and
 # drought-reduced hydro availability) PLUS a binding GWP emission cap.
 #
-# Emission cap: 128 000 ktCO2-eq/y  (~25 % below Drought-2035 baseline
-# of 171 151 ktCO2-eq/y).  The cap forces the optimizer to curtail
+# Emission cap: ~144 400 ktCO2-eq/y (~25 % below Drought-2035 baseline
+# after national-demand alignment; baseline ≈ 192 541 ktCO2-eq/y).  The cap forces the optimizer to curtail
 # fossil-fuel generation (primarily coal, secondarily gas) and shift
 # towards available renewables + nuclear where possible.
 # ================================================================
@@ -16,4 +16,4 @@ include scenarios/turkey_drought_2035/ses_main_turkey_drought_2035.dat;
 # ----------------------------------------------------------------
 # EMISSION CAP — 25 % reduction from Drought-2035 baseline
 # ----------------------------------------------------------------
-let gwp_limit := 100000; ## MIN FEASIBLE
+let gwp_limit := 144400;

@@ -96,10 +96,15 @@ let c_p_t["HYDRO_RIVER", 12] := 0.05360192588;
 # 3) ELECTRICITY DEMAND — 2035 (GWh/year)
 # ----------------------------------------------------------------
 
+# Demand aligned with reference 2035 (see ses_main_turkey_reference_2035.dat §3).
 let end_uses_demand_year["ELECTRICITY", "HOUSEHOLDS"] := 85600;
 let end_uses_demand_year["ELECTRICITY", "SERVICES"] := 111500;
-let end_uses_demand_year["ELECTRICITY", "INDUSTRY"] := 208000;
+let end_uses_demand_year["ELECTRICITY", "INDUSTRY"] := 288900;
 let end_uses_demand_year["ELECTRICITY", "TRANSPORTATION"] := 24500;
 
 # Fuel prices: STEPS 2035 (tiered)
 include scenarios/turkey_weo2025_steps_fuel_operations_2035.dat;
+
+include scenarios/turkey_dispatch_capacity_only.dat;
+param elec_import_cap_gwh_2035 := (85600 + 111500 + 288900 + 24500) * 1.075 * 0.05;
+let avail["ELECTRICITY"] := elec_import_cap_gwh_2035;

@@ -753,9 +753,13 @@ async function scanScenarios(rootHandle) {
       scenario.costBreakdown = parseCostBreakdown(await readText(costBreakdownFile));
     }
 
+    const paramsFile = await getOptionalFile(handle, "params.txt");
+    const periodDuration = paramsFile
+      ? parsePeriodDurationFromParams(await readText(paramsFile))
+      : DEFAULT_PERIOD_DURATION_H;
     const endUsesFile = await getOptionalFile(handle, "End_Uses.txt");
     if (endUsesFile) {
-      scenario.endUsesAnnual = parseEndUses(await readText(endUsesFile));
+      scenario.endUsesAnnual = parseEndUses(await readText(endUsesFile), periodDuration);
     }
 
     const sankeyFile = await getSankeyFileHandle(handle);
@@ -823,30 +827,29 @@ async function scanScenarios(rootHandle) {
       elecLossesGwh = Number(lossMap.ELECTRICITY) || 0;
     }
 
-    const elecRow = scenario.totalOutput.ELECTRICITY;
-    const elecSupply = sumElectricitySupplyGwh(scenario.totalOutput, elecSupplyTechs);
-    let denom = null;
-    if (Number.isFinite(elecRow) && elecRow > 0) denom = elecRow;
-    else if (elecSupply != null && elecSupply > 0) denom = elecSupply;
-
-    let elecDemandGwh = null;
-    if (denom != null && denom > 0) {
-      elecDemandGwh = denom - elecLossesGwh;
-      if (elecDemandGwh <= 0) elecDemandGwh = denom;
-    }
+    const bal = computeElectricityBalanceKpis(
+      scenario.totalOutput,
+      elecSupplyTechs,
+      scenario.endUsesAnnual,
+      elecLossesGwh
+    );
+    const endUseDemandGwh = bal.endUseDemandGWh;
+    const denom =
+      endUseDemandGwh && endUseDemandGwh > 0 ? endUseDemandGwh : bal.electricityTotalSupplyGWh;
 
     let energyPriceEurPerMwh = null;
-    if (scenario.solved && scenario.totalCost != null && elecDemandGwh && elecDemandGwh > 0) {
-      energyPriceEurPerMwh = scenario.totalCost / elecDemandGwh * 1000.0;
+    if (scenario.solved && scenario.totalCost != null && endUseDemandGwh && endUseDemandGwh > 0) {
+      energyPriceEurPerMwh = scenario.totalCost / endUseDemandGwh * 1000.0;
     }
 
-    const endSum = sumObjectValues(scenario.endUsesAnnual);
     scenario.kpi = {
-      electricityOutputGWh: Number.isFinite(elecRow) ? elecRow : null,
-      electricitySupplyGWh: elecSupply == null ? null : elecSupply,
-      electricityDemandGWh: elecDemandGwh,
-      electricityLossesGWh: elecLossesGwh,
-      endUseDemandGWh: endSum > 0 ? endSum : null,
+      electricityGenerationGWh: bal.electricityGenerationGWh,
+      electricityImportGWh: bal.electricityImportGWh,
+      electricityTotalSupplyGWh: bal.electricityTotalSupplyGWh,
+      electricitySupplyGWh: bal.electricityTotalSupplyGWh,
+      electricityDemandGWh: endUseDemandGwh,
+      electricityLossesGWh: bal.electricityLossesGWh,
+      endUseDemandGWh: endUseDemandGwh,
       costPerGWh:
         scenario.solved && denom && denom > 0 && scenario.totalCost != null ? scenario.totalCost / denom : null,
       gwpPerGWh:
@@ -990,7 +993,67 @@ function sumElectricitySupplyGwh(totalOutput, techs) {
   return s > 0 ? s : 0;
 }
 
-function parseEndUses(content) {
+/** Yerli üretim + total_output ELECTRICITY (ithalat) ≈ End_Uses talebi [GWh]. */
+function computeElectricityBalanceKpis(totalOutput, elecSupplyTechs, endUsesAnnual, elecLossesGwh) {
+  const gen = sumElectricitySupplyGwh(totalOutput, elecSupplyTechs);
+  const imp = Number(totalOutput?.ELECTRICITY) || 0;
+  let endUse = endUsesAnnual?.ELECTRICITY > 0 ? endUsesAnnual.ELECTRICITY : null;
+  if (endUse == null) {
+    const sum = sumObjectValues(endUsesAnnual || {});
+    endUse = sum > 0 ? sum : null;
+  }
+  let totalSupply = null;
+  if (gen != null) totalSupply = gen + imp;
+  else if (imp > 0) totalSupply = imp;
+  return {
+    electricityGenerationGWh: gen,
+    electricityImportGWh: imp > 0 ? imp : 0,
+    electricityTotalSupplyGWh: totalSupply,
+    endUseDemandGWh: endUse,
+    electricityLossesGWh: elecLossesGwh
+  };
+}
+
+/** End_Uses.txt columns are monthly power [GW]; annual GWh = sum_t |P_t| * period_duration[h]. */
+const DEFAULT_PERIOD_DURATION_H = {
+  1: 744,
+  2: 672,
+  3: 744,
+  4: 720,
+  5: 744,
+  6: 720,
+  7: 744,
+  8: 744,
+  9: 720,
+  10: 744,
+  11: 720,
+  12: 744
+};
+
+function parsePeriodDurationFromParams(content) {
+  const durations = { ...DEFAULT_PERIOD_DURATION_H };
+  if (!content) return durations;
+  let inBlock = false;
+  for (const raw of content.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (line.startsWith("param period_duration")) {
+      inBlock = true;
+      continue;
+    }
+    if (!inBlock) continue;
+    if (line.startsWith(";")) break;
+    const parts = line.split(/\s+/);
+    if (parts.length >= 2) {
+      const period = Number(parts[0]);
+      const hours = Number(parts[1]);
+      if (Number.isFinite(period) && Number.isFinite(hours)) durations[period] = hours;
+    }
+  }
+  return durations;
+}
+
+function parseEndUses(content, periodDuration) {
+  const durations = periodDuration || DEFAULT_PERIOD_DURATION_H;
   const result = {};
   const lines = content.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
   for (const line of lines) {
@@ -1001,7 +1064,9 @@ function parseEndUses(content) {
     let total = 0;
     for (let i = 1; i < parts.length; i++) {
       const v = Number(parts[i]);
-      if (Number.isFinite(v)) total += Math.abs(v);
+      if (!Number.isFinite(v)) continue;
+      const hours = durations[i] ?? 0;
+      total += Math.abs(v) * hours;
     }
     result[name] = total;
   }
@@ -1327,6 +1392,11 @@ function splitCsvLine(line) {
   return out.map((s) => s.trim());
 }
 
+function formatKpiGwh(value) {
+  if (value == null || !Number.isFinite(value)) return "—";
+  return formatNumber(value);
+}
+
 function renderEnergySummaryTable(active) {
   const rows = active
     .map((s) => {
@@ -1337,22 +1407,17 @@ function renderEnergySummaryTable(active) {
           : sumObjectValues(s.endUsesAnnual) > 0
             ? formatNumber(sumObjectValues(s.endUsesAnnual))
             : "—";
-      const supply = s.kpi?.electricitySupplyGWh;
-      const rowE = s.totalOutput?.ELECTRICITY;
-      let elecCell = "—";
-      if (supply != null && Number.isFinite(supply) && supply > 0) {
-        elecCell = formatNumber(supply);
-      } else if (rowE != null && Number.isFinite(rowE) && rowE > 0) {
-        elecCell = formatNumber(rowE);
-      } else if (supply === 0) {
-        elecCell = "0";
-      }
+      const gen = s.kpi?.electricityGenerationGWh;
+      const imp = s.kpi?.electricityImportGWh;
+      const total = s.kpi?.electricityTotalSupplyGWh;
       return `
         <tr>
           <td>${s.label || s.folderName}</td>
           <td>${solveStatusLabel(s)}</td>
           <td>${demandCell}</td>
-          <td>${elecCell}</td>
+          <td>${formatKpiGwh(gen)}</td>
+          <td>${formatKpiGwh(imp)}</td>
+          <td>${formatKpiGwh(total)}</td>
         </tr>`;
     })
     .join("");
@@ -1363,16 +1428,19 @@ function renderEnergySummaryTable(active) {
         <tr>
           <th>Senaryo</th>
           <th>Durum</th>
-          <th>Talep özeti (End_Uses, GWh)</th>
-          <th>Elektrik üretimi (sets.txt → ELECTRICITY teknolojileri, GWh)</th>
+          <th>Talep (End_Uses, GWh)</th>
+          <th>Yerli üretim (GWh)</th>
+          <th>İthalat / dış arz (GWh)</th>
+          <th>Toplam arz (GWh)</th>
         </tr>
       </thead>
       <tbody>${rows}</tbody>
     </table>
     <p class="muted">
-      Talep: <code>End_Uses.txt</code> (yoksa &quot;—&quot;). Elektrik üretimi: <code>sets.txt</code> içindeki
-      <code>TECHNOLOGIES_OF_END_USES_TYPE[ELECTRICITY]</code> kümesindeki teknolojilerin <code>total_output.txt</code>
-      değerleri toplanır; <code>ELECTRICITY</code> satırı 0 olsa da bu sütun dolabilir. GWP/maliyet yoğunluğu aynı toplam GWh paydasını kullanır.
+      <strong>Talep:</strong> <code>End_Uses.txt</code> → <code>ELECTRICITY</code>, aylık güç [GW]×<code>period_duration</code> [saat].
+      <strong>Yerli üretim:</strong> <code>TECHNOLOGIES_OF_END_USES_TYPE[ELECTRICITY]</code> teknolojileri, <code>total_output.txt</code>.
+      <strong>İthalat:</strong> aynı dosyada <code>ELECTRICITY</code> <em>kaynak</em> satırı (kapasite yetmediğinde denge için).
+      <strong>Toplam arz</strong> = yerli + ithalat; katman dengesinde talebe eşit olmalıdır.
     </p>
   `;
 }
@@ -1690,7 +1758,7 @@ function renderMetricsTable(active) {
       (s) => {
         const price = s.kpi?.energyPriceEurPerMwh;
         const emissions = s.kpi?.totalEmissionsKtCO2;
-        const demandGWh = s.kpi?.electricityDemandGWh;
+        const demandGWh = s.kpi?.endUseDemandGWh ?? s.kpi?.electricityDemandGWh;
         return `
         <tr>
           <td>${s.label || s.folderName}</td>

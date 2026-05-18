@@ -1,17 +1,15 @@
 source,target,realValue,layerID,layerColor,layerUnit
-Electricity,Elec,71.96,Electricity,#00BFFF,TWh
+NG,Elec,107.97,NG,#FFD700,TWh
 Nuclear,Elec,52.06,Nuclear,#FFC0CB,TWh
 Wind,Elec,87.62,Wind,#FFA500,TWh
 Hydro Dams,Elec,61.77,Hydro Dam,#00CED1,TWh
-Hydro River,Elec,20.00,Hydro River,#0000FF,TWh
-Coal,Elec,78.61,Coal,#A0522D,TWh
+Hydro River,Elec,18.82,Hydro River,#0000FF,TWh
+Coal,Elec,135.87,Coal,#A0522D,TWh
+Coal CCS,Elec,6.60,Coal,#A0522D,TWh
 Solar,Elec,64.48,Solar,#FFFF00,TWh
 Geothermal,Elec,13.73,Geothermal,#FF0000,TWh
-Biomass,Elec,11.70,Biomass,#CD853F,TWh
-Elec,Exp & Loss,32.34,Electricity,#00BFFF,TWh
+Elec,Exp & Loss,38.42,Electricity,#00BFFF,TWh
 Elec,Elec: HOUSEHOLDS,85.60,Electricity,#00BFFF,TWh
 Elec,Elec: SERVICES,111.50,Electricity,#00BFFF,TWh
-Elec,Elec: INDUSTRY,208.00,Electricity,#00BFFF,TWh
+Elec,Elec: INDUSTRY,288.90,Electricity,#00BFFF,TWh
 Elec,Elec: TRANSPORTATION,24.50,Electricity,#00BFFF,TWh
-CHP,Elec,11.70,Electricity,#00BFFF,TWh
-CHP,Heat HT,0.00,Heat HT,#DC143C,TWh

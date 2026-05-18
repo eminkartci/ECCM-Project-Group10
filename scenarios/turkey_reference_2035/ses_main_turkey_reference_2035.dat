@@ -48,10 +48,10 @@ let f_max["CCGT"] := 15.5;
 let f_min["CCGT_CCS"] := 20.0;
 let f_max["CCGT_CCS"] := 21.0;
 
-# Hydro: installed 35.1 GW (real capacity; reservoir effect via c_p_t)
+# Hydro: installed 35.1 GW (26.325 dam + 8.775 river)
 let f_min["HYDRO_DAM"] := 35.000* 0.75;
 let f_max["HYDRO_DAM"] := 35.100 * 0.75;
-let f_max["HYDRO_RIVER"] := 32.000 * 0.25;
+let f_min["HYDRO_RIVER"] := 32.000 * 0.25;
 let f_max["HYDRO_RIVER"] := 35.100 * 0.25;
 
 # Solar PV (Güneş 52.9 GW)
@@ -102,12 +102,22 @@ let c_p_t["HYDRO_RIVER", 12] := 0.179368648;
 # ----------------------------------------------------------------
 # 3) ELECTRICITY DEMAND — 2035 (GWh/year)
 # ----------------------------------------------------------------
-# Mesken 85.6, Hizmetler 111.5, Sanayi 208.0, Ulaştırma 24.5 TWh
+# Sektörler: Mesken 85.6, Hizmetler 111.5, Sanayi 208.0, Ulaştırma 24.5 TWh
+# (Sektörler toplamı 429.6 TWh)
+#
+# INDUSTRY additionally includes (national table, no extra SECTORS):
+#   Santral iç tüketim 19.7 + Diğer 40.9 + Temiz yakıt üretimi 20.3 = 80.9 TWh
+# → Ulusal tablo "Toplam" ≈ 510.5 TWh (girdi toplamı).
 
 let end_uses_demand_year["ELECTRICITY", "HOUSEHOLDS"] := 85600;
 let end_uses_demand_year["ELECTRICITY", "SERVICES"] := 111500;
-let end_uses_demand_year["ELECTRICITY", "INDUSTRY"] := 208000;
+let end_uses_demand_year["ELECTRICITY", "INDUSTRY"] := 288900;
 let end_uses_demand_year["ELECTRICITY", "TRANSPORTATION"] := 24500;
 
 # Fuel prices: STEPS 2035 (tiered)
 include scenarios/turkey_weo2025_steps_fuel_operations_2035.dat;
+
+include scenarios/turkey_dispatch_capacity_only.dat;
+
+param elec_import_cap_gwh_2035 := (85600 + 111500 + 288900 + 24500) * 1.075 * 0.05;
+let avail["ELECTRICITY"] := elec_import_cap_gwh_2035;

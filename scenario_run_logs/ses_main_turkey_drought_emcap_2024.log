@@ -1,13 +1,13 @@
 
-Presolve eliminates 2790 constraints and 1969 variables.
+Presolve eliminates 2794 constraints and 1969 variables.
 Adjusted problem:
 1007 variables:
 	118 binary variables
 	57 integer variables
 	832 linear variables
-959 constraints, all linear; 5357 nonzeros
+956 constraints, all linear; 4757 nonzeros
 	415 equality constraints
-	544 inequality constraints
+	541 inequality constraints
 1 linear objective; 1 nonzero.
 
 Setting $presolve_inteps < 3.73e-10 could change presolve results.
@@ -19,11 +19,11 @@ Gurobi 12.0.3: Set parameter LogToConsole to value 1
 
 AMPL MP initial flat model has 1007 variables (57 integer, 118 binary);
 Objectives: 1 linear; 
-Constraints:  959 linear;
+Constraints:  956 linear;
 
 AMPL MP final model has 1007 variables (57 integer, 118 binary);
 Objectives: 1 linear; 
-Constraints:  959 linear;
+Constraints:  956 linear;
 
 
 Set parameter InfUnbdInfo to value 1
@@ -35,42 +35,39 @@ Thread count: 10 physical cores, 10 logical processors, using up to 10 threads
 Non-default parameters:
 InfUnbdInfo  1
 
-Optimize a model with 959 rows, 1007 columns and 5357 nonzeros
-Model fingerprint: 0xc22f93d1
+Optimize a model with 956 rows, 1007 columns and 4757 nonzeros
+Model fingerprint: 0x89fcd842
 Variable types: 832 continuous, 175 integer (0 binary)
 Coefficient statistics:
   Matrix range     [2e-03, 3e+05]
   Objective range  [1e+00, 1e+00]
   Bounds range     [4e-01, 1e+08]
-  RHS range        [1e+00, 6e+04]
+  RHS range        [1e+00, 1e+05]
 
 User MIP start did not produce a new incumbent solution
-User MIP start violates constraint R527 by 39.023744292
+User MIP start violates constraint R525 by 39.023744292
 
 Presolve removed 622 rows and 688 columns
-Presolve time: 0.00s
-Presolved: 337 rows, 319 columns, 2255 nonzeros
+Presolve time: 0.01s
+Presolved: 334 rows, 319 columns, 1811 nonzeros
 Variable types: 280 continuous, 39 integer (24 binary)
-Found heuristic solution: objective 30578.728697
+Found heuristic solution: objective 29840.986739
 
-Root relaxation: objective 2.693509e+04, 230 iterations, 0.00 seconds (0.00 work units)
-Another try with MIP start
+Root relaxation: objective 2.635611e+04, 240 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-H    0     0                    26939.229530 26935.0921  0.02%     -    0s
-     0     0 26935.0921    0    1 26939.2295 26935.0921  0.02%     -    0s
-H    0     0                    26935.173324 26935.0921  0.00%     -    0s
+*    0     0               0    26356.112227 26356.1122  0.00%     -    0s
 
-Explored 1 nodes (230 simplex iterations) in 0.01 seconds (0.01 work units)
+Explored 1 nodes (240 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 10 (of 10 available processors)
 
-Solution count 3: 26935.2 26939.2 30578.7 
+Solution count 2: 26356.1 29841 
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective 2.693517332380e+04, best bound 2.693509210265e+04, gap 0.0003%
-Gurobi 12.0.3: optimal solution; objective 26935.17332
-230 simplex iterations
+Best objective 2.635611222686e+04, best bound 2.635611222686e+04, gap 0.0000%
+Gurobi 12.0.3: optimal solution; objective 26356.11223
+240 simplex iterations
 1 branching node
-absmipgap=0.0812212, relmipgap=3.01543e-06
+absmipgap=3.63798e-12, relmipgap=0

@@ -48,10 +48,10 @@ let f_max["CCGT"] := 13.0;
 let f_min["CCGT_CCS"] := 17.5;
 let f_max["CCGT_CCS"] := 18.0;
 
-# Hydro: installed 35.1 GW (real capacity; reservoir effect via c_p_t)
+# Hydro: installed 35.1 GW (26.325 dam + 8.775 river)
 let f_min["HYDRO_DAM"] := 35.000* 0.75;
 let f_max["HYDRO_DAM"] := 35.100 * 0.75;
-let f_max["HYDRO_RIVER"] := 32.000 * 0.25;
+let f_min["HYDRO_RIVER"] := 32.000 * 0.25;
 let f_max["HYDRO_RIVER"] := 35.100 * 0.25;
 
 # Solar PV (Güneş 32.9 GW)
@@ -102,12 +102,27 @@ let c_p_t["HYDRO_RIVER", 12] := 0.179368648;
 # ----------------------------------------------------------------
 # 3) ELECTRICITY DEMAND — 2030 (GWh/year)
 # ----------------------------------------------------------------
-# Mesken 83.1, Hizmetler 114.5, Sanayi 181.1, Ulaştırma 8.5 TWh
+# Sektörler: Mesken 83.1, Hizmetler 114.5, Sanayi 181.1, Ulaştırma 8.5 TWh
+# (Sektörler toplamı 387.3 TWh)
+#
+# INDUSTRY additionally includes non-sector rows from the national table
+# (no new SECTORS set member — aggregated here for SES input):
+#   Santral iç tüketim 20.4 + Diğer 40.0 + Temiz yakıt üretimi 7.6 = 68.0 TWh
+# → Ulusal tablo "Toplam" elektrik tüketimi ≈ 455.3 TWh (girdi toplamı).
+# Model adds transmission/distribution losses on top via Losses[ELECTRICITY,*].
 
 let end_uses_demand_year["ELECTRICITY", "HOUSEHOLDS"] := 83100;
 let end_uses_demand_year["ELECTRICITY", "SERVICES"] := 114500;
-let end_uses_demand_year["ELECTRICITY", "INDUSTRY"] := 181100;
+let end_uses_demand_year["ELECTRICITY", "INDUSTRY"] := 249100;
 let end_uses_demand_year["ELECTRICITY", "TRANSPORTATION"] := 8500;
 
 # Fuel prices: STEPS 2030 (tiered)
 include scenarios/turkey_weo2025_steps_fuel_operations_2030.dat;
+
+# f_min:=0 (yıl dosyasındaki kurulu GW yalnızca f_max); ithalat ≤5% → ses_main.mod electricity_import_cap
+include scenarios/turkey_dispatch_capacity_only.dat;
+
+# İthalat tavanı: talep + kayıp sonrası ~490 TWh → %5 ≈ 24.5 TWh (avail + electricity_import_cap)
+param elec_import_cap_gwh_2030 := (83100 + 114500 + 249100 + 8500) * 1.075 * 0.05;
+let avail["ELECTRICITY"] := elec_import_cap_gwh_2030;
+# let avail["ELECTRICITY"] := 0;  # tam yerli denge testi

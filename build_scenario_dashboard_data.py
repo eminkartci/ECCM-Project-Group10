@@ -213,10 +213,40 @@ def parse_electricity_supply_techs(sets_path: Path):
 
 
 def sum_electricity_supply_gwh(total_output: dict, techs: list) -> float | None:
+    """Yerli ELECTRICITY teknolojilerinin yıllık çıktısı [GWh] (total_output)."""
     if not techs or not total_output:
         return None
     s = sum(float(total_output.get(t, 0) or 0) for t in techs)
     return s if s > 0 else 0.0
+
+
+def compute_electricity_balance_kpis(
+    total_output: dict,
+    elec_supply_techs: list,
+    end_uses_annual: dict[str, float],
+    losses: dict[str, float],
+) -> dict[str, float | None]:
+    """
+    SES denge: yerli üretim + ELECTRICITY kaynağı (ithalat/sınırsız arz) ≈ End_Uses talebi.
+    total_output['ELECTRICITY'] = RESOURCES kümesindeki ithalat [GWh/yıl], teknoloji değil.
+    """
+    gen = sum_electricity_supply_gwh(total_output, elec_supply_techs)
+    imp = float(total_output.get("ELECTRICITY", 0) or 0)
+    end_use = end_uses_annual.get("ELECTRICITY")
+    if not end_use or end_use <= 0:
+        end_use = sum(v for v in end_uses_annual.values() if v and v > 0) or None
+    total_supply = None
+    if gen is not None:
+        total_supply = gen + imp
+    elif imp > 0:
+        total_supply = imp
+    return {
+        "electricityGenerationGWh": gen,
+        "electricityImportGWh": imp if imp > 0 else 0.0,
+        "electricityTotalSupplyGWh": total_supply,
+        "endUseDemandGWh": end_use,
+        "electricityLossesGWh": float(losses.get("ELECTRICITY", 0) or 0),
+    }
 
 
 def parse_turkey_scenario_year_track(folder_name: str) -> tuple[int | None, str | None]:
@@ -394,11 +424,54 @@ def parse_monthly_energy_price(path: Path):
     return rows
 
 
-def parse_end_uses(path: Path):
-    """Annual activity per carrier: sum of absolute period values (GWh per period in model output)."""
+# End_Uses.txt monthly columns are power [GW]; annual energy [GWh] = sum_t |P_t| * period_duration[t].
+DEFAULT_PERIOD_DURATION_H: dict[int, float] = {
+    1: 744,
+    2: 672,
+    3: 744,
+    4: 720,
+    5: 744,
+    6: 720,
+    7: 744,
+    8: 744,
+    9: 720,
+    10: 744,
+    11: 720,
+    12: 744,
+}
+
+
+def parse_period_duration(path: Path) -> dict[int, float]:
+    """Read period_duration from params.txt; fall back to 8760 h/year calendar."""
+    durations = dict(DEFAULT_PERIOD_DURATION_H)
+    if not path.exists():
+        return durations
+    in_block = False
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if line.startswith("param period_duration"):
+            in_block = True
+            continue
+        if not in_block:
+            continue
+        if line.startswith(";"):
+            break
+        parts = line.split()
+        if len(parts) >= 2:
+            try:
+                durations[int(parts[0])] = float(parts[1])
+            except ValueError:
+                continue
+    return durations
+
+
+def parse_end_uses(path: Path, period_duration: dict[int, float] | None = None):
+    """Annual energy per layer [GWh]: sum_t |End_Uses power GW| * period_duration[h]."""
     result = {}
     if not path.exists():
         return result
+    if period_duration is None:
+        period_duration = parse_period_duration(path.parent / "params.txt")
     for raw in path.read_text(encoding="utf-8").splitlines():
         line = raw.strip()
         if not line:
@@ -410,11 +483,13 @@ def parse_end_uses(path: Path):
         if name == "Name":
             continue
         total = 0.0
-        for p in parts[1:]:
+        for period_idx, p in enumerate(parts[1:], start=1):
             try:
-                total += abs(float(p))
+                power_gw = abs(float(p))
             except ValueError:
                 continue
+            hours = period_duration.get(period_idx, 0.0)
+            total += power_gw * hours
         result[name] = total
     return result
 
@@ -575,17 +650,22 @@ def build():
             d, total_cost, total_gwp, total_output, has_metrics, run_error
         )
         cost_breakdown = parse_cost_breakdown(d / "cost_breakdown.txt")
-        end_uses_annual = parse_end_uses(d / "End_Uses.txt")
+        period_duration = parse_period_duration(d / "params.txt")
+        end_uses_annual = parse_end_uses(d / "End_Uses.txt", period_duration)
         sankey_links = parse_sankey_csv(d / "sankey" / "input2sankey.csv")
         electricity_sankey_supply_gwh = aggregate_sankey_supply_to_elec_gwh(sankey_links)
-        elec_row = total_output.get("ELECTRICITY")
         elec_supply_techs = parse_electricity_supply_techs(d / "sets.txt")
-        elec_supply = sum_electricity_supply_gwh(total_output, elec_supply_techs)
-        denom = None
-        if elec_row is not None and elec_row > 0:
-            denom = elec_row
-        elif elec_supply is not None and elec_supply > 0:
-            denom = elec_supply
+        losses = parse_losses(d / "losses.txt")
+        elec_kpi = compute_electricity_balance_kpis(
+            total_output, elec_supply_techs, end_uses_annual, losses
+        )
+        end_use_demand_gwh = elec_kpi["endUseDemandGWh"]
+        elec_total_supply = elec_kpi["electricityTotalSupplyGWh"]
+        elec_gen = elec_kpi["electricityGenerationGWh"]
+        elec_import = elec_kpi["electricityImportGWh"]
+        elec_losses_gwh = elec_kpi["electricityLossesGWh"]
+
+        denom = end_use_demand_gwh if end_use_demand_gwh and end_use_demand_gwh > 0 else elec_total_supply
         cost_intensity = None
         gwp_intensity = None
         if solved and denom and denom > 0 and total_cost is not None and total_gwp is not None:
@@ -595,17 +675,9 @@ def build():
         scenario_year, scenario_track = parse_turkey_scenario_year_track(d.name)
         installed_by_fuel = load_installed_capacity_by_fuel(d, d / "f_mult.txt", d / "sets.txt")
 
-        losses = parse_losses(d / "losses.txt")
-        elec_losses_gwh = losses.get("ELECTRICITY", 0.0)
-        elec_demand_gwh = None
-        if denom is not None and denom > 0:
-            elec_demand_gwh = denom - elec_losses_gwh
-            if elec_demand_gwh <= 0:
-                elec_demand_gwh = denom
-
         energy_price_eur_per_mwh = None
-        if solved and total_cost is not None and elec_demand_gwh and elec_demand_gwh > 0:
-            energy_price_eur_per_mwh = total_cost / elec_demand_gwh * 1000.0
+        if solved and total_cost is not None and end_use_demand_gwh and end_use_demand_gwh > 0:
+            energy_price_eur_per_mwh = total_cost / end_use_demand_gwh * 1000.0
 
         total_emissions_kt_co2 = total_gwp if solved else None
         monthly_energy_price = parse_monthly_energy_price(d / "monthly_energy_price.txt")
@@ -634,13 +706,15 @@ def build():
             "expected": False,
             "label": d.name,
             "kpi": {
-                "electricityOutputGWh": elec_row,
-                "electricitySupplyGWh": elec_supply,
-                "electricityDemandGWh": elec_demand_gwh,
+                "electricityGenerationGWh": elec_gen,
+                "electricityImportGWh": elec_import,
+                "electricityTotalSupplyGWh": elec_total_supply,
+                "electricitySupplyGWh": elec_total_supply,
+                "electricityDemandGWh": end_use_demand_gwh,
                 "electricityLossesGWh": elec_losses_gwh,
                 "costPerGWh": cost_intensity,
                 "gwpPerGWh": gwp_intensity,
-                "endUseDemandGWh": sum(end_uses_annual.values()) if end_uses_annual else None,
+                "endUseDemandGWh": end_use_demand_gwh,
                 "energyPriceEurPerMwh": energy_price_eur_per_mwh,
                 "totalEmissionsKtCO2": total_emissions_kt_co2,
             },
@@ -674,7 +748,9 @@ def build():
                 "expected": True,
                 "label": label,
                 "kpi": {
-                    "electricityOutputGWh": None,
+                    "electricityGenerationGWh": None,
+                    "electricityImportGWh": None,
+                    "electricityTotalSupplyGWh": None,
                     "electricitySupplyGWh": None,
                     "electricityDemandGWh": None,
                     "electricityLossesGWh": None,

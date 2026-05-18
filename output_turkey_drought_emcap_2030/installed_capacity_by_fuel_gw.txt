@@ -1,12 +1,12 @@
 fuel_group	installed_GW
 nuclear	5.000000
-natural_gas	30.000000
+natural_gas	31.500000
 coal	22.500000
-hydro_dam	26.260000
-hydro_river	8.500000
-solar_pv	32.900001
+hydro_dam	26.700000
+hydro_river	9.350000
+solar_pv	35.299998
 wind	19.299000
 geothermal	1.704000
 biomass	3.420000
 other_electric	3.420000
-electricity_techs_total_GW	149.583001
+electricity_techs_total_GW	154.772998

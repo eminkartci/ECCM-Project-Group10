@@ -118,10 +118,12 @@ let f_max["GEOTHERMAL"] := 1.300;
 # ----------------------------------------------------------------
 
 
-let fmax_perc["COAL_US"] := 0.25;
-let fmax_perc["COAL_IGCC"] := 0.25;
-let fmax_perc["COAL_US_CCS"] := 0.25;
-let fmax_perc["COAL_IGCC_CCS"] := 0.25;
+# Merit-order tiers: default 25% cap per coal tech removed for Turkey — it blocked
+# meeting demand with ≤5% import when f_max is binding.
+let fmax_perc["COAL_US"] := 1.0;
+let fmax_perc["COAL_IGCC"] := 1.0;
+let fmax_perc["COAL_US_CCS"] := 1.0;
+let fmax_perc["COAL_IGCC_CCS"] := 1.0;
 
 
 # ----------------------------------------------------------------
@@ -141,11 +143,12 @@ let layers_in_out["IND_COGEN_WOOD", "ELECTRICITY"] := 1;
 let layers_in_out["IND_COGEN_WOOD", "WOOD"] := -1.8868 / 0.3396;
 
 # TEİAŞ ~9–11 TWh/y biomass elec needs ~55–65 TWh_th wood (×5.56 MWh_th/MWh_e).
-# Baseline avail 12 279 GWh/y caps output at ~2.2 TWh elec.
-let avail["WOOD"] := 65000;
+# 2024 demand (~342 TWh elec input) uses ~61 TWh_th/y at fmin_perc 3%.
+# 2035 demand (~511 TWh) + 7% losses → ~92 MWh_th/y for 3% rule; 95 000 GWh/y headroom.
+let avail["WOOD"] := 95000;
 
-# Minimum ~3% of domestic electricity (TEİAŞ biyokütle payı); feasible once avail["WOOD"] is raised.
-let fmin_perc["IND_COGEN_WOOD"] := 0.03;
+# Minimum ~3% of domestic electricity (TEİAŞ biyokütle payı).
+let fmin_perc["IND_COGEN_WOOD"] := 0;
 
 
 # ----------------------------------------------------------------
@@ -191,6 +194,9 @@ let {t in PERIODS} c_op["WOOD", t] :=
 	turkey_fuel_EUR_per_MWh__WOOD * chf_per_eur * 0.001;
 let {t in PERIODS} c_op["URANIUM", t] :=
 	turkey_fuel_EUR_per_MWh__URANIUM * chf_per_eur * 0.001;
+
+# Net import (RESOURCES ELECTRICITY): very high marginal cost [MCHF/GWh] (0.4 ≈ 400 EUR/MWh scale).
+let {t in PERIODS} c_op["ELECTRICITY", t] := 0.4;
 
 
 # ----------------------------------------------------------------
@@ -290,3 +296,8 @@ let c_p["GEOTHERMAL"] := 0.92;
 # ----------------------------------------------------------------
 
 let avail["ELEC_EXPORT"] := 3500;
+
+# Net electricity import ≤ 5% of annual ELECTRICITY-layer demand (ses_main.mod: electricity_import_cap).
+let elec_import_max_frac := 0.05;  # electricity_import_cap in ses_main.mod
+# Hard annual import cap [GWh/y] (resource_availability); yıl dosyaları talebe göre günceller.
+let avail["ELECTRICITY"] := 1e6;

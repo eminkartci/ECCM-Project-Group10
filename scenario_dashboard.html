@@ -109,12 +109,10 @@
         </div>
         <div class="card__body" id="card-energy-body">
           <p class="card__desc">
-            <strong>Talep (taşıyıcı):</strong> <code>End_Uses.txt</code> — dönem sütunlarının mutlak değerleri toplanır.
-            Bu dosya yalnızca koşu betiği yazdırdıysa oluşur; <code>export_standard_outputs.run</code> ile tüm
-            <code>output_*</code> klasörlerine eklenmiştir (yeniden çalıştırmanız gerekir).
-            <strong>Üretim:</strong> <code>total_output.txt</code> teknoloji başına yıllık çıktı.
-            <strong>Elektrik üretimi özeti:</strong> <code>sets.txt</code> içindeki ELECTRICITY teknoloji kümesi ile
-            <code>total_output.txt</code> toplanır (tek <code>ELECTRICITY</code> satırına bağlı değildir).
+            <strong>Talep:</strong> <code>End_Uses.txt</code> → <code>ELECTRICITY</code> [GW×saat→GWh].
+            <strong>Yerli üretim:</strong> <code>sets.txt</code> ELECTRICITY teknolojileri, <code>total_output.txt</code>.
+            <strong>İthalat:</strong> <code>total_output.txt</code> içindeki <code>ELECTRICITY</code> kaynak satırı (kapasite açığı).
+            <strong>Toplam arz</strong> = yerli + ithalat ≈ talep (katman dengesi).
           </p>
           <div id="energy-summary-table" class="table-scroll table-scroll--card"></div>
           <div class="chart-block">

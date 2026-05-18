@@ -4,14 +4,11 @@ Wind,Elec,37.57,Wind,#FFA500,TWh
 Hydro Dams,Elec,52.27,Hydro Dam,#00CED1,TWh
 Hydro River,Elec,17.64,Hydro River,#0000FF,TWh
 Coal,Elec,124.51,Coal,#A0522D,TWh
-Coal CCS,Elec,24.28,Coal,#A0522D,TWh
+Coal CCS,Elec,35.31,Coal,#A0522D,TWh
 Solar,Elec,23.91,Solar,#FFFF00,TWh
 Geothermal,Elec,9.35,Geothermal,#FF0000,TWh
-Biomass,Elec,11.03,Biomass,#CD853F,TWh
 Elec,Exp & Loss,25.73,Electricity,#00BFFF,TWh
 Elec,Elec: HOUSEHOLDS,85.46,Electricity,#00BFFF,TWh
 Elec,Elec: SERVICES,94.30,Electricity,#00BFFF,TWh
 Elec,Elec: INDUSTRY,150.30,Electricity,#00BFFF,TWh
 Elec,Elec: TRANSPORTATION,11.79,Electricity,#00BFFF,TWh
-CHP,Elec,11.03,Electricity,#00BFFF,TWh
-CHP,Heat HT,0.00,Heat HT,#DC143C,TWh

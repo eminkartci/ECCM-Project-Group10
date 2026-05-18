@@ -109,10 +109,10 @@
         </div>
         <div class="card__body" id="card-energy-body">
           <p class="card__desc">
-            <strong>Talep:</strong> <code>End_Uses.txt</code> → <code>ELECTRICITY</code> [GW×saat→GWh].
-            <strong>Yerli üretim:</strong> <code>sets.txt</code> ELECTRICITY teknolojileri, <code>total_output.txt</code>.
-            <strong>İthalat:</strong> <code>total_output.txt</code> içindeki <code>ELECTRICITY</code> kaynak satırı (kapasite açığı).
-            <strong>Toplam arz</strong> = yerli + ithalat ≈ talep (katman dengesi).
+            <strong>Talep:</strong> <code>End_Uses.txt</code> → <code>ELECTRICITY</code> (kayıplı sistem talebi).
+            <strong>Kayıp:</strong> <code>losses.txt</code> → <code>ELECTRICITY</code>.
+            <strong>Tam kullanılan:</strong> talep − kayıp (NEP/son kullanıcı tüketimi).
+            <strong>Yerli üretim / ithalat / toplam arz:</strong> <code>total_output.txt</code>; toplam arz ≈ talep.
           </p>
           <div id="energy-summary-table" class="table-scroll table-scroll--card"></div>
           <div class="chart-block">

@@ -1397,16 +1397,29 @@ function formatKpiGwh(value) {
   return formatNumber(value);
 }
 
+function resolveElectricityDemandGwh(scenario) {
+  const demand = scenario.kpi?.endUseDemandGWh;
+  if (demand != null && Number.isFinite(demand)) return demand;
+  const fromEndUses = scenario.endUsesAnnual?.ELECTRICITY;
+  if (fromEndUses != null && Number.isFinite(fromEndUses) && fromEndUses > 0) return fromEndUses;
+  const sum = sumObjectValues(scenario.endUsesAnnual || {});
+  return sum > 0 ? sum : null;
+}
+
+function resolveElectricityNetDemandGwh(scenario) {
+  const demand = resolveElectricityDemandGwh(scenario);
+  const losses = scenario.kpi?.electricityLossesGWh;
+  if (demand == null || !Number.isFinite(demand)) return null;
+  if (losses == null || !Number.isFinite(losses)) return null;
+  return Math.max(0, demand - losses);
+}
+
 function renderEnergySummaryTable(active) {
   const rows = active
     .map((s) => {
-      const demand = s.kpi?.endUseDemandGWh;
-      const demandCell =
-        demand != null && Number.isFinite(demand)
-          ? formatNumber(demand)
-          : sumObjectValues(s.endUsesAnnual) > 0
-            ? formatNumber(sumObjectValues(s.endUsesAnnual))
-            : "—";
+      const demand = resolveElectricityDemandGwh(s);
+      const losses = s.kpi?.electricityLossesGWh;
+      const netUsed = resolveElectricityNetDemandGwh(s);
       const gen = s.kpi?.electricityGenerationGWh;
       const imp = s.kpi?.electricityImportGWh;
       const total = s.kpi?.electricityTotalSupplyGWh;
@@ -1414,7 +1427,9 @@ function renderEnergySummaryTable(active) {
         <tr>
           <td>${s.label || s.folderName}</td>
           <td>${solveStatusLabel(s)}</td>
-          <td>${demandCell}</td>
+          <td>${formatKpiGwh(demand)}</td>
+          <td>${formatKpiGwh(losses)}</td>
+          <td>${formatKpiGwh(netUsed)}</td>
           <td>${formatKpiGwh(gen)}</td>
           <td>${formatKpiGwh(imp)}</td>
           <td>${formatKpiGwh(total)}</td>
@@ -1428,7 +1443,9 @@ function renderEnergySummaryTable(active) {
         <tr>
           <th>Senaryo</th>
           <th>Durum</th>
-          <th>Talep (End_Uses, GWh)</th>
+          <th>Talep (GWh)</th>
+          <th>Kayıp (GWh)</th>
+          <th>Tam kullanılan (GWh)</th>
           <th>Yerli üretim (GWh)</th>
           <th>İthalat / dış arz (GWh)</th>
           <th>Toplam arz (GWh)</th>
@@ -1437,10 +1454,12 @@ function renderEnergySummaryTable(active) {
       <tbody>${rows}</tbody>
     </table>
     <p class="muted">
-      <strong>Talep:</strong> <code>End_Uses.txt</code> → <code>ELECTRICITY</code>, aylık güç [GW]×<code>period_duration</code> [saat].
-      <strong>Yerli üretim:</strong> <code>TECHNOLOGIES_OF_END_USES_TYPE[ELECTRICITY]</code> teknolojileri, <code>total_output.txt</code>.
-      <strong>İthalat:</strong> aynı dosyada <code>ELECTRICITY</code> <em>kaynak</em> satırı (kapasite yetmediğinde denge için).
-      <strong>Toplam arz</strong> = yerli + ithalat; katman dengesinde talebe eşit olmalıdır.
+      <strong>Talep:</strong> <code>End_Uses.txt</code> → <code>ELECTRICITY</code> (sistem ihtiyacı, kayıplar dahil), aylık güç [GW]×<code>period_duration</code> [saat].
+      <strong>Kayıp:</strong> <code>losses.txt</code> → <code>ELECTRICITY</code> (iletim kaybı).
+      <strong>Tam kullanılan:</strong> talep − kayıp ≈ <code>end_uses_demand_year</code> toplamı (NEP ulusal tüketim / son kullanıcı enerji hizmeti).
+      <strong>Yerli üretim:</strong> <code>TECHNOLOGIES_OF_END_USES_TYPE[ELECTRICITY]</code>, <code>total_output.txt</code>.
+      <strong>İthalat:</strong> <code>total_output.txt</code> içindeki <code>ELECTRICITY</code> kaynak satırı.
+      <strong>Toplam arz</strong> = yerli + ithalat ≈ talep.
     </p>
   `;
 }

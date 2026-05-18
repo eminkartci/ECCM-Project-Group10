@@ -15,7 +15,8 @@ INSTALLED_CAPACITY_FUEL_ORDER = [
     "nuclear",
     "natural_gas",
     "coal",
-    "hydro",
+    "hydro_dam",
+    "hydro_river",
     "solar_pv",
     "wind",
     "geothermal",
@@ -26,7 +27,8 @@ INSTALLED_CAPACITY_FUEL_LABELS_TR = {
     "nuclear": "Nükleer",
     "natural_gas": "Doğal gaz (CCGT)",
     "coal": "Kömür",
-    "hydro": "Hidro",
+    "hydro_dam": "Hidro (baraj)",
+    "hydro_river": "Hidro (nehir)",
     "solar_pv": "Güneş (PV)",
     "wind": "Rüzgar",
     "geothermal": "Jeotermal",
@@ -54,6 +56,105 @@ def read_run_error(path: Path) -> str | None:
         return None
     text = err.read_text(encoding="utf-8", errors="replace").strip()
     return text or None
+
+
+LOG_ROOT = ROOT / "scenario_run_logs"
+SOLVER_FAIL_LINE = re.compile(
+    r"cannot hold|infeasible|Infeasible|unbounded|Unbounded|no solution|No solution",
+    re.IGNORECASE,
+)
+
+
+def log_path_for_output_folder(folder_name: str) -> Path | None:
+    """output_turkey_reference_2035 -> scenario_run_logs/ses_main_turkey_reference_2035.log"""
+    if not folder_name.startswith("output_"):
+        return None
+    log = LOG_ROOT / f"ses_main_{folder_name[len('output_'):]}.log"
+    return log if log.exists() else None
+
+
+def extract_solver_failure_lines(log_text: str) -> list[str]:
+    return [ln.strip() for ln in log_text.splitlines() if SOLVER_FAIL_LINE.search(ln)]
+
+
+def build_run_error_from_log(log_path: Path, folder_name: str, run_hint: str | None = None) -> str:
+    log_text = log_path.read_text(encoding="utf-8", errors="replace")
+    fail_lines = extract_solver_failure_lines(log_text)
+    parts = [
+        "Model feasible değil veya çözücü optimal çözüm üretmedi.",
+        f"Çıktı klasörü: {folder_name}/",
+    ]
+    if run_hint:
+        parts.append(f"Betik: {run_hint}")
+    parts.append("")
+    parts.append("--- Çözücü / presolve ---")
+    if fail_lines:
+        parts.extend(fail_lines[-20:])
+    else:
+        parts.append("(infeasibility satırı bulunamadı)")
+    parts.append("")
+    parts.append("--- Günlüğün son 80 satırı ---")
+    tail = [ln.rstrip() for ln in log_text.splitlines()[-80:]]
+    parts.extend(tail)
+    return "\n".join(parts).strip()
+
+
+def metrics_indicate_failed_run(total_cost, total_gwp, total_output: dict) -> bool:
+    """Failed AMPL runs still export scenario_metrics.txt with zeros."""
+    del total_output  # ELECTRICITY row in total_output is always 0 (layer, not tech)
+    if total_cost is None or total_gwp is None:
+        return True
+    return total_cost == 0 and total_gwp == 0
+
+
+def resolve_scenario_solve_status(
+    out_dir: Path,
+    total_cost,
+    total_gwp,
+    total_output: dict,
+    has_metrics: bool,
+    run_error: str | None,
+):
+    """Return (solved, status_reason, status_kind, run_error). status_kind: ok | infeasible | missing."""
+    folder_name = out_dir.name
+    log_path = log_path_for_output_folder(folder_name)
+
+    if run_error:
+        summary = extract_solver_failure_lines(run_error)
+        reason = summary[-1] if summary else "Model çözülmedi (scenario_run_error.txt)"
+        kind = "infeasible" if summary else "missing"
+        return False, reason, kind, run_error
+
+    if not has_metrics:
+        if log_path:
+            run_error = build_run_error_from_log(log_path, folder_name)
+            summary = extract_solver_failure_lines(run_error)
+            reason = summary[-1] if summary else "scenario_metrics.txt yok"
+            return False, reason, "infeasible" if summary else "missing", run_error
+        return False, "scenario_metrics.txt not found — model run did not export metrics", "missing", None
+
+    if metrics_indicate_failed_run(total_cost, total_gwp, total_output):
+        if log_path:
+            run_error = build_run_error_from_log(
+                log_path,
+                folder_name,
+                run_hint=f"scenarios/{folder_name[len('output_'):]}/ses_main_{folder_name[len('output_'):]}.run",
+            )
+        else:
+            run_error = (
+                "TotalCost ve TotalGWP sıfır (veya elektrik çıktısı yok); "
+                "muhtemelen başarısız koşunun eski çıktısı."
+            )
+        summary = extract_solver_failure_lines(run_error) if run_error else []
+        if summary:
+            reason = summary[-1]
+            kind = "infeasible"
+        else:
+            reason = "Metrikler sıfır — model muhtemelen çözülmedi"
+            kind = "infeasible"
+        return False, reason, kind, run_error
+
+    return True, "ok", "ok", None
 
 
 def parse_metrics(path: Path):
@@ -150,19 +251,21 @@ def aggregate_installed_capacity_from_fmult(
     nuclear = gv("NUCLEAR")
     natural_gas = gv("CCGT") + gv("CCGT_CCS")
     coal = gv("COAL_US") + gv("COAL_IGCC") + gv("COAL_US_CCS") + gv("COAL_IGCC_CCS")
-    hydro = gv("HYDRO_DAM") + gv("NEW_HYDRO_DAM") + gv("HYDRO_RIVER") + gv("NEW_HYDRO_RIVER")
+    hydro_dam = gv("HYDRO_DAM") + gv("NEW_HYDRO_DAM")
+    hydro_river = gv("HYDRO_RIVER") + gv("NEW_HYDRO_RIVER")
     solar_pv = gv("PV")
     wind = gv("WIND")
     geothermal = gv("GEOTHERMAL")
     biomass = gv("IND_COGEN_WOOD")
     elec_total = sum(gv(t) for t in electricity_techs)
-    mapped_core = nuclear + natural_gas + coal + hydro + solar_pv + wind + geothermal
+    mapped_core = nuclear + natural_gas + coal + hydro_dam + hydro_river + solar_pv + wind + geothermal
     other_electric = max(0.0, elec_total - mapped_core)
     out = {
         "nuclear": nuclear,
         "natural_gas": natural_gas,
         "coal": coal,
-        "hydro": hydro,
+        "hydro_dam": hydro_dam,
+        "hydro_river": hydro_river,
         "solar_pv": solar_pv,
         "wind": wind,
         "geothermal": geothermal,
@@ -180,6 +283,11 @@ def load_installed_capacity_by_fuel(
     if p.exists():
         raw = parse_two_col(p)
     raw.pop("electricity_techs_total_GW", None)
+    uses_legacy_hydro = "hydro" in raw and "hydro_dam" not in raw and "hydro_river" not in raw
+    if uses_legacy_hydro:
+        fm = parse_two_col(f_mult_path)
+        elc = parse_electricity_supply_techs(sets_path)
+        return aggregate_installed_capacity_from_fmult(fm, elc)
     if raw and any(abs(float(v or 0)) > 1e-15 for v in raw.values()):
         return {k: float(raw.get(k, 0) or 0) for k in INSTALLED_CAPACITY_FUEL_ORDER}
     fm = parse_two_col(f_mult_path)
@@ -461,17 +569,11 @@ def build():
         total_cost, total_gwp = parse_metrics(metrics_file)
         run_error = read_run_error(d)
         has_metrics = metrics_file.exists()
-        solved = has_metrics and total_cost is not None and total_gwp is not None
-        if not has_metrics:
-            reason = "scenario_metrics.txt not found — model run did not export metrics"
-            if run_error:
-                reason += " (scenario_run_error.txt present)"
-        elif not solved:
-            reason = "metrics file exists but values are missing/invalid"
-        else:
-            reason = "ok"
 
         total_output = parse_two_col(d / "total_output.txt")
+        solved, reason, status_kind, run_error = resolve_scenario_solve_status(
+            d, total_cost, total_gwp, total_output, has_metrics, run_error
+        )
         cost_breakdown = parse_cost_breakdown(d / "cost_breakdown.txt")
         end_uses_annual = parse_end_uses(d / "End_Uses.txt")
         sankey_links = parse_sankey_csv(d / "sankey" / "input2sankey.csv")
@@ -522,6 +624,7 @@ def build():
             "electricitySankeySupplyGwh": electricity_sankey_supply_gwh,
             "solved": solved,
             "statusReason": reason,
+            "statusKind": status_kind,
             "runError": run_error,
             "scenarioYear": scenario_year,
             "scenarioTrack": scenario_track,
@@ -561,6 +664,7 @@ def build():
                 "electricitySankeySupplyGwh": {},
                 "solved": False,
                 "statusReason": "output folder not found",
+                "statusKind": "missing",
                 "runError": None,
                 "scenarioYear": _yr,
                 "scenarioTrack": _tr,
@@ -591,6 +695,7 @@ def build():
                 "label": label,
                 "solved": scenario["solved"],
                 "statusReason": scenario["statusReason"],
+                "statusKind": scenario.get("statusKind", "ok" if scenario["solved"] else "missing"),
                 "runError": scenario.get("runError"),
             }
         )

@@ -11,9 +11,12 @@ printf "%s\t%.6f\n", "natural_gas", sum {i in TECHNOLOGIES} (if i = "CCGT" or i 
 printf "%s\t%.6f\n", "coal",
   sum {i in TECHNOLOGIES}
     (if i = "COAL_US" or i = "COAL_IGCC" or i = "COAL_US_CCS" or i = "COAL_IGCC_CCS" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
-printf "%s\t%.6f\n", "hydro",
+printf "%s\t%.6f\n", "hydro_dam",
   sum {i in TECHNOLOGIES}
-    (if i = "HYDRO_DAM" or i = "NEW_HYDRO_DAM" or i = "HYDRO_RIVER" or i = "NEW_HYDRO_RIVER" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
+    (if i = "HYDRO_DAM" or i = "NEW_HYDRO_DAM" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
+printf "%s\t%.6f\n", "hydro_river",
+  sum {i in TECHNOLOGIES}
+    (if i = "HYDRO_RIVER" or i = "NEW_HYDRO_RIVER" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
 printf "%s\t%.6f\n", "solar_pv", sum {i in TECHNOLOGIES} (if i = "PV" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
 printf "%s\t%.6f\n", "wind", sum {i in TECHNOLOGIES} (if i = "WIND" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");
 printf "%s\t%.6f\n", "geothermal", sum {i in TECHNOLOGIES} (if i = "GEOTHERMAL" then F_Mult[i] else 0) >> (OUTPUT_DIR & "/installed_capacity_by_fuel_gw.txt");

@@ -93,8 +93,8 @@ let f_max["CCGT_CCS"] := 16.0;
 # Hydro
 let f_min["HYDRO_DAM"] := 21.886;
 let f_max["HYDRO_DAM"] := 30.000;
-let f_min["HYDRO_RIVER"] := 10.421;
-let f_max["HYDRO_RIVER"] := 15.000;
+let f_min["HYDRO_RIVER"] := 8.421;
+let f_max["HYDRO_RIVER"] := 12.000;
 
 # Solar PV
 let f_min["PV"] := 19.615;
@@ -117,10 +117,6 @@ let f_max["GEOTHERMAL"] := 1.300;
 # 3) LOCK UNUSED TECHNOLOGIES
 # ----------------------------------------------------------------
 
-let f_min["NEW_HYDRO_DAM"] := 0;
-let f_min["NEW_HYDRO_RIVER"] := 0;
-let f_max["NEW_HYDRO_DAM"] := 0;
-let f_max["NEW_HYDRO_RIVER"] := 0;
 
 let fmax_perc["COAL_US"] := 0.25;
 let fmax_perc["COAL_IGCC"] := 0.25;

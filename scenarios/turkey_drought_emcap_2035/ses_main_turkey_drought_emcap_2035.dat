@@ -16,4 +16,4 @@ include scenarios/turkey_drought_2035/ses_main_turkey_drought_2035.dat;
 # ----------------------------------------------------------------
 # EMISSION CAP — 25 % reduction from Drought-2035 baseline
 # ----------------------------------------------------------------
-let gwp_limit := 50600;
+let gwp_limit := 100000; ## MIN FEASIBLE

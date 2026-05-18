@@ -1,13 +1,13 @@
 
-Presolve eliminates 2809 constraints and 1986 variables.
+Presolve eliminates 2775 constraints and 1943 variables.
 Adjusted problem:
-990 variables:
+1033 variables:
 	118 binary variables
-	55 integer variables
-	817 linear variables
-940 constraints, all linear; 5032 nonzeros
-	424 equality constraints
-	516 inequality constraints
+	57 integer variables
+	858 linear variables
+974 constraints, all linear; 5530 nonzeros
+	429 equality constraints
+	545 inequality constraints
 1 linear objective; 1 nonzero.
 
 Setting $presolve_inteps < 3.73e-10 could change presolve results.
@@ -17,13 +17,13 @@ Setting $presolve_fixeps >= 1.01e-13 could change presolve results.
 Gurobi 12.0.3: Set parameter LogToConsole to value 1
   tech:outlev = 1
 
-AMPL MP initial flat model has 990 variables (55 integer, 118 binary);
+AMPL MP initial flat model has 1033 variables (57 integer, 118 binary);
 Objectives: 1 linear; 
-Constraints:  940 linear;
+Constraints:  974 linear;
 
-AMPL MP final model has 990 variables (55 integer, 118 binary);
+AMPL MP final model has 1033 variables (57 integer, 118 binary);
 Objectives: 1 linear; 
-Constraints:  940 linear;
+Constraints:  974 linear;
 
 
 Set parameter InfUnbdInfo to value 1
@@ -35,39 +35,42 @@ Thread count: 10 physical cores, 10 logical processors, using up to 10 threads
 Non-default parameters:
 InfUnbdInfo  1
 
-Optimize a model with 940 rows, 990 columns and 5032 nonzeros
-Model fingerprint: 0xf80b4639
-Variable types: 817 continuous, 173 integer (0 binary)
+Optimize a model with 974 rows, 1033 columns and 5530 nonzeros
+Model fingerprint: 0x18df68cd
+Variable types: 858 continuous, 175 integer (0 binary)
 Coefficient statistics:
   Matrix range     [2e-03, 3e+05]
   Objective range  [1e+00, 1e+00]
-  Bounds range     [9e-01, 1e+08]
+  Bounds range     [4e-01, 1e+08]
   RHS range        [1e+00, 6e+04]
 
 User MIP start did not produce a new incumbent solution
-User MIP start violates constraint R499 by 49.041095890
+User MIP start violates constraint R528 by 49.041095890
 
-Presolve removed 681 rows and 732 columns
+Presolve removed 635 rows and 701 columns
 Presolve time: 0.00s
-Presolved: 259 rows, 258 columns, 1746 nonzeros
-Variable types: 233 continuous, 25 integer (12 binary)
+Presolved: 339 rows, 332 columns, 2367 nonzeros
+Variable types: 293 continuous, 39 integer (24 binary)
+Found heuristic solution: objective 43872.626817
 
-Root relaxation: infeasible, 67 iterations, 0.00 seconds (0.00 work units)
+Root relaxation: objective 4.004842e+04, 268 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-     0     0 infeasible    0               - infeasible      -     -    0s
+     0     0 40048.4150    0    1 43872.6268 40048.4150  8.72%     -    0s
+Another try with MIP start
+H    0     0                    41176.167285 40048.4150  2.74%     -    0s
+H    0     0                    40048.464436 40048.4150  0.00%     -    0s
 
-Explored 1 nodes (67 simplex iterations) in 0.00 seconds (0.01 work units)
+Explored 1 nodes (268 simplex iterations) in 0.01 seconds (0.01 work units)
 Thread count was 10 (of 10 available processors)
 
-Solution count 0
+Solution count 3: 40048.5 41176.2 43872.6 
 
-Model is infeasible
-Best objective -, best bound -, gap -
-Gurobi 12.0.3: infeasible problem
-67 simplex iterations
+Optimal solution found (tolerance 1.00e-04)
+Best objective 4.004846443610e+04, best bound 4.004841500727e+04, gap 0.0001%
+Gurobi 12.0.3: optimal solution; objective 40048.46444
+268 simplex iterations
 1 branching node
-
-suffix dunbdd OUT;
+absmipgap=0.0494288, relmipgap=1.23423e-06

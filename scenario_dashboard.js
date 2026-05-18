@@ -42,7 +42,8 @@ const DEFAULT_INSTALLED_FUEL_ORDER = [
   "nuclear",
   "natural_gas",
   "coal",
-  "hydro",
+  "hydro_dam",
+  "hydro_river",
   "solar_pv",
   "wind",
   "geothermal",
@@ -54,7 +55,8 @@ const DEFAULT_INSTALLED_FUEL_LABELS = {
   nuclear: "Nükleer",
   natural_gas: "Doğal gaz (CCGT)",
   coal: "Kömür",
-  hydro: "Hidro",
+  hydro_dam: "Hidro (baraj)",
+  hydro_river: "Hidro (nehir)",
   solar_pv: "Güneş (PV)",
   wind: "Rüzgar",
   geothermal: "Jeotermal",
@@ -67,6 +69,7 @@ const INSTALLED_FUEL_SEGMENT_COLORS = [
   "#f59e0b",
   "#44403c",
   "#0ea5e9",
+  "#0284c7",
   "#eab308",
   "#22c55e",
   "#dc2626",
@@ -305,15 +308,84 @@ function sumObjectValues(obj) {
   return Object.values(obj).reduce((a, b) => a + (Number(b) || 0), 0);
 }
 
+const SOLVER_FAIL_RE =
+  /cannot hold|infeasible|Infeasible|unbounded|Unbounded|no solution|No solution/i;
+
+function extractSolverFailureSummary(runError) {
+  if (!runError) return null;
+  const lines = runError.split(/\r?\n/).map((l) => l.trim()).filter((l) => SOLVER_FAIL_RE.test(l));
+  return lines.length ? lines[lines.length - 1] : null;
+}
+
+function metricsIndicateFailedRun(totalCost, totalGwp) {
+  if (totalCost == null || totalGwp == null) return true;
+  return totalCost === 0 && totalGwp === 0;
+}
+
+function solveStatusLabel(scenario) {
+  if (scenario.solved) return "Çözüldü";
+  if (scenario.statusKind === "infeasible") return "Feasible değil";
+  return "Çözüm yok";
+}
+
+function solveStatusReasonDisplay(scenario) {
+  if (scenario.solved) return "ok";
+  const fromLog = extractSolverFailureSummary(scenario.runError);
+  if (fromLog) return fromLog;
+  return scenario.statusReason || "bilinmiyor";
+}
+
+/** Reconcile solved flag when metrics are zero placeholders from a failed AMPL run. */
+function normalizeScenarioSolveStatus(scenario) {
+  if (!scenario) return scenario;
+  if (scenario.solved && metricsIndicateFailedRun(scenario.totalCost, scenario.totalGwp)) {
+    scenario.solved = false;
+    scenario.statusKind = "infeasible";
+    scenario.statusReason =
+      scenario.statusReason ||
+      "TotalCost/TotalGWP sıfır — model muhtemelen çözülmedi (başarısız koşu çıktısı)";
+  }
+  if (!scenario.solved) {
+    const summary = extractSolverFailureSummary(scenario.runError);
+    if (summary) {
+      scenario.statusKind = "infeasible";
+      if (!scenario.statusReason || scenario.statusReason === "ok") {
+        scenario.statusReason = summary;
+      }
+    } else if (!scenario.statusKind) {
+      scenario.statusKind = "missing";
+    }
+  } else if (!scenario.statusKind) {
+    scenario.statusKind = "ok";
+  }
+  return scenario;
+}
+
+function normalizeAllScenarioSolveStatuses() {
+  scenarios = scenarios.map(normalizeScenarioSolveStatus);
+  expectedScenarios = expectedScenarios.map((row) => {
+    const full = scenarios.find((s) => s.folderName === row.folderName);
+    if (!full) return normalizeScenarioSolveStatus({ ...row });
+    return {
+      ...row,
+      solved: full.solved,
+      statusReason: full.statusReason,
+      statusKind: full.statusKind,
+      runError: full.runError
+    };
+  });
+}
+
 function loadFromPrecomputedData() {
   const payload = window.SCENARIO_DASHBOARD_DATA;
   if (!payload || !Array.isArray(payload.scenarios) || payload.scenarios.length === 0) {
     return false;
   }
 
-  scenarios = payload.scenarios;
+  scenarios = payload.scenarios.map(normalizeScenarioSolveStatus);
   enrichScenariosElectricitySankeySupply();
   expectedScenarios = Array.isArray(payload.expectedScenarios) ? payload.expectedScenarios : [];
+  normalizeAllScenarioSolveStatuses();
   fuelResourcesForShare = Array.isArray(payload.fuelResourcesForShare) ? payload.fuelResourcesForShare : [];
   installedFuelOrder = Array.isArray(payload.installedCapacityFuelOrder) ? payload.installedCapacityFuelOrder : [];
   installedFuelLabels =
@@ -362,9 +434,16 @@ function labelForInstalledFuelKey(key) {
   return labels[key] || key;
 }
 
+function installedCapacityUsesLegacyHydro(raw) {
+  return raw.hydro != null && raw.hydro_dam == null && raw.hydro_river == null;
+}
+
 function parseInstalledCapacityFuelFile(text) {
   const raw = parseTwoColumnNumericTable(text, "fuel_group");
   delete raw.electricity_techs_total_GW;
+  if (installedCapacityUsesLegacyHydro(raw)) {
+    return { __legacyHydro: true, raw };
+  }
   const order = fuelOrderResolved();
   const out = {};
   order.forEach((k) => {
@@ -378,20 +457,22 @@ function aggregateInstalledFromFmultJs(fm, elecTechs) {
   const nuclear = gv("NUCLEAR");
   const natural_gas = gv("CCGT") + gv("CCGT_CCS");
   const coal = gv("COAL_US") + gv("COAL_IGCC") + gv("COAL_US_CCS") + gv("COAL_IGCC_CCS");
-  const hydro = gv("HYDRO_DAM") + gv("NEW_HYDRO_DAM") + gv("HYDRO_RIVER") + gv("NEW_HYDRO_RIVER");
+  const hydro_dam = gv("HYDRO_DAM") + gv("NEW_HYDRO_DAM");
+  const hydro_river = gv("HYDRO_RIVER") + gv("NEW_HYDRO_RIVER");
   const solar_pv = gv("PV");
   const wind = gv("WIND");
   const geothermal = gv("GEOTHERMAL");
   const biomass = gv("IND_COGEN_WOOD");
   const elecTotal = elecTechs.reduce((acc, t) => acc + gv(t), 0);
-  const mappedCore = nuclear + natural_gas + coal + hydro + solar_pv + wind + geothermal;
+  const mappedCore = nuclear + natural_gas + coal + hydro_dam + hydro_river + solar_pv + wind + geothermal;
   const other_electric = Math.max(0, elecTotal - mappedCore);
   const order = fuelOrderResolved();
   const o = {
     nuclear,
     natural_gas,
     coal,
-    hydro,
+    hydro_dam,
+    hydro_river,
     solar_pv,
     wind,
     geothermal,
@@ -698,15 +779,22 @@ async function scanScenarios(rootHandle) {
     scenario.scenarioTrack = metaFromFolder ? metaFromFolder.track : null;
 
     const icFile = await getOptionalFile(handle, "installed_capacity_by_fuel_gw.txt");
+    const fmultIcFile = await getOptionalFile(handle, "f_mult.txt");
     let installedByFuel = null;
     if (icFile) {
       try {
-        installedByFuel = parseInstalledCapacityFuelFile(await readText(icFile));
+        const parsed = parseInstalledCapacityFuelFile(await readText(icFile));
+        if (parsed && parsed.__legacyHydro && fmultIcFile && elecSupplyTechs.length) {
+          const ftxt = await readText(fmultIcFile);
+          const fm = parseTwoColumnNumericTable(ftxt, "Name");
+          installedByFuel = aggregateInstalledFromFmultJs(fm, elecSupplyTechs);
+        } else if (parsed && !parsed.__legacyHydro) {
+          installedByFuel = parsed;
+        }
       } catch {
         installedByFuel = null;
       }
     }
-    const fmultIcFile = await getOptionalFile(handle, "f_mult.txt");
     if (!installedByFuel && fmultIcFile && elecSupplyTechs.length) {
       const ftxt = await readText(fmultIcFile);
       const fm = parseTwoColumnNumericTable(ftxt, "Name");
@@ -767,6 +855,7 @@ async function scanScenarios(rootHandle) {
       totalEmissionsKtCO2: scenario.solved ? scenario.totalGwp : null
     };
 
+    normalizeScenarioSolveStatus(scenario);
     found.push(scenario);
   }
 
@@ -1261,7 +1350,7 @@ function renderEnergySummaryTable(active) {
       return `
         <tr>
           <td>${s.label || s.folderName}</td>
-          <td>${s.solved === false ? "Çözüm yok" : "Çözüldü"}</td>
+          <td>${solveStatusLabel(s)}</td>
           <td>${demandCell}</td>
           <td>${elecCell}</td>
         </tr>`;
@@ -1605,7 +1694,7 @@ function renderMetricsTable(active) {
         return `
         <tr>
           <td>${s.label || s.folderName}</td>
-          <td>${s.solved === false ? "Çözüm yok" : "Çözüldü"}</td>
+          <td>${solveStatusLabel(s)}</td>
           <td>${formatNumber(s.totalCost)}</td>
           <td>${formatNumber(s.totalGwp)}</td>
           <td>${demandGWh != null ? formatNumber(demandGWh) : "—"}</td>
@@ -1652,7 +1741,7 @@ function updateFailBanner() {
     )
     .join("");
   el.innerHTML = `
-    <strong>Beklenen senaryolardan ${bad.length} tanesi çözülmedi veya metrik dosyası eksik</strong>
+    <strong>Beklenen senaryolardan ${bad.length} tanesi feasible değil veya çözülmedi</strong>
     <ul>${items}</ul>
     <p class="muted" style="margin: 0.6rem 0 0; color: #991b1b">
       Çözücü günlüğü: aşağıdaki tabloda «Hata günlüğü» sütunundan açın; veya
@@ -1669,14 +1758,14 @@ function renderSolutionStatus() {
   }
   const rows = expectedScenarios
     .map((s) => {
-      const status = s.solved ? "Çözüldü" : "Çözüm yok";
-      const reason = s.solved ? "ok" : escapeHtml(s.statusReason || "bilinmiyor");
+      const status = solveStatusLabel(s);
+      const reason = s.solved ? "ok" : escapeHtml(solveStatusReasonDisplay(s));
       const rowClass = s.solved ? "" : "row-solve-fail";
       const errCell =
         !s.solved && s.runError
-          ? `<details class="run-error-details"><summary>Hata günlüğünü göster</summary><pre class="run-error-pre">${escapeHtml(s.runError)}</pre></details>`
+          ? `<details class="run-error-details"><summary>Hata / çözücü günlüğü</summary><pre class="run-error-pre">${escapeHtml(s.runError)}</pre></details>`
           : !s.solved
-            ? "<span class=\"muted\">— (<code>scenario_run_error.txt</code> yok; koşuyu yeniden çalıştırın)</span>"
+            ? "<span class=\"muted\">— (günlük yok; <code>run_all_turkey_scenarios.sh</code> ile yeniden koşun)</span>"
             : "—";
       return `
         <tr class="${rowClass}">

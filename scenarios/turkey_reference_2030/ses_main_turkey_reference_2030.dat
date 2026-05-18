@@ -49,10 +49,10 @@ let f_min["CCGT_CCS"] := 17.5;
 let f_max["CCGT_CCS"] := 18.0;
 
 # Hydro: installed 35.1 GW (real capacity; reservoir effect via c_p_t)
-let f_min["HYDRO_DAM"] := 35.100 * (21.886 / 32.307);
-let f_max["HYDRO_DAM"] := 30.000 * (35.100 / 32.307);
-let f_min["HYDRO_RIVER"] := 35.100 * (10.421 / 32.307);
-let f_max["HYDRO_RIVER"] := 15.000 * (35.100 / 32.307);
+let f_min["HYDRO_DAM"] := 35.000* 0.75;
+let f_max["HYDRO_DAM"] := 35.100 * 0.75;
+let f_max["HYDRO_RIVER"] := 32.000 * 0.25;
+let f_max["HYDRO_RIVER"] := 35.100 * 0.25;
 
 # Solar PV (Güneş 32.9 GW)
 let f_min["PV"] := 32.900;

@@ -121,10 +121,20 @@ for run_file in "${RUN_FILES[@]}"; do
   cp -f "$tmp_log" "$LOG_ROOT/$(basename "$run_file" .run).log"
 
   metrics_path="$ROOT_DIR/${OUTPUT_DIR_FOR_RUN}/scenario_metrics.txt"
-  if [[ -n "$OUTPUT_DIR_FOR_RUN" && -f "$metrics_path" ]]; then
+  run_failed=0
+  if [[ -z "$OUTPUT_DIR_FOR_RUN" || ! -f "$metrics_path" ]]; then
+    run_failed=1
+  elif grep -qE '^TotalCost[[:space:]]+0([[:space:]]|$)' "$metrics_path" \
+    && grep -qE '^TotalGWP[[:space:]]+0([[:space:]]|$)' "$metrics_path"; then
+    run_failed=1
+  elif grep -qE "cannot hold|infeasible|Infeasible|unbounded|Unbounded|no solution|No solution" "$tmp_log" 2>/dev/null; then
+    run_failed=1
+  fi
+
+  if [[ "$run_failed" -eq 0 ]]; then
     echo "Completed: ${run_file}"
   else
-    echo "FAILED (no scenario_metrics.txt): ${run_file}"
+    echo "FAILED (infeasible / no valid metrics): ${run_file}"
     FAILED_RUNS+=("$run_file")
     if [[ -n "$OUTPUT_DIR_FOR_RUN" ]]; then
       mkdir -p "$ROOT_DIR/$OUTPUT_DIR_FOR_RUN"
